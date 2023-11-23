@@ -1,25 +1,30 @@
 @font-face {
     font-family: 'suit';
-    src: url(../assets/font/SUIT-Bold.otf);
+    src: url(./SUIT-Bold.otf);
     font-weight: 600;
+    font-style: normal;
 }
 @font-face {
     font-family: 'suit';
-    src: url(../assets/font/SUIT-SemiBold.otf);
+    src: url(./SUIT-SemiBold.otf);
     font-weight: 500;
+    font-style: normal;
 }
 @font-face {
     font-family: 'suit';
-    src: url(../assets/font/SUIT-Medium.otf);
+    src: url(./SUIT-Medium.otf);
     font-weight: 400;
+    font-style: normal;
 }
 @font-face {
     font-family: 'suit';
-    src: url(../assets/font/SUIT-Regular.otf);
+    src: url(./SUIT-Regular.otf);
     font-weight: 300;
+    font-style: normal;
 }
 @font-face {
     font-family: 'suit';
-    src: url(../assets/font/SUIT-Light.otf);
+    src: url(./SUIT-Light.otf);
     font-weight: 200;
+    font-style: normal;
 }

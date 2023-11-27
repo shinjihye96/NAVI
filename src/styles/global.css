@@ -38,5 +38,6 @@ a{
 
 .main{
     max-width: 414px;
+    height: 100vh;
     margin: auto;
 }

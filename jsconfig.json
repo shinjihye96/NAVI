@@ -1,18 +1,8 @@
 {
-    "compilerOptions": {
-        "baseUrl": "src",
-        "paths": {
-            "@config/*": ["config/*"],
-            "@utils/*": ["utils/*"],
-            "@constant/*": ["constant/*"],
-            "@service/*": ["service/*"],
-            "@assets/*": ["assets/*"],
-            "@pages/*": ["pages/*"],
-            "@components/*": ["components/*"],
-            "@styles/*": ["styles/*"]
-          }
-    },
-    "include": [
-        "./src"
-    ]
+  "compilerOptions": {
+    "baseUrl": "src",
+  },
+  "include": [
+    "src"
+  ]
 }

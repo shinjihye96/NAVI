@@ -1,0 +1,19 @@
+.nav_wrap{
+    width: 100%;
+    background: red;
+    padding: 8px 16px;
+}
+.nav_wrap .nav_tab{
+    display: grid; align-items: center; grid-template-columns: repeat(5, 1fr); gap: 8px;
+}
+.nav_wrap .nav_tab .nav_tab_con{
+    display: grid; align-items: center; justify-content: center; gap: 4px;
+    text-align: center;
+    cursor: pointer;
+}
+.nav_wrap .nav_tab .nav_tab_con .nav_icon{
+    width: 24px;
+}
+.nav_wrap .nav_tab .nav_tab_con .nav_name{
+    font-size: 16px;
+}

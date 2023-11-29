@@ -1,5 +1,7 @@
+@import 'styles/components/color';
+
 .nav_wrap{
-    background: red;
+    background: $Primary16;
     padding: 8px 16px;
 }
 .nav_wrap .nav_tab{

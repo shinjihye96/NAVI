@@ -1,4 +1,4 @@
-// import { Colors } from './color';
+import './color.scss';
 
 const Button = ({ title, onPress, icon, size, type, iconPosition, iconName}) => {
     const BtnStyle = (type) => {

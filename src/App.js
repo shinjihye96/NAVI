@@ -1,24 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import 'styles/global.css';
+import BottomNav from 'components/bottom_nav/bottom_nav';
+import { BottomNavPaths } from 'pages/pages_paths';
+import * as Pages from 'pages/pages'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className='main'>
+        <Router>
+          <div className="main_pages">
+            <Routes>
+              <Route index path={BottomNavPaths.DIARY} element={<Pages.Diary/>} />
+              <Route path={BottomNavPaths.DIARY} element={<Pages.Diary/>} />
+              <Route path={BottomNavPaths.COMMUNITY} element={<Pages.Community />} />
+              <Route path={BottomNavPaths.HEALTH_INFO} element={<Pages.HealthInfo />} />
+              <Route path={BottomNavPaths.MEDICAL_SPONSORSHIP} element={<Pages.MedicalSponsorship />} />
+              <Route path={BottomNavPaths.MYPAGE} element={<Pages.Mypage />} />
+            </Routes>
+          </div>
+          <BottomNav />
+        </Router>
+      </div>
+    </>
   );
 }
 

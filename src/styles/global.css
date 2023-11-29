@@ -23,7 +23,7 @@ time, mark, audio, video {
 }
 
 /* global styles */
-@import url('../assets/font/font.css');
+@import url('assets/font/font.css');
 body{
     font-family: 'suit', Arial, Helvetica, sans-serif;
 }
@@ -40,4 +40,11 @@ a{
     max-width: 414px;
     height: 100vh;
     margin: auto;
+    display: flex; flex-direction: column;
+}
+.main_pages{
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    background-color: gray;
 }

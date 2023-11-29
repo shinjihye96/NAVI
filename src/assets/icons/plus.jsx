@@ -1,8 +1,8 @@
 import React from 'react';
-import { Colors } from '../../styles/color';
+import 'styles/components/color.scss';
 
 let size = 48;
-let fillColor = 'Colors.Gray900';
+let fillColor = $Gray900;
 
 export default function plus({ size, fillColor }) {
     return (

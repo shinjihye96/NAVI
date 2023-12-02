@@ -1,9 +1,6 @@
 import React from 'react';
 import 'styles/components/color.scss';
 
-let size = 48;
-let fillColor = $Gray900;
-
 export default function eye_close({ size, fillColor }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">

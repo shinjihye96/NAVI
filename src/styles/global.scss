@@ -20,7 +20,10 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
     color: inherit;
-    $base-font-size: 1;
+}
+
+html{
+    font-size: 1px;
 }
 
 /* global styles */

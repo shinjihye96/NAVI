@@ -20,6 +20,7 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
     color: inherit;
+    $base-font-size: 1;
 }
 
 /* global styles */
@@ -37,7 +38,7 @@ a{
 }
 
 .main{
-    max-width: 414px;
+    max-width: 414rem;
     height: 100vh;
     margin: auto;
     display: flex; flex-direction: column;

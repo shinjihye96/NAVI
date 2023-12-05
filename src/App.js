@@ -12,7 +12,8 @@ function App() {
         <Router>
           <div className="main_pages">
             <Routes>
-              <Route index path={BottomNavPaths.DIARY} element={<Pages.Diary/>} />
+              <Route path='/' element={<Pages.Diary/>}></Route>
+              <Route path={BottomNavPaths.DIARY} element={<Pages.Diary/>} />
               <Route path={BottomNavPaths.DIARY} element={<Pages.Diary/>} />
               <Route path={BottomNavPaths.COMMUNITY} element={<Pages.Community />} />
               <Route path={BottomNavPaths.HEALTH_INFO} element={<Pages.HealthInfo />} />

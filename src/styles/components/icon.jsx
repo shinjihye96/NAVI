@@ -14,7 +14,7 @@ const Icon = ({ name, size, className }) => {
 export default Icon;
 
 // example
-{/* <Icon name='arrow_left' size={24} clasName='icon_example' > */}
+// <Icon name='arrow_left' size={24} clasName='icon_example' >
 
 // icon color example
 // .icon_example: fill: $Gray100;

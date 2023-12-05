@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function arrow_left({ size = 48, className, ...props }) {
+export default function EmotionMinus({ size = 48, className, ...props }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
             <path d="M25 21C25 22.6569 24.1046 24 23 24C21.8954 24 21 22.6569 21 21C21 19.3431 21.8954 18 23 18C24.1046 18 25 19.3431 25 21Z" fill={className}/>

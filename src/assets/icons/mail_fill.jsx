@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function arrow_left({ size = 48, className, ...props }) {
+export default function MainFill({ size = 48, className, ...props }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
             <path d="M2.99615 11.2604C2.35866 12.5366 2 13.9764 2 15.5V32.5C2 37.7467 6.25329 42 11.5 42H36.5C41.7467 42 46 37.7467 46 32.5V15.5C46 13.9764 45.6413 12.5366 45.0038 11.2604L43.5518 12.3551L27.4014 25.0653C25.4057 26.6358 22.5942 26.6358 20.5985 25.0653L4.44818 12.3551L2.99615 11.2604Z" fill={className}/>

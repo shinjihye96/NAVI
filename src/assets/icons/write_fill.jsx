@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function arrow_left({ size = 48, className, ...props }) {
+export default function WriteFill({ size = 48, className, ...props }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
             <path fill-rule="evenodd" clip-rule="evenodd" d="M4 10V38C4 41.3137 6.68629 44 10 44H15.9448C17.7486 44 19.3293 42.7927 19.8039 41.0525L21.5995 34.4686C21.8623 33.5048 22.3617 32.6219 23.0522 31.9L31.8906 22.6599C32.6026 21.9155 33 20.9251 33 19.895V10C33 6.68629 30.3137 4 27 4H10C6.68629 4 4 6.68629 4 10ZM14.5 13.25C13.6716 13.25 13 13.9216 13 14.75C13 15.5784 13.6716 16.25 14.5 16.25H22.5C23.3284 16.25 24 15.5784 24 14.75C24 13.9216 23.3284 13.25 22.5 13.25H14.5Z" fill={className}/>

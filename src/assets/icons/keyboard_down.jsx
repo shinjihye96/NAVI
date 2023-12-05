@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function arrow_left({ size = 48, className, ...props }) {
+export default function KeyboardDown({ size = 48, className, ...props }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
             <path fill-rule="evenodd" clip-rule="evenodd" d="M38 9H10C8.34315 9 7 10.3431 7 12V29C7 30.6569 8.34315 32 10 32H38C39.6569 32 41 30.6569 41 29V12C41 10.3431 39.6569 9 38 9ZM10 6C6.68629 6 4 8.68629 4 12V29C4 32.3137 6.68629 35 10 35H38C41.3137 35 44 32.3137 44 29V12C44 8.68629 41.3137 6 38 6H10Z" fill={className}/>

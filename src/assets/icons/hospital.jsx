@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function arrow_left({ size = 48, className, ...props }) {
+export default function Hospital({ size = 48, className, ...props }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
             <path fill-rule="evenodd" clip-rule="evenodd" d="M13 9.5C13 6.46243 15.4624 4 18.5 4H29.5C32.5376 4 35 6.46243 35 9.5V13.5H38.5C41.5376 13.5 44 15.9624 44 19V38.5C44 41.5376 41.5376 44 38.5 44H9.5C6.46243 44 4 41.5376 4 38.5V19C4 15.9624 6.46243 13.5 9.5 13.5H13V9.5ZM13 16.5H9.5C8.11929 16.5 7 17.6193 7 19V38.5C7 39.8807 8.11929 41 9.5 41H13V16.5ZM16 41H19V34C19 31.2386 21.2386 29 24 29C26.7614 29 29 31.2386 29 34V41H32V9.5C32 8.11929 30.8807 7 29.5 7H18.5C17.1193 7 16 8.11929 16 9.5V41ZM35 41H38.5C39.8807 41 41 39.8807 41 38.5V19C41 17.6193 39.8807 16.5 38.5 16.5H35V41ZM26 41V34C26 32.8954 25.1046 32 24 32C22.8954 32 22 32.8954 22 34V41H26Z" fill={className}/>

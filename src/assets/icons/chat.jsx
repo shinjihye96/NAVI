@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function arrow_left({ size = 48, className, ...props }) {
+export default function Chat({ size = 48, className, ...props }) {
     return (
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
             <path fill-rule="evenodd" clip-rule="evenodd" d="M38 18H18C16.3431 18 15 19.3431 15 21V35C15 36.6569 16.3431 38 18 38H35.5279C36.3041 38 37.0697 38.1807 37.7639 38.5279L41 40.1459V21C41 19.3431 39.6569 18 38 18ZM18 15C14.6863 15 12 17.6863 12 21V35C12 38.3137 14.6863 41 18 41H35.5279C35.8384 41 36.1446 41.0723 36.4223 41.2111L41.1056 43.5528C42.4354 44.2177 44 43.2507 44 41.7639V21C44 17.6863 41.3137 15 38 15H18Z" fill={className}/>

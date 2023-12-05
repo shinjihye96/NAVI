@@ -34,9 +34,3 @@ export { default as Search } from './search';
 export { default as Sort } from './sort';
 export { default as WriteFill } from './write_fill';
 export { default as Write } from './write';
-
-// example
-{/* <Icon.ArrowLeft size={24} clasName='icon_example' > */}
-
-// icon color example
-// .icon_example: fill: $Gray100;

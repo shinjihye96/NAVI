@@ -164,8 +164,10 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
           return 'primary';
         case 'secondary':
           return 'secondary';
-        case 'glass':
-          return 'glass';
+        case 'tertiary':
+          return 'tertiary';
+        case 'quaternary':
+          return 'quaternary';
         default:
           return 'primary';
       }
@@ -200,4 +202,5 @@ export {
 // example
 // <PrimButton title='test' iconPosition='left' icon='Plus' type='primary'/>
 // <PrimButton href='/' title='test' iconPosition='left' icon='Plus' type='primary'/>
-// <IConButton href='/' title='test' iconName='Plus' type='primary'/>
+// <IconButton iconName='Plus' type='glass' size='S' />
+// <IconButton href={`/`} iconName='Plus' type='primary' size='L'/>

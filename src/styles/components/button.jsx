@@ -1,83 +1,193 @@
 import './color.scss';
+import './button.scss';
+import Icon from 'styles/components/icon';
 
-const Button = ({ title, onPress, icon, size, type, iconPosition, iconName}) => {
-    const BtnStyle = (type) => {
-        switch (type) {
-        case 'Primary':
-            return {
-            btnType: [ButtonStyle.Primary],
-            btnTxt: [ButtonStyle.PrimaryTxt],
-            btnIcon: Colors.Gray100,
-            };
-        case 'Primary_r':
-            return {
-            btnType: [ButtonStyle.Primary, ButtonStyle.roundBtn],
-            btnTxt: [ButtonStyle.PrimaryTxt],
-            btnIcon: Colors.Gray100,
-            };
-        case 'Secondary':
-            return {
-            btnType: [ButtonStyle.Secondary],
-            btnTxt: [ButtonStyle.SecondaryTxt],
-            btnIcon: Colors.Gray900,
-            };
-        case 'Secondary_r':
-            return {
-            btnType: [ButtonStyle.Secondary, ButtonStyle.roundBtn],
-            btnTxt: [ButtonStyle.SecondaryTxt],
-            btnIcon: Colors.Gray900,
-            };
-        case 'Glass':
-            return {
-            btnType: [ButtonStyle.Glass],
-            btnTxt: [ButtonStyle.GlassTxt],
-            btnIcon: Colors.Gray100,
-            };
-        case 'Glass_r':
-            return {
-            btnType: [ButtonStyle.Glass, ButtonStyle.roundBtn],
-            btnTxt: [ButtonStyle.GlassTxt],
-            btnIcon: Colors.Gray100,
-            };
+// prim button
+const PrimButton = ({ title, type, onPress, icon, iconPosition, size, href, ...props}) => {
+  // button의 link 유무
+  const isLink = href && href.length > 0;
+
+  // button size
+  const BtnSize = (size) => {
+    switch (size){
+      case 'L':
+        return 'L';
+      case 'M':
+        return 'M';
+      case 'S':
+        return 'S';
+      default:
+        return 'L';
+    }
+  };
+
+  const btnSizeClass = BtnSize(size);
+
+  const btntype = (type) => {
+      switch (type){
+        case 'primary':
+          return 'primary';
+        case 'secondary':
+          return 'secondary';
+        case 'glass':
+          return 'glass';
         default:
-            return {
-            btnType: [ButtonStyle.Primary],
-            btnTxt: [ButtonStyle.PrimaryTxt],
-            btnIcon: Colors.Gray100,
-            };
-        }
-    };
-    const { btnType, btnTxt, btnIcon } = BtnStyle(type);
+          return 'primary';
+      }
+  };
+  const btnTypeClass = btntype(type);
 
-    const BtnSize = () => {
-        switch (size){
-        case 'L':
-            return ButtonStyle.L;
-        case 'M':
-            return ButtonStyle.M;
-        case 'S':
-            return ButtonStyle.S;
-        default:
-            return ButtonStyle.L;
-        }
-    };
-
+  if(isLink) {
     return (
-        <TouchableOpacity style={[ButtonStyle.btnCommon, BtnSize(), ...btnType]} onPress={onPress}>
-        {iconPosition === 'left' && icon && (
-            <Icon name={iconName} size={16} color={btnIcon} />
-        )}
-        <Text style={[ButtonStyle.btnTxt, ...btnTxt, CommonStyle.commonText]}>{title}</Text>
-        {iconPosition === 'right' && icon && (
-            <Icon name={iconName} size={16} color={btnIcon} />
-        )}
-        </TouchableOpacity>
+        <>
+          <a href={href} className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+              {iconPosition === 'left' && icon && (
+                  <Icon name={icon} size={16} className={`btn_icon`} />
+              )}
+              <p className='btn_tit'>{title}</p>
+              {iconPosition === 'right' && icon && (
+                  <Icon name={icon} size={16} className={`btn_icon`} />
+              )}
+          </a>
+        </>
     );
+  }
+
+  return (
+      <>
+        <button className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+            {iconPosition === 'left' && icon && (
+                <Icon name={icon} size={16} className={`btn_icon`} />
+            )}
+            <p className='btn_tit'>{title}</p>
+            {iconPosition === 'right' && icon && (
+                <Icon name={icon} size={16} className={`btn_icon`} />
+            )}
+        </button>
+      </>
+  );
+}
+
+// text button
+const TextButton = ({ title, type, onPress, icon, iconPosition, size, href, ...props}) => {
+  // button의 link 유무
+  const isLink = href && href.length > 0;
+
+  // button size
+  const BtnSize = (size) => {
+    switch (size){
+      case 'L':
+        return 'L';
+      case 'M':
+        return 'M';
+      case 'S':
+        return 'S';
+      case 'XS':
+        return 'XS';
+      default:
+        return 'L';
+    }
+  };
+
+  const btnSizeClass = BtnSize(size);
+
+  const btntype = (type) => {
+      switch (type){
+        case 'primary':
+          return 'primary';
+        case 'secondary':
+          return 'secondary';
+        case 'glass':
+          return 'glass';
+        default:
+          return 'primary';
+      }
+  };
+  const btnTypeClass = btntype(type);
+
+  if(isLink) {
+    return (
+      <>
+        <a href={href} className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+            {iconPosition === 'left' && icon && (
+                <Icon name={icon} size={16} className={`btn_icon`} />
+            )}
+            <p className='btn_tit'>{title}</p>
+            {iconPosition === 'right' && icon && (
+                <Icon name={icon} size={16} className={`btn_icon`} />
+            )}
+        </a>
+      </>
+    );
+  }
+
+  return (
+    <>
+        <button className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+            {iconPosition === 'left' && icon && (
+                <Icon name={icon} size={16} className={`btn_icon`} />
+            )}
+            <p className='btn_tit'>{title}</p>
+            {iconPosition === 'right' && icon && (
+                <Icon name={icon} size={16} className={`btn_icon`} />
+            )}
+        </button>
+    </>
+  );
+}
+
+// icon button
+const IconButton = ({ onPress, type, iconName, size, href, ...props}) => {
+  // button의 link 유무
+  const isLink = href && href.length > 0;
+
+  const btnSizeClass = size(size);
+
+  const btntype = (type) => {
+      switch (type){
+        case 'primary':
+          return 'primary';
+        case 'secondary':
+          return 'secondary';
+        case 'tertiary':
+          return 'tertiary';
+        case 'quaternary':
+          return 'quaternary';
+        default:
+          return 'primary';
+      }
+  };
+  const btnTypeClass = btntype(type)
+
+  if(isLink) {
+    return (
+      <>
+        <a href={href} className={`icon_btn btn_common ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+            <div>
+                <Icon name={iconName} className={`btn_icon`} />
+            </div>
+        </a>
+      </>
+  );
+  }
+
+  return (
+      <>
+        <button className={`icon_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+            <div>
+                <Icon name={iconName} className={`btn_icon`} />
+            </div>
+        </button>
+      </>
+  );
 }
 
 export {
-    Button,
+    PrimButton,
     TextButton,
     IconButton,
 };
-  
+
+// example
+// <PrimButton title='test' iconPosition='left' icon='Plus' type='primary'/>
+// <PrimButton href='/' title='test' iconPosition='left' icon='Plus' type='primary'/>

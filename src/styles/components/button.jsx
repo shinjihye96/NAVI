@@ -54,7 +54,7 @@ const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 
   return (
       <>
-        <button className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -122,7 +122,7 @@ const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 
   return (
     <>
-        <button className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -184,7 +184,7 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
 
   return (
     <>
-        <button className={`btn_common icon_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common icon_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
           <Icon name={iconName} size={16} className={`btn_icon`} />
         </button>
     </>

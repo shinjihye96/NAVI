@@ -1,0 +1,25 @@
+@import 'styles/components/color';
+
+input.input_common{
+    padding: 16rem;
+    border-radius: 8rem;
+}
+input{}
+
+input .input_box{
+    position: relative;
+
+    &.label{
+        margin-bottom: 6rem;
+        color: $Gray900;
+    }
+    &.sub_txt{
+        margin: 6rem;
+    }
+    &.btn_box{
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}

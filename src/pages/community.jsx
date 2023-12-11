@@ -19,7 +19,8 @@ export default function Community() {
                 <p>zz</p>
                 <IconButton iconName='Plus' type='primary' size='L' />
                 <IconButton iconName='Plus' type='secondary' size='M' />
-                <IconButton iconName='Plus' type='glass' size='S' />
+                <IconButton iconName='Plus' type='tertiary' size='S' />
+                <IconButton href={`/`} iconName='Plus' type='quaternary' size='L'/>
                 <IconButton href={`/`} iconName='Plus' type='primary' size='L'/>
             </div>
         </>

@@ -1,4 +1,3 @@
-import './color.scss';
 import './button.scss';
 import Icon from 'styles/components/icon';
 

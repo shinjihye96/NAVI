@@ -3,7 +3,7 @@ import './button.scss';
 import Icon from 'styles/components/icon';
 
 // prim button
-const PrimButton = ({ title, type, onPress, icon, iconPosition, size, href, ...props}) => {
+const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, ...props}) => {
   // button의 link 유무
   const isLink = href && href.length > 0;
 
@@ -40,7 +40,7 @@ const PrimButton = ({ title, type, onPress, icon, iconPosition, size, href, ...p
   if(isLink) {
     return (
         <>
-          <a href={href} className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+          <a href={href} className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
               {iconPosition === 'left' && icon && (
                   <Icon name={icon} size={16} className={`btn_icon`} />
               )}
@@ -55,7 +55,7 @@ const PrimButton = ({ title, type, onPress, icon, iconPosition, size, href, ...p
 
   return (
       <>
-        <button className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+        <button className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -69,7 +69,7 @@ const PrimButton = ({ title, type, onPress, icon, iconPosition, size, href, ...p
 }
 
 // text button
-const TextButton = ({ title, type, onPress, icon, iconPosition, size, href, ...props}) => {
+const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...props}) => {
   // button의 link 유무
   const isLink = href && href.length > 0;
 
@@ -108,7 +108,7 @@ const TextButton = ({ title, type, onPress, icon, iconPosition, size, href, ...p
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+        <a href={href} className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -123,7 +123,7 @@ const TextButton = ({ title, type, onPress, icon, iconPosition, size, href, ...p
 
   return (
     <>
-        <button className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
+        <button className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -137,11 +137,27 @@ const TextButton = ({ title, type, onPress, icon, iconPosition, size, href, ...p
 }
 
 // icon button
-const IconButton = ({ onPress, type, iconName, size, href, ...props}) => {
+const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
   // button의 link 유무
   const isLink = href && href.length > 0;
 
-  const btnSizeClass = size(size);
+  // button size
+  const BtnSize = (size) => {
+    switch (size){
+      case 'L':
+        return 'L';
+      case 'M':
+        return 'M';
+      case 'S':
+        return 'S';
+      case 'XS':
+        return 'XS';
+      default:
+        return 'L';
+    }
+  };
+
+  const btnSizeClass = BtnSize(size);
 
   const btntype = (type) => {
       switch (type){
@@ -149,36 +165,30 @@ const IconButton = ({ onPress, type, iconName, size, href, ...props}) => {
           return 'primary';
         case 'secondary':
           return 'secondary';
-        case 'tertiary':
-          return 'tertiary';
-        case 'quaternary':
-          return 'quaternary';
+        case 'glass':
+          return 'glass';
         default:
           return 'primary';
       }
   };
-  const btnTypeClass = btntype(type)
+  const btnTypeClass = btntype(type);
 
   if(isLink) {
     return (
       <>
-        <a href={href} className={`icon_btn btn_common ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
-            <div>
-                <Icon name={iconName} className={`btn_icon`} />
-            </div>
+        <a href={href} className={`btn_common icon_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+            <Icon name={iconName} size={16} className={`btn_icon`} />
         </a>
       </>
-  );
+    );
   }
 
   return (
-      <>
-        <button className={`icon_btn ${btnSizeClass} ${btnTypeClass}`} onPress={onPress} {...props}>
-            <div>
-                <Icon name={iconName} className={`btn_icon`} />
-            </div>
+    <>
+        <button className={`btn_common icon_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+          <Icon name={iconName} size={16} className={`btn_icon`} />
         </button>
-      </>
+    </>
   );
 }
 
@@ -191,3 +201,4 @@ export {
 // example
 // <PrimButton title='test' iconPosition='left' icon='Plus' type='primary'/>
 // <PrimButton href='/' title='test' iconPosition='left' icon='Plus' type='primary'/>
+// <IConButton href='/' title='test' iconName='Plus' type='primary'/>

@@ -2,8 +2,11 @@
 
 // button common
 .btn_common{
-    display: inline-flex; align-items: center; gap: 6rem;
+    display: flex; align-items: center; gap: 6rem;
     border-radius: 8rem;
+}
+a.btn_common{
+    display: inline-flex;
 }
 
 .btn_tit{
@@ -100,29 +103,42 @@
 // icon button
 .icon_btn{
     border-radius: 50%;
+    justify-content: center;
 
     // buttons size
     &.L{
+        width: 48rem;
         height: 48rem;
-        padding: 24rem;
     }
     &.M{
+        width: 40rem;
         height: 40rem;
-        padding: 20rem;
     }
     &.S{
+        width: 32rem;
         height: 32rem;
-        padding: 16rem;
     }
 
     &.primary{
-        .btn_icon{}
+        background: $Primary500;
+
+        .btn_icon{
+            fill: $Gray100;
+        }
     }
     &.secondary{
-        .btn_icon{}
+        border: 1px solid;
+        border-color: $Base_w24;
+        color: $Gray900;
+
+        .btn_icon{
+            fill: $Gray900;
+        }
     }
     &.tertiary{
-        .btn_icon{}
+        .btn_icon{
+            fill: $Primary500;
+        }
     }
     &.quaternary{
         .btn_icon{}

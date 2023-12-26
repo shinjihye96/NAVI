@@ -1,11 +1,19 @@
 @import 'styles/components/color';
 
 .nav_wrap{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 414rem;
     background: $Base_wf;
-    padding: 8rem 16rem;
+    
 
     .nav_tab{
-        display: grid; align-items: center; grid-template-columns: repeat(5, 1fr); gap: 8rem;
+        display: grid;
+        align-items: center;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8rem;
+        padding: 8rem 16rem;
     }
     .nav_tab_con{
         display: grid; align-items: center; justify-content: center; gap: 4rem;

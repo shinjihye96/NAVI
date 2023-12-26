@@ -92,14 +92,14 @@ const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 
   const btntype = (type) => {
       switch (type){
-        case 'primary':
-          return 'primary';
-        case 'secondary':
-          return 'secondary';
-        case 'glass':
-          return 'glass';
+        case 'tertiary':
+          return 'tertiary';
+        case 'quaternary':
+          return 'qaternary';
+        case 'gray':
+          return 'gray';
         default:
-          return 'primary';
+          return 'tertiary';
       }
   };
   const btnTypeClass = btntype(type);

@@ -41,17 +41,19 @@ ol,ul{
 a{
     text-decoration: none;
     cursor: pointer;
+    display: inline-block;
 }
 
 img{
     display: block;
 }
 
-.main{
+#main{
     max-width: 414rem;
     height: 100vh;
     margin: auto;
     font-size: 16rem;
+    position: relative;
 }
 .main_pages{
     width: 100%;

@@ -142,21 +142,19 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
 
   // button size
   const BtnSize = (size) => {
-    switch (size){
+    switch (size) {
       case 'L':
-        return 'L';
+        return { btnSize: 'L', iconSize: 24 };
       case 'M':
-        return 'M';
+        return { btnSize: 'M', iconSize: 22 };
       case 'S':
-        return 'S';
-      case 'XS':
-        return 'XS';
+        return { btnSize: 'S', iconSize: 20 };
       default:
-        return 'L';
+        return { btnSize: 'L', iconSize: 24 };
     }
   };
-
-  const btnSizeClass = BtnSize(size);
+  
+  const { btnSize, iconSize } = BtnSize(size);
 
   const btntype = (type) => {
       switch (type){
@@ -177,8 +175,8 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common icon_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
-            <Icon name={iconName} size={16} className={`btn_icon`} />
+        <a href={href} className={`btn_common icon_btn ${btnSize} ${btnTypeClass}`} onClick={onClick} {...props}>
+            <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </a>
       </>
     );
@@ -186,8 +184,8 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
 
   return (
     <>
-        <button type='button' className={`btn_common icon_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
-          <Icon name={iconName} size={16} className={`btn_icon`} />
+        <button type='button' className={`btn_common icon_btn ${btnSize} ${btnTypeClass}`} onClick={onClick} {...props}>
+          <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </button>
     </>
   );

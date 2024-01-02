@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PrimButton, TextButton, IconButton } from 'styles/components/button';
 import Chips from 'styles/components/chip'
-import { Swiper, SwiperSlide } from 'swiper/react';
+import Slider from "react-slick";
 import 'swiper/css';
 import './list.scss';
 
@@ -17,19 +17,19 @@ export default function DiaryList() {
             id: 0,
             name: "heart",
             icon: "./png_icon/heart.png",
-            count: 300,
+            count: 20,
         },
         {
             id: 1,
             name: "likeThumbUp",
             icon: "./png_icon/like-thumb-up.png",
-            count: 10,
+            count: 300,
         },
         {
             id: 2,
             name: "loudSpeaker",
             icon: "./png_icon/loud-speaker.png",
-            count: 25,
+            count: 5,
         },
         {
             id: 3,
@@ -41,46 +41,7 @@ export default function DiaryList() {
             id: 4,
             name: "sad",
             icon: "./png_icon/sad.png",
-            count: 1,
-        },
-        {
-            id: 5,
-            name: "congrats",
-            icon: "./png_icon/congrats.png",
-            count: 0,
-        },
-    ];
-
-    let emptyEmojies = [
-        {
-            id: 0,
-            name: "heart",
-            icon: "./png_icon/heart.png",
-            count: 0,
-        },
-        {
-            id: 1,
-            name: "likeThumbUp",
-            icon: "./png_icon/like-thumb-up.png",
-            count: 0,
-        },
-        {
-            id: 2,
-            name: "loudSpeaker",
-            icon: "./png_icon/loud-speaker.png",
-            count: 0,
-        },
-        {
-            id: 3,
-            name: "pray",
-            icon: "./png_icon/pray.png",
-            count: 0,
-        },
-        {
-            id: 4,
-            name: "sad",
-            icon: "./png_icon/sad.png",
-            count: 0,
+            count: 15,
         },
         {
             id: 5,
@@ -108,6 +69,41 @@ export default function DiaryList() {
 
     const postTimeToWrite = '23시간'
 
+    const emojiRender = () => {
+        if(emojies.every(emoji => emoji.count === 0)) {
+            return (
+                <>
+                    {firstEmogi ? null :
+                        <PrimButton size='S' title='마음나누기' iconPosition='left' icon='Heart' type='secondary' onClick={pushFirstEmogi}/>
+                    }
+                    <Slider>
+                        <>
+                            {firstEmogi ? (
+                                emojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
+                                    <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji} />
+                                ))
+                            ) : null}
+                        </>
+                    </Slider>
+                </>
+            );
+        } else {
+            return(
+                <Slider>
+                    <>
+                    {toggle
+                        ? emojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
+                            <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji} />
+                        ))
+                        : emojies.sort((a, b) => b.count - a.count).slice(0, 3).map((emoji, index) => (
+                            <Chips key={index} icon={emoji.icon} text={emoji.count ?? 0} onclick={pushEmoji} />
+                            ))}
+                    <Chips icon={toggle ? './png_icon/emotion-minus.png' : './png_icon/emotion-plus.png'} onclick={iconViewToggle} />
+                    </>
+                </Slider>
+            );
+        }
+    } 
 
     return(
         <>
@@ -135,24 +131,7 @@ export default function DiaryList() {
                     <p>{`저에게는 도서관이 마음을 달래주는 곳입니다. 책 속 세계로 빠져들며, 조용함과 지식의 풍부함에서 에너지를 얻습니다.`}</p>
                 </div>
                 <div className="btn_wrap">
-                    <p>전체 0일때</p>
-                    {firstEmogi ? null : <PrimButton size='S' title='마음나누기' iconPosition='left' icon='Heart' type='secondary' onClick={pushFirstEmogi}/>}
-                    {firstEmogi ? (
-                        <div className="btn_box">
-                        {emptyEmojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
-                            <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji}/>
-                        ))}
-                    </div>
-                    ) : null}
-                    <p>이모지 카운팅 값 있을 때</p>
-                    <div className="btn_box swiper-wrapper">
-                        {toggle ? emojies.map((emoji, index) => (
-                            <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji}/>
-                        )) : emojies.sort((a, b) => b.count - a.count).slice(0, 3).map((emoji, index) => (
-                            <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji}/>
-                        ))}
-                        <Chips icon={toggle ? `./png_icon/emotion-minus.png` : `./png_icon/emotion-plus.png`} onclick={iconViewToggle}/>
-                    </div>
+                    {emojiRender()}
                 </div>
             </div>
         </>

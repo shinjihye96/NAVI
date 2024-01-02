@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PrimButton, TextButton, IconButton } from 'styles/components/button';
 import Chips from 'styles/components/chip'
-import Slider from "react-slick";
+import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import './list.scss';
 
@@ -12,44 +12,50 @@ export default function DiaryList() {
         setUserFollow((follow) => !follow);
     };
 
-    let emojies = [
+    const [emojies, setEmojies] = useState([
         {
             id: 0,
             name: "heart",
             icon: "./png_icon/heart.png",
             count: 20,
+            isUserChecked: false,
         },
         {
             id: 1,
             name: "likeThumbUp",
             icon: "./png_icon/like-thumb-up.png",
             count: 300,
+            isUserChecked: false,
         },
         {
             id: 2,
             name: "loudSpeaker",
             icon: "./png_icon/loud-speaker.png",
             count: 5,
+            isUserChecked: false,
         },
         {
             id: 3,
             name: "pray",
             icon: "./png_icon/pray.png",
             count: 2,
+            isUserChecked: false,
         },
         {
             id: 4,
             name: "sad",
             icon: "./png_icon/sad.png",
             count: 15,
+            isUserChecked: false,
         },
         {
             id: 5,
             name: "congrats",
             icon: "./png_icon/congrats.png",
             count: 0,
+            isUserChecked: false,
         },
-    ];
+    ]);
 
     const [firstEmogi, sefirstEmogi] = useState(false);
     const pushFirstEmogi = () => {
@@ -62,9 +68,14 @@ export default function DiaryList() {
         setToggle((prevToggle) => !prevToggle);
     }
 
-    const [emojiCount, setEmojiCount] = useState(0);
-    const pushEmoji = () => {
-        setEmojiCount((emojiCount) => emojiCount + 1);
+    const pushEmoji = (id) => {
+        setEmojies((emojiCount) => emojiCount.map((emoji) =>
+            emoji.id === id ? {
+                ...emoji,
+                isUserChecked: !emoji.isUserChecked,
+                count: emoji.isUserChecked ? emoji.count + 1 : emoji.count - 1,
+            } : emoji
+        ));
     };
 
     const postTimeToWrite = '23시간'
@@ -76,34 +87,28 @@ export default function DiaryList() {
                     {firstEmogi ? null :
                         <PrimButton size='S' title='마음나누기' iconPosition='left' icon='Heart' type='secondary' onClick={pushFirstEmogi}/>
                     }
-                    <Slider>
-                        <>
-                            {firstEmogi ? (
-                                emojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
-                                    <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji} />
-                                ))
-                            ) : null}
-                        </>
-                    </Slider>
+                    {firstEmogi ? (
+                        emojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
+                            <Chips icon={emoji.icon} text={emoji.count} key={emoji.id} onclick={() => pushEmoji(emoji.id)} />
+                        ))
+                    ) : null}
                 </>
             );
         } else {
             return(
-                <Slider>
-                    <>
-                    {toggle
-                        ? emojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
-                            <Chips icon={emoji.icon} text={emoji.count} key={index} onclick={pushEmoji} />
+                <>
+                    {toggle ? emojies.sort((a, b) => b.count - a.count).map((emoji, index) => (
+                            <Chips icon={emoji.icon} text={emoji.count} key={emoji.id} onclick={() => pushEmoji(emoji.id)} />
                         ))
                         : emojies.sort((a, b) => b.count - a.count).slice(0, 3).map((emoji, index) => (
-                            <Chips key={index} icon={emoji.icon} text={emoji.count ?? 0} onclick={pushEmoji} />
-                            ))}
+                            <Chips key={emoji.id} icon={emoji.icon} text={emoji.count ?? 0} onclick={() => pushEmoji(emoji.id)} />
+                        ))
+                    }
                     <Chips icon={toggle ? './png_icon/emotion-minus.png' : './png_icon/emotion-plus.png'} onclick={iconViewToggle} />
-                    </>
-                </Slider>
+                </>
             );
         }
-    } 
+    }
 
     return(
         <>

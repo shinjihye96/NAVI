@@ -8,7 +8,7 @@ import * as Pages from 'pages/pages'
 function App() {
   return (
     <>
-      <div className='main'>
+      <div id='main'>
         <Router>
           <div className="main_pages">
             <Routes>

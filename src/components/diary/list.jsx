@@ -7,11 +7,13 @@ import './list.scss';
 
 
 export default function DiaryList() {
+    // 팔로우 기능
     const [userFollow, setUserFollow] = useState(false);
     const followCheck = () => {
         setUserFollow((follow) => !follow);
     };
 
+    // 이모지 데이터 임시 기능
     const [emojies, setEmojies] = useState([
         {
             id: 0,
@@ -57,17 +59,20 @@ export default function DiaryList() {
         },
     ]);
 
+    // 첫 공감 버튼 기능
     const [firstEmogi, sefirstEmogi] = useState(false);
     const pushFirstEmogi = () => {
         sefirstEmogi(true);
         console.log(firstEmogi);
     }
 
+    // 공감 버튼 펼치기 기능
     const [toggle, setToggle] = useState(false);
     const iconViewToggle = () => {
         setToggle((prevToggle) => !prevToggle);
     }
 
+    // 공감 버튼 카운트 기능
     const pushEmoji = (id) => {
         setEmojies((emojiCount) => emojiCount.map((emoji) =>
             emoji.id === id ? {
@@ -81,6 +86,7 @@ export default function DiaryList() {
     const postTimeToWrite = '23시간'
 
     const emojiRender = () => {
+        // 공감 버튼 전체 카운트 0일때
         if(emojies.every(emoji => emoji.count === 0)) {
             return (
                 <>

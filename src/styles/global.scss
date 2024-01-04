@@ -1,0 +1,74 @@
+@import 'assets/font/font.css';
+@import 'styles/components/color';
+
+/* css초기화 */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+    color: inherit;
+    font-family: 'suit', sans-serif;
+}
+
+html{
+    font-size: 1px;
+    
+}
+
+/* global styles */
+body{
+    font-family: 'suit', Arial, Helvetica, sans-serif;
+}
+
+ol,ul{
+    list-style: none;
+}
+
+a{
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+img{
+    display: block;
+}
+
+#main{
+    max-width: 414rem;
+    height: 100vh;
+    margin: auto;
+    font-size: 16rem;
+    position: relative;
+}
+.main_pages{
+    width: 100%;
+}
+
+svg{
+    fill: $Gray900;
+}
+
+button{
+    background: inherit;
+    border:none;
+    box-shadow:none;
+    border-radius:0;
+    padding:0;
+    overflow:visible;
+    cursor: pointer;
+}

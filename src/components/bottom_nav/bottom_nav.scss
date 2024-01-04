@@ -1,0 +1,52 @@
+@import 'styles/components/color';
+
+.nav_wrap{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 414rem;
+    background: $Base_wf;
+    z-index: 8;
+    
+
+    .nav_tab{
+        display: grid;
+        align-items: center;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8rem;
+        padding: 8rem 16rem;
+    }
+    .nav_tab_con{
+        display: grid; align-items: center; justify-content: center; gap: 4rem;
+        text-align: center;
+        cursor: pointer;
+
+        .con{
+            color: $Gray900;
+            display: grid; align-items: center; gap: 4rem;
+
+            .nav_icon{
+                width: 24rem;
+                fill: $Gray900;
+                margin: auto;
+            }
+            
+            .nav_name{
+                font-size: 16rem;
+            }
+        }
+        .con.active{
+            color: $Primary500;
+
+            .nav_icon{
+                fill: $Primary500;
+            }
+        }
+        
+    }
+    
+}
+
+.testicon{
+    color: #000;
+}

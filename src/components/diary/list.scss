@@ -1,0 +1,69 @@
+@import 'styles/components/color';
+
+.list_wrap{
+    .profile_wrap{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .profile_box{
+            display: flex;
+            align-content: center;
+            gap: 10rem;
+            padding: 16rem;
+
+            .profile_img{
+                width: 32rem;
+                height: 32rem;
+                background: $Gray300;
+                border-radius: 50%;
+                overflow: hidden;
+
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+            .user_info{
+
+                .nick_name{
+                    color: $Gray950;
+                    font-size: 14rem;
+                    font-weight: 400;
+                }
+                .box{
+                    display: flex;
+                    align-items: center;
+                    gap: 4rem;
+                    font-size: 12rem;
+                    color: $Gray300;
+                    .user_type{
+                        color: $Gray700;
+                    }
+                    .diary_time{
+                        color: $Gray600;
+                    }
+                }
+            }
+        }
+    }
+    .post_img{
+        width: 100%;
+    }
+    .txt_box{
+        padding: 8rem 16rem;
+        line-height: 24rem;
+        font-size: 16rem;
+        color: $Gray950;
+        font-weight: 400;
+    }
+    .btn_wrap{
+        padding: 16rem;
+        
+        .chip{
+            margin-right: 6rem;
+            margin-bottom: 6rem;
+        }
+    }
+}

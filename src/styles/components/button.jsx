@@ -2,7 +2,7 @@ import './button.scss';
 import Icon from 'styles/components/icon';
 
 // prim button
-const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, ...props}) => {
+const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, className, ...props}) => {
   // button의 link 유무
   const isLink = href && href.length > 0;
 
@@ -39,7 +39,7 @@ const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
   if(isLink) {
     return (
         <>
-          <a href={href} className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+          <a href={href} className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
               {iconPosition === 'left' && icon && (
                   <Icon name={icon} size={16} className={`btn_icon`} />
               )}
@@ -54,7 +54,7 @@ const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 
   return (
       <>
-        <button type='button' className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common prim_btn ${btnSizeClass} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -68,7 +68,7 @@ const PrimButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 }
 
 // text button
-const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...props}) => {
+const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, className, ...props}) => {
   // button의 link 유무
   const isLink = href && href.length > 0;
 
@@ -107,7 +107,7 @@ const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <a href={href} className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -122,7 +122,7 @@ const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 
   return (
     <>
-        <button type='button' className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common txt_btn ${btnSizeClass} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && icon && (
                 <Icon name={icon} size={16} className={`btn_icon`} />
             )}
@@ -136,7 +136,7 @@ const TextButton = ({ title, type, onClick, icon, iconPosition, size, href, ...p
 }
 
 // icon button
-const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
+const IconButton = ({type, onClick, iconName, size, href, className, ...props}) => {
   // button의 link 유무
   const isLink = href && href.length > 0;
 
@@ -175,7 +175,7 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common icon_btn ${btnSize} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <a href={href} className={`btn_common icon_btn ${btnSize} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
             <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </a>
       </>
@@ -184,7 +184,7 @@ const IconButton = ({type, onClick, iconName, size, href, ...props}) => {
 
   return (
     <>
-        <button type='button' className={`btn_common icon_btn ${btnSize} ${btnTypeClass}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common icon_btn ${btnSize} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
           <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </button>
     </>

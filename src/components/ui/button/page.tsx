@@ -1,26 +1,28 @@
-import './button.scss';
-import {Icon} from 'icon/page';
+import styles from './page.module.scss' ;
+import { Icon } from 'icon/page';
 
 // prim button
 interface PrimProps{
     title: string;
-    btnTypeClass: string;
+    btnType: string;
     onClick?: () => void;
     iconName?: string;
     iconPosition?: string;
-    size: string;
-    href: string;
-    className: string;
+    size?: string;
+    href?: string;
+    className?: string;
+    round?: boolean;
 }
 export const PrimButton = ({
     title, 
-    btnTypeClass='primary', 
+    btnType='primary', 
     onClick, 
     iconName, 
     iconPosition, 
     size='L', 
     href, 
     className, 
+    round = false,
     ...props
 }: PrimProps) => {
   // button의 link 유무
@@ -29,7 +31,8 @@ export const PrimButton = ({
   if(isLink) {
     return (
         <>
-          <a href={href} className={`btn_common prim_btn ${size} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
+    round = false,
+          <a href={href} className={`btn_common prim_btn ${styles.size} ${styles.btnType} ${round ? styles.round_btn : ''} ${className}`} onClick={onClick} {...props}>
               {iconPosition === 'left' && iconName && (
                   <Icon name={iconName} size={16} className={`btn_icon`} />
               )}
@@ -44,7 +47,7 @@ export const PrimButton = ({
 
   return (
       <>
-        <button type='button' className={`btn_common prim_btn ${size} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common prim_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && iconName && (
                 <Icon name={iconName} size={16} className={`btn_icon`} />
             )}
@@ -64,7 +67,7 @@ interface TextButtonProps{
     iconName?: string;
     iconPosition?: string;
     size?: string;
-    btnTypeClass?: string;
+    btnType?: string;
     href?: string;
     className?: string;
 }
@@ -74,7 +77,7 @@ export const TextButton = ({
     iconName, 
     iconPosition, 
     size='L', 
-    btnTypeClass='tertiary' , 
+    btnType='tertiary' , 
     href, 
     className, 
     ...props
@@ -85,7 +88,7 @@ export const TextButton = ({
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common txt_btn ${size} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
+        <a href={href} className={`btn_common txt_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && iconName && (
                 <Icon name={iconName} size={16} className={`btn_icon`} />
             )}
@@ -100,7 +103,7 @@ export const TextButton = ({
 
   return (
     <>
-        <button type='button' className={`btn_common txt_btn ${size} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common txt_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && iconName && (
                 <Icon name={iconName} size={16} className={`btn_icon`} />
             )}
@@ -120,7 +123,7 @@ interface IconButtonProps{
     size?: string;
     href?: string;
     className?: string;
-    btnTypeClass?: string;
+    btnType?: string;
 }
 export const IconButton = ({
     onClick, 
@@ -128,7 +131,7 @@ export const IconButton = ({
     size='L', 
     href, 
     className, 
-    btnTypeClass='primary', 
+    btnType='primary', 
     ...props
 }: IconButtonProps) => {
   // button의 link 유무
@@ -153,7 +156,7 @@ export const IconButton = ({
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common icon_btn ${btnSize} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
+        <a href={href} className={`btn_common icon_btn ${btnSize} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </a>
       </>
@@ -162,7 +165,7 @@ export const IconButton = ({
 
   return (
     <>
-        <button type='button' className={`btn_common icon_btn ${btnSize} ${btnTypeClass} ${className}`} onClick={onClick} {...props}>
+        <button type='button' className={`btn_common icon_btn ${btnSize} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
           <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </button>
     </>

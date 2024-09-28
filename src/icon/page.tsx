@@ -4,16 +4,16 @@ import * as customIcons from './_icon_url';
 interface IconProps{
     size: number;
     className: string;
-    IconName: string;
+    name: string;
 }
 export const Icon: React.FC<IconProps> = ({
     size = 48, 
     className,
-    IconName, 
+    name, 
     ...props
 
 }) => {
-    const CustomIcon = customIcons[IconName as keyof typeof customIcons];
+    const CustomIcon = customIcons[name as keyof typeof customIcons];
 
     return(
         <>

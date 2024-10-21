@@ -8,10 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      boxShadow: {
+        'xs': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 4px 8px -4px rgba(33, 37, 41, 0.10)',
+        's': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 8px 12px -4px rgba(33, 37, 41, 0.10)',
+        'm': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 12px 16px -4px rgba(33, 37, 41, 0.10)',
+        'l': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 16px 24px -4px rgba(33, 37, 41, 0.10)',
+        'xl': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 24px 36px -4px rgba(33, 37, 41, 0.10)',
       },
     },
   },

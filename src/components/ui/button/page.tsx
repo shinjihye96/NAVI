@@ -21,7 +21,7 @@ export const PrimButton = ({
     iconPosition, 
     size='L', 
     href, 
-    className, 
+    className = '', 
     round = false,
     ...props
 }: PrimProps) => {
@@ -31,8 +31,12 @@ export const PrimButton = ({
   if(isLink) {
     return (
         <>
-    round = false,
-          <a href={href} className={`btn_common prim_btn ${styles.size} ${styles.btnType} ${round ? styles.round_btn : ''} ${className}`} onClick={onClick} {...props}>
+          <a 
+            href={href} 
+            className={`${styles.btn_common} ${styles.prim_btn} ${styles[size]} ${styles[btnType]} ${round ? styles.round_btn : ''} ${className}`}
+            onClick={onClick}
+            {...props}
+          >
               {iconPosition === 'left' && iconName && (
                   <Icon name={iconName} size={16} className={`btn_icon`} />
               )}
@@ -47,7 +51,12 @@ export const PrimButton = ({
 
   return (
       <>
-        <button type='button' className={`btn_common prim_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
+        <button 
+          type='button' 
+          className={`${styles.btn_common} ${styles.prim_btn} ${styles[size]} ${styles[btnType]} ${round ? styles.round_btn : ''} ${className}`} 
+          onClick={onClick}
+          {...props}
+        >
             {iconPosition === 'left' && iconName && (
                 <Icon name={iconName} size={16} className={`btn_icon`} />
             )}
@@ -88,7 +97,7 @@ export const TextButton = ({
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common txt_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
+        <a href={href} className={`${styles.btn_common} txt_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && iconName && (
                 <Icon name={iconName} size={16} className={`btn_icon`} />
             )}
@@ -103,7 +112,7 @@ export const TextButton = ({
 
   return (
     <>
-        <button type='button' className={`btn_common txt_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
+        <button type='button' className={`${styles.btn_common} txt_btn ${styles.size} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             {iconPosition === 'left' && iconName && (
                 <Icon name={iconName} size={16} className={`btn_icon`} />
             )}
@@ -156,7 +165,7 @@ export const IconButton = ({
   if(isLink) {
     return (
       <>
-        <a href={href} className={`btn_common icon_btn ${btnSize} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
+        <a href={href} className={`${styles.btn_common} icon_btn ${btnSize} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
             <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </a>
       </>
@@ -165,7 +174,7 @@ export const IconButton = ({
 
   return (
     <>
-        <button type='button' className={`btn_common icon_btn ${btnSize} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
+        <button type='button' className={`${styles.btn_common} icon_btn ${btnSize} ${styles.btnType} ${className}`} onClick={onClick} {...props}>
           <Icon name={iconName} size={iconSize} className={`btn_icon`} />
         </button>
     </>

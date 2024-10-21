@@ -1,8 +1,8 @@
-@import 'components/color';
+@import '../colors.scss';
 
 // button common
 .btn_common{
-    display: flex; align-items: center; gap: 6rem;
+    display: inline-flex; align-items: center; gap: 6rem;
     border-radius: 8rem;
 }
 a.btn_common{
@@ -12,9 +12,7 @@ a.btn_common{
 .btn_tit{
     font-size: 14rem;
     font-weight: 500;
-
 }
-
 
 // prim button
 .prim_btn{
@@ -30,6 +28,10 @@ a.btn_common{
     &.S{
         height: 32rem;
         padding: 0 16rem;
+    }
+
+    &.round_btn{
+        border-radius: 90px;
     }
 
     &.primary{
@@ -146,9 +148,3 @@ a.btn_common{
         }
     }
 }
-
-// round button
-.round_btn{
-    border-radius: 90px;
-}
-

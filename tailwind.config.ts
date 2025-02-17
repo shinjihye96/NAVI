@@ -8,7 +8,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      color:{
+      colors:{
         base: {
           wf: "#ffffff",
           bkf: "#000000",
@@ -57,7 +57,14 @@ const config: Config = {
           16: "#26B38816",
           8: "#26B38808",
         },
-        semantic: "#FE3D3D",
+        semantic: {
+          r300: "#FE3D3D",
+          r400: "#D40101",
+          r500: "#A10101",
+          b300: "#178FFD",
+          b400: "#D40101",
+          b500: "#A10101",
+        },
       },
       boxShadow: {
         'xs': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 4px 8px -4px rgba(33, 37, 41, 0.10)',
@@ -66,6 +73,9 @@ const config: Config = {
         'l': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 16px 24px -4px rgba(33, 37, 41, 0.10)',
         'xl': '0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 24px 36px -4px rgba(33, 37, 41, 0.10)',
       },
+      opacity: Object.fromEntries(
+        Array.from({ length: 100 }, (_, i) => [`${i + 1}`, `${(i + 1) / 100}`])
+      ),
     },
   },
   plugins: [],

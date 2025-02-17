@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './page.module.scss';
 import { Icon } from 'icon/page';
 
@@ -6,11 +6,12 @@ interface ChipsProps{
     type?: string,
     typeName?: string,
     iconName?: string,
-    iconPosition?: string,
+    iconPosition?: 'r' | 'l',
     text: string,
     className?: string,
     onclick?: () => void,
     onChange?: () => void,
+    checked?: boolean;
 }
 export default function Chips({
     type = 'radio',
@@ -21,45 +22,89 @@ export default function Chips({
     className = '',
     onclick,
     onChange,
+    checked = false,
     ...props
 }:ChipsProps) {
+    const [isChecked, setIsChecked] = useState(checked);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsChecked(e.target.checked);
+
+        if (onChange) {
+          onChange();
+        }
+    };
+
     if(onclick) {
         return (
-            <button className={`${styles.chip} ${className}`} onClick={onclick} {...props}>
-                {iconPosition == 'left' && iconName && (
-                    <Icon name={iconName} size={16} className={`btn_icon`} />
+            <button 
+                className={`inline-flex items-center gap-[3rem] px-[6rem] py-[8rem] border border-gray-400 rounded-[50rem] cursor-pointer ${className}`} 
+                onClick={onclick} 
+                {...props}
+            >
+                {iconPosition == 'l' && iconName && (
+                    <Icon
+                        name={iconName}
+                        size={20}
+                    />
                 )}
-                {text && <p className='txt'>{text}</p>}
-                {iconPosition == 'right' && iconName && (
-                   <Icon name={iconName} size={16} className={`btn_icon`} />
+                {text && <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>}
+                {iconPosition == 'r' && iconName && (
+                   <Icon
+                        name={iconName}
+                        size={20}
+                    />
                 )}
             </button>
         );
     }
 
-    if(type == 'radio' && 'checkbox') {
+    if(type == 'radio' || 'checkbox') {
         return (
-            <label className={`${styles.chip} ${className}`} {...props}>
-                <input type={type} name={typeName} onChange={onChange}/>
-                {iconPosition == 'left' && iconName && (
-                   <Icon name={iconName} size={16} className={`btn_icon`} />
+            <label 
+                className={`inline-flex items-center gap-[3rem] px-[6rem] py-[8rem] border rounded-[50rem] cursor-pointer ${isChecked ? 'border-gray-400' : 'border-green-400'} ${className}`} 
+                {...props}
+            >
+                <input 
+                    type={type} 
+                    name={typeName} 
+                    className='hidden' 
+                    onChange={handleChange}
+                />
+                {iconPosition == 'l' && iconName && (
+                   <Icon
+                        name={iconName}
+                        size={20}
+                    />
                 )}
-                <p className='txt'>{text}</p>
-                {iconPosition == 'right' && iconName && (
-                   <Icon name={iconName} size={16} className={`btn_icon`} />
+                <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>
+                {iconPosition == 'r' && iconName && (
+                   <Icon
+                        name={iconName}
+                        size={20}
+                    />
                 )}
             </label>
         );
     }
     
     return(
-        <div className={`${styles.chip} ${className}`} {...props}>
-            {iconPosition == 'left' && iconName && (
-               <Icon name={iconName} size={16} className={`btn_icon`} />
+        <div 
+            className={`inline-flex items-center gap-[3rem] px-[6rem] py-[8rem] border border-gray-400 rounded-[50rem] cursor-pointer ${className}`} 
+            {...props}
+        >
+            {iconPosition == 'l' && iconName && (
+               <Icon
+                    name={iconName}
+                    size={20}
+                />
             )}
-            {text && <p className='txt'>{text}</p>}
-            {iconPosition == 'right' && iconName && (
-               <Icon name={iconName} size={16} className={`btn_icon`} />
+            {text && <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>}
+            {iconPosition == 'r' && iconName && (
+               <Icon
+                    name={iconName}
+                    size={20}
+                />
             )}
         </div>
     );

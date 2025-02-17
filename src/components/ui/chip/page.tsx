@@ -45,14 +45,14 @@ export default function Chips({
                 {iconPosition == 'l' && iconName && (
                     <Icon
                         name={iconName}
-                        size={20}
+                        size={16}
                     />
                 )}
                 {text && <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>}
                 {iconPosition == 'r' && iconName && (
                    <Icon
                         name={iconName}
-                        size={20}
+                        size={16}
                     />
                 )}
             </button>
@@ -74,14 +74,14 @@ export default function Chips({
                 {iconPosition == 'l' && iconName && (
                    <Icon
                         name={iconName}
-                        size={20}
+                        size={16}
                     />
                 )}
                 <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>
                 {iconPosition == 'r' && iconName && (
                    <Icon
                         name={iconName}
-                        size={20}
+                        size={16}
                     />
                 )}
             </label>
@@ -96,14 +96,14 @@ export default function Chips({
             {iconPosition == 'l' && iconName && (
                <Icon
                     name={iconName}
-                    size={20}
+                    size={16}
                 />
             )}
             {text && <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>}
             {iconPosition == 'r' && iconName && (
                <Icon
                     name={iconName}
-                    size={20}
+                    size={16}
                 />
             )}
         </div>

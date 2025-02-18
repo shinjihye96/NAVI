@@ -3,7 +3,7 @@ import * as customIcons from './_icon_url';
 
 interface IconProps{
     name: string;
-    size: number;
+    size?: number;
     className?: string;
 }
 export const Icon: React.FC<IconProps> = ({

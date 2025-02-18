@@ -5,12 +5,14 @@ import { useState } from "react";
 interface SearchProps{
     className?: string;
     value: string;
+    name: string;
     onChange: (e?: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e?: React.FocusEvent<HTMLInputElement>) => void;
 }
 export default function Search({
     className,
     value,
+    name,
     onChange,
     onBlur,
 }: SearchProps){
@@ -39,9 +41,10 @@ export default function Search({
             <input
                 type="text"
                 value={inputValue}
+                name={name}
                 onChange={valueHandler}
                 onBlur={onBlur}
-                className="placeholder:text-gray-600 text-gray-900 font-regular leading-[20rem] text-[14rem]"
+                className="placeholder:text-gray-600 text-gray-900 font-normal leading-[20rem] text-[14rem]"
             />
             <div className="flex items-center justify-end">
                 <button

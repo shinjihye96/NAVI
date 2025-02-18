@@ -11,7 +11,7 @@ export default function Badge({
     return(
         <>
             <div className={`${color ? 'bg-semantic-r300' : 'bg-gray-200'} rounded-[99rem] px-[3rem] ${className}`}>
-                <span className={`font-regular text-[10rem] leading-[14rem] ${color ? 'text-gray-700' : 'text-base-wtf'}`}>{txt}</span>
+                <span className={`font-normal text-[10rem] leading-[14rem] ${color ? 'text-gray-700' : 'text-base-wtf'}`}>{txt}</span>
             </div>
         </>
     );

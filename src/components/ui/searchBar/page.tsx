@@ -41,7 +41,7 @@ export default function Search({
                 value={inputValue}
                 onChange={valueHandler}
                 onBlur={onBlur}
-                className="appearance-none focus:outline-none placeholder:text-gray-600 bg-transparent text-gray-900 font-regular leading-[20rem] text-[14rem]"
+                className="placeholder:text-gray-600 text-gray-900 font-regular leading-[20rem] text-[14rem]"
             />
             <div className="flex items-center justify-end">
                 <button

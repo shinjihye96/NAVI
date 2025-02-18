@@ -1,5 +1,6 @@
 'use client';
 
+import BottomNav from 'components/section/bottomNav/page';
 import { usePathname } from 'next/navigation'
 
 interface LayoutContainerProps{
@@ -9,10 +10,11 @@ const LayoutChildren: React.FC<LayoutContainerProps> =({children}) => {
     const pathname = usePathname();
 
     return(
-        <main>
-            <section>
+        <main className='w-[360rem] m-auto'>
+            <section className='bg-tp-bk8'>
                 {children}
             </section>
+            <BottomNav />
         </main>
     );
 }

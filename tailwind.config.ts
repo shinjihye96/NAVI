@@ -7,6 +7,15 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontWeight: {
+      regular: '400',
+      medium: '500',
+      semibold: '600',
+      bold: '700',
+    },
+    fontFamily: {
+      suit: ["suit", "Arial", "sans-serif"],
+    },
     extend: {
       colors:{
         base: {
@@ -76,12 +85,6 @@ const config: Config = {
       opacity: Object.fromEntries(
         Array.from({ length: 100 }, (_, i) => [`${i + 1}`, `${(i + 1) / 100}`])
       ),
-      fontWeight: {
-        regular: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-      }
     },
   },
   plugins: [],

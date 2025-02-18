@@ -1,12 +1,13 @@
+@import url('../../public/font/font.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('../../public/font/font.css');
 
 html{
     font-size: 1px;
 }
 body{
     font-size: 16px;
-    font-family: 'suit', Arial;
+    font-family: 'suit', Arial, sans-serif;
 }

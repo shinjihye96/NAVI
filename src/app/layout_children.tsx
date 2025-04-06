@@ -11,7 +11,7 @@ const LayoutChildren: React.FC<LayoutContainerProps> =({children}) => {
 
     return(
         <main className='w-[360rem] m-auto'>
-            <section className='bg-tp-bk8'>
+            <section className=''>
                 {children}
             </section>
             <BottomNav />

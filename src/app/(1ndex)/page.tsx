@@ -1,14 +1,39 @@
 'use client';
 
-import { PrimButton } from "components/ui/button/page";
+import { Button, IconButton, TextButton } from "components/ui/button/page";
+import Chips from "components/ui/chip/page";
+import Input from "components/ui/input/page";
+import Search from "components/ui/searchBar/page";
+import { useState } from "react";
 
 export default function Home() {
+  const [value, setValue] = useState('')
   return (
     <main>
-      <PrimButton
-        size="l"
-        title="prim button"
-        btnType="prim"
+      <Search
+        value={value}
+        name="search"
+        onChange={() => {}}
+      />
+      <Input
+        label="label"
+        name="vlue"
+        value="dmdpdpd"
+        onChange={() => {}}      
+      />
+      <Input
+        label="label"
+        name="vlue"
+        value="dmdpdpd"
+        type="line"
+        onChange={() => {}}      
+      />
+      <Input
+        label="label"
+        name="vlue"
+        value="dmdpdpd"
+        type="noLine"
+        onChange={() => {}}      
       />
     </main>
   )

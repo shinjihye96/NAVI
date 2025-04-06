@@ -33,7 +33,7 @@ export default function BottomNav(){
                         size={24}
                         className="m-auto"
                     />
-                    <p className="text-[12rem] leading-[16rem] font-regular">{nav.name}</p>
+                    <p className="text-[12rem] leading-[16rem] font-normal">{nav.name}</p>
                 </button>
             ))}
         </nav>

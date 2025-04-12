@@ -20,7 +20,7 @@ export default function BottomNav(){
     }, [routerData]);
 
     return(
-        <nav className='flex items-center justify-between fixed bottom-0 w-[360rem] px-[8rem] py-[16rem]'>
+        <nav className='flex items-center justify-between fixed bottom-0 w-[360rem] px-[8rem] py-[16rem] bg-base-wf z-10'>
             {routerData.map((nav, index) => (
                 <button 
                     type="button" 

@@ -47,7 +47,7 @@ export function Button({
   return(
     <button
       type='button'
-      className={`inline-flex items-center gap-[6rem] text-[16rem] font-medium leading-[24rem] ${round ? 'rounded-[99rem]' : 'rounded-[8rem]'} ${buttonSize()} ${buttonColor()} ${className}`}
+      className={`inline-flex items-center justify-center gap-[6rem] text-[16rem] font-medium leading-[24rem] ${round ? 'rounded-[99rem]' : 'rounded-[8rem]'} ${buttonSize()} ${buttonColor()} ${className}`}
       disabled={disabled}
       onClick={onClick}
     >

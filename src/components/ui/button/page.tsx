@@ -129,23 +129,26 @@ export function TextButton({
   );
 }
 
-interface IconButtonProps{
+interface IconButtonProps {
   className?: string;
   iconName: string;
   size?: 'l' | 'm' | 's' | 'xs';
   color?: 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'glass' | 'dark';
   shapeType?: 'square' | 'round';
+  disabled?: boolean;
   onClick: () => void;
 }
+
 export function IconButton({
-  className = '', 
-  iconName, 
-  size = 'l', 
-  color = 'primary', 
+  className = '',
+  iconName,
+  size = 'l',
+  color = 'primary',
   shapeType = 'square',
-  onClick, 
+  disabled = false,
+  onClick,
   ...props
-}: IconButtonProps){
+}: IconButtonProps) {
   const BtnSize = (size: any) => {
     switch (size) {
       case 'l':
@@ -160,36 +163,85 @@ export function IconButton({
         return { btnSize: 'L', iconSize: 24 };
     }
   };
-  
+
   const { btnSize, iconSize } = BtnSize(size);
 
   const buttonColor = () => {
-    switch(color){
+    switch (color) {
       case 'primary':
-        return 'bg-green-500 text-base-wf disabled:bg-opacity-32';
+        return disabled
+          ? 'bg-green-32'
+          : 'bg-primary-500 hover:bg-green-600';
       case 'secondary':
-        return 'border border-gray-400 text-gray-900 disabled:text-gray-500';
+        return disabled
+          ? ''
+          : 'border border-gray-400 hover:bg-tp-bk8';
       case 'tertiary':
-        return 'text-tp-wf disabled:text-opaticy-32';
+        return disabled
+          ? ''
+          : 'hover:bg-tp-bk8';
       case 'ghost':
-        return 'border border-gray-400 text-gray-900 disabled:text-gray-500';
+        return ''; // 배경 없음
       case 'glass':
-        return 'bg-tp-wf bg-opacity-16 text-base-wf disabled:bg-opacity-24 disabled:text-opacity-32';
+        return disabled
+          ? 'bg-tp-w40'
+          : 'bg-tp-w16 hover:bg-tp-w24';
       case 'dark':
-        return 'bg-tp-bkf bg-opacity-85 text-base-wf disabled:bg-opacity-40 disabled:text-opacity-40';
+        return disabled
+          ? 'bg-tp-bk40'
+          : 'bg-tp-bk85 hover:bg-base-bkf';
+      default:
+        return '';
     }
-  }
+  };
+
+  const iconColor = () => {
+    if (disabled) {
+      switch (color) {
+        case 'primary':
+        case 'ghost':
+        case 'glass':
+          return 'text-base-wf';
+        case 'secondary':
+        case 'tertiary':
+          return 'text-gray-500';
+        case 'dark':
+          return 'text-tp-w40';
+        default:
+          return '';
+      }
+    } else {
+      switch (color) {
+        case 'primary':
+          return 'text-base-wf';
+        case 'secondary':
+        case 'tertiary':
+          return 'text-gray-900';
+        case 'ghost':
+          return 'hover:text-tp-w32 text-base-wf';
+        case 'glass':
+          return 'hover:text-tp-32 text-base-wf';
+        case 'dark':
+          return 'text-base-wf';
+        default:
+          return '';
+      }
+    }
+  };
 
   return (
-    <>
-        <button 
-          type='button' 
-          className={`aspect-square ${shapeType === 'round' && '!rounded-[99rem]'} ${btnSize} ${buttonColor()} ${className}`} 
-          onClick={onClick} 
-          {...props}
-        >
-          <Icon name={iconName} size={iconSize} className={`m-auto`} />
-        </button>
-    </>
+    <button
+      type="button"
+      className={`
+        aspect-square flex items-center justify-center 
+        ${shapeType === 'round' ? '!rounded-[99rem]' : ''}
+        ${btnSize} ${buttonColor()} ${className}
+      `}
+      onClick={onClick}
+      disabled={disabled}
+      {...props}
+    >
+      <Icon name={iconName} size={iconSize} className={`m-auto ${iconColor()}`} />
+    </button>
   );
 }

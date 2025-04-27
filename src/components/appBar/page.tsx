@@ -8,6 +8,7 @@ interface AppBarProps {
   right?: React.ReactNode;
   center?: React.ReactNode;
   sticky?: boolean;
+  className?: String;
 }
 
 export default function AppBar({
@@ -16,9 +17,10 @@ export default function AppBar({
   right,
   center,
   sticky = true,
+  className = ''
 }: AppBarProps) {
   return (
-    <header className={`h-[56px] px-4 flex items-center border-b bg-base-wf ${sticky && 'sticky top-0 z-10'}`}>
+    <header className={`h-[56px] px-4 flex items-center ${sticky && 'sticky top-0 z-10'} ${className}`}>
       <div className="grid items-center grid-cols-[1fr_2fr_1fr] w-full">
         <div className="flex justify-start">{left}</div>
         <div className="flex justify-center">

@@ -89,7 +89,7 @@ export default function DailyShare(){
                 </div>
                 <div className="relative flex flex-col flex-1">
                     <div className="flex-shrink-0">
-                        <TodayMyMood />
+                        <TodayMyMood dailyListLength={dailyList.length} />
                     </div>
                     <div className="bg-base-wf rounded-t-[24rem] pt-[8rem] flex flex-col flex-1">
                         <div className="flex items-center justify-between py-[12rem] px-[16rem]">

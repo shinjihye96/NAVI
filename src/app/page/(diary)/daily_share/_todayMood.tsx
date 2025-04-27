@@ -7,6 +7,10 @@ import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface TodayMyMoodProps{
+    dailyListLength: number;
+}
+
 const weatherImg = [
     {
         id: 0, 
@@ -35,12 +39,11 @@ const weatherImg = [
     },
 ];
 
-export default function TodayMyMood(){
+export default function TodayMyMood({dailyListLength}: TodayMyMoodProps){
     const router = useRouter();
     const [myDaily, setMyDaily] = useState<any>({});
-    const [postStatus, setPostStatus] = useState<ShareStatus>(ShareStatus.WEATHER_ONLY);
-    console.log('postStatus: ', postStatus);
-    const currentWeather = weatherImg.find(weather => weather.name === myDaily.post.moodStep);
+    const [postStatus, setPostStatus] = useState<ShareStatus>(ShareStatus.NONE);
+    const currentWeather = weatherImg.find(weather => weather.name === myDaily.post?.moodStep);
 
     const myDailyFetch = async () => {
         try{
@@ -58,14 +61,14 @@ export default function TodayMyMood(){
     }
 
     useEffect(() => {
-        // myDailyFetch();
+        myDailyFetch();
     }, []);
     
     return(
         <>
             {postStatus === ShareStatus.NONE ? (
                 <div className="daily_none">
-                    <div className="">
+                    <div className={`pt-[14px] px-[24px] ${dailyListLength > 0 ? 'pb-[44px]' : 'pb-[80px]'}`}>
                         <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-regular">오늘 한 일 중에<br />가장 자랑스러운<br />일은 무엇인가요?</h1>
                         <Label
                             iconName="Clock"

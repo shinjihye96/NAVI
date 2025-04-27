@@ -61,7 +61,7 @@ export default function DailyShare(){
         <div className="relative">
             <AppBar
                 left={
-                    <p className="pl-[24px] text-regular text-gray-800 text-[14px] leading-[20px]">{today}</p>
+                    <p className="pl-[24rem] text-regular text-gray-800 text-[14rem] leading-[20rem]">{today}</p>
                 }
                 right={
                     <div className="flex items-center gap-[]">
@@ -91,9 +91,9 @@ export default function DailyShare(){
                     <div className="flex-shrink-0">
                         <TodayMyMood />
                     </div>
-                    <div className="bg-base-wf rounded-t-[24px] pt-[8px] flex flex-col flex-1">
-                        <div className="flex items-center justify-between py-[12px] px-[16px]">
-                            <div className="flex items-center gap-[12px]">
+                    <div className="bg-base-wf rounded-t-[24rem] pt-[8rem] flex flex-col flex-1">
+                        <div className="flex items-center justify-between py-[12rem] px-[16rem]">
+                            <div className="flex items-center gap-[12rem]">
                                 <TextButton
                                     txt="최신순"
                                     color="secondary"
@@ -117,13 +117,13 @@ export default function DailyShare(){
                             />
                         </div>
                         {!dailyList.length ? (
-                            <div className="flex-1 flex flex-col items-center justify-center gap-[24px]">
-                                <p className="text-base-bk text-[20px] leading-[28px] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
+                            <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">
+                                <p className="text-base-bk text-[20rem] leading-[28rem] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
                                 <Button
                                     txt="오늘의 하루 공유하기"
                                     round
                                     size="l"
-                                    className="w-[166px]"
+                                    className="w-[166rem]"
                                     onClick={() => {}}
                                 />
                             </div>

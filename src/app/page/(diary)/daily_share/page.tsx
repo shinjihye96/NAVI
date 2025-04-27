@@ -84,25 +84,13 @@ export default function DailyShare(){
                 className="flex flex-col w-full bg-cover bg-center"
                 style={{ minHeight: 'calc(100vh - 132px)' }}
             >
-                <div className="absolute  inset-0">
+                <div className="absolute inset-0">
                     <img src={shareBg.none} alt="Navi" />
                 </div>
                 <div className="relative flex flex-col flex-1">
                     <div className="flex-shrink-0">
-                        <TodayMyMood shareStatus={ShareStatus.NONE} />
+                        <TodayMyMood />
                     </div>
-                    {!dailyList.length && (
-                        <div className="flex-shrink-0 flex justify-center p-[16px]">
-                            <Button
-                                txt="오늘의 하루 기록하기"
-                                iconName="Edit"
-                                iconPosition="l"
-                                round
-                                className="w-full"
-                                onClick={() => {}}
-                            />
-                        </div>
-                    )}
                     <div className="bg-base-wf rounded-t-[24px] pt-[8px] flex flex-col flex-1">
                         <div className="flex items-center justify-between py-[12px] px-[16px]">
                             <div className="flex items-center gap-[12px]">

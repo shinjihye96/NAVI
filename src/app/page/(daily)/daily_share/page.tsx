@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
-import { ShareStatus } from "enums/shareStatus";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 

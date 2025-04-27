@@ -7,8 +7,13 @@ import { useEffect, useState } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
+import { ShareStatus } from "enums/shareStatus";
+import dayjs, { Dayjs } from "dayjs";
+import { useRouter } from "next/navigation";
 
 export default function DailyShare(){
+    const router = useRouter();
+    const today = dayjs(new Date()).format('M월 DD일');
     const [dailyList, setDailyList] = useState<any[]>([]);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
@@ -53,10 +58,10 @@ export default function DailyShare(){
     }, []);
 
     return(
-        <>
+        <div className="relative">
             <AppBar
                 left={
-                    <p>오늘날짜</p>
+                    <p className="pl-[24px] text-regular text-gray-800 text-[14px] leading-[20px]">{today}</p>
                 }
                 right={
                     <div className="flex items-center gap-[]">
@@ -76,15 +81,15 @@ export default function DailyShare(){
                 }
             />
             <article
-                className="relative flex flex-col w-full bg-cover bg-center"
+                className="flex flex-col w-full bg-cover bg-center"
                 style={{ minHeight: 'calc(100vh - 132px)' }}
             >
-                <div className="absolute  inset-0">`ㄴㄴ`
+                <div className="absolute  inset-0">
                     <img src={shareBg.none} alt="Navi" />
                 </div>
                 <div className="relative flex flex-col flex-1">
                     <div className="flex-shrink-0">
-                        <TodayMyMood dailyStatus="" />
+                        <TodayMyMood shareStatus={ShareStatus.NONE} />
                     </div>
                     {!dailyList.length && (
                         <div className="flex-shrink-0 flex justify-center p-[16px]">
@@ -159,6 +164,6 @@ export default function DailyShare(){
                     </div>
                 </div>
             </article>
-        </>
+        </div>
     );
 }

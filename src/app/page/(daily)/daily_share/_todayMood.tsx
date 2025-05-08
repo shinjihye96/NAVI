@@ -84,7 +84,7 @@ export default function TodayMyMood({dailyListLength}: TodayMyMoodProps){
                             iconPosition="l"
                             round
                             className="w-full"
-                            onClick={() => {}}
+                            onClick={() => router.push('page/regist_daily')}
                         />
                     </div>
                 </div>

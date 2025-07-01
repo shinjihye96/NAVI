@@ -1,6 +1,6 @@
 'use client';
 
-import DailyShare from "@/page/(daily)/daily_share/page";
+import DailyShare from "@/(page)/(daily)/daily_share/page";
 import { Button, IconButton, TextButton } from "components/ui/button/page";
 import Chips from "components/ui/chip/page";
 import Input from "components/ui/input/page";

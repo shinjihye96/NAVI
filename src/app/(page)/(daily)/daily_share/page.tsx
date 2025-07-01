@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 export default function DailyShare(){
     const router = useRouter();
     const today = dayjs(new Date()).format('M월 DD일');
+    const [myDaily, setMyDaily] = useState<any>({});
     const [dailyList, setDailyList] = useState<any[]>([]);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
@@ -26,6 +27,18 @@ export default function DailyShare(){
         rain: "/img/share_bg/Rain.jpg",
         ligtning: "/img/share_bg/Lightning.jpg",
     };
+
+    const fetcyMyDailyShare = async () => {
+        try {
+            const response = await fetch('/api/daily-share/me');
+            const json = await response.json();
+            console.log('json: ', json);
+
+            setMyDaily(json);
+        } catch(e) {
+            console.error(e);
+        }
+    }
 
     const fetchDailyList = async () => {
         try {
@@ -53,6 +66,7 @@ export default function DailyShare(){
     }
 
     useEffect(() => {
+        fetcyMyDailyShare();
         fetchDailyList();
     }, []);
 

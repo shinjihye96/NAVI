@@ -136,7 +136,6 @@ export default function DailyShare(){
                                     txt="오늘의 하루 공유하기"
                                     round
                                     size="l"
-                                    className="w-[166rem]"
                                     onClick={() => router.push('regist_daily')}
                                 />
                             </div>

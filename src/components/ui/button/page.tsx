@@ -36,18 +36,18 @@ export function Button({
   const buttonSize = () => {
     switch(size){
       case 'l':
-        return 'h-[48rem] px-[24rem]';
+        return 'h-[48rem]';
       case 'm':
-        return 'h-[40rem] px-[20rem]';
+        return 'h-[40rem]';
       case 's':
-        return 'h-[32rem] px-[16rem]';
+        return 'h-[32rem]';
     }
   }
 
   return(
     <button
       type='button'
-      className={`inline-flex items-center justify-center gap-[6rem] text-[16rem] font-medium leading-[24rem] ${round ? 'rounded-[99rem]' : 'rounded-[8rem]'} ${buttonSize()} ${buttonColor()} ${className}`}
+      className={`px-[16rem] inline-flex items-center justify-center gap-[6rem] ${round ? 'rounded-[99rem]' : 'rounded-[8rem]'} ${buttonSize()} ${buttonColor()} ${className}`}
       disabled={disabled}
       onClick={onClick}
     >
@@ -57,7 +57,7 @@ export function Button({
           size={16}
         />
       )}
-      <span>{txt}</span>
+      <span className='inline-block text-[16rem] font-medium leading-[24rem]'>{txt}</span>
       {iconPosition === 'r' && iconName && (
         <Icon
           name={iconName}

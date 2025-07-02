@@ -19,3 +19,32 @@ input{
 input:focus{
     outline: none;
 }
+
+textarea{
+    outline: none;
+    border: 1px solid transparent;
+    padding: 12rem 16rem;
+    color: #343A40;
+    border-radius: 16rem;
+}
+textarea::placeholder{
+    color: #ADB5BD;
+}
+textarea.line{
+    border-color: #DEE2E6;
+}
+textarea.filled{
+    background: #F1F3F5;
+}
+textarea:disabled{
+    color: #ADB5BD;
+}
+textarea.line:focus{
+    border-color: #26B388;
+}
+textarea.line:disabled{
+    border-color: #DEE2E6;
+}
+textarea.line.error{
+    border-color: #FE3D3D;
+}

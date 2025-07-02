@@ -24,6 +24,7 @@ const config: Config = {
         },
         tp: {
           wf: "#FFFFFF",
+          w85: "#E1F0FF85",
           w40: "#E1F0FF40",
           w32: "#E1F0FF32",
           w24: "#E1F0FF24",

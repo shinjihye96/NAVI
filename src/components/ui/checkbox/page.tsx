@@ -48,12 +48,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 onBlur={onBlur}
                 onFocus={onFocus}
             />
-            <div className={`rounded-[50%] border w-[16px] h-[16px] ${disabled ? checked ? 'bg-gray-300 border-gray-300' : 'bg-gray-100 border-gray-300' : checked ? 'bg-green-400 border-green-400' : 'bg-white border-gray-500'}`}>
+            <div className={`rounded-[50%] border w-[16rem] h-[16rem] aspect-square ${disabled ? checked ? 'bg-gray-300 border-gray-300' : 'bg-gray-100 border-gray-300' : checked ? 'bg-green-400 border-green-400' : 'bg-white border-gray-500'}`}>
                 {checked && (
                     <Icon
                         name='Check'
                         size={16}
-                        className='text-base-wf'
+                        className='text-base-wf w-full'
                     />
                 )}
             </div>

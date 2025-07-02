@@ -10,8 +10,8 @@ const LayoutChildren: React.FC<LayoutContainerProps> =({children}) => {
     const pathname = usePathname();
 
     return(
-        <main className='w-[360rem] m-auto'>
-            <section className='realtive pb-[76px]'>
+        <main className='max-w-[414rem] m-auto'>
+            <section className='pb-[76rem] overflow-hidden'>
                 {children}
             </section>
             <BottomNav />

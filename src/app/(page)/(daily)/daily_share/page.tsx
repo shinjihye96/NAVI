@@ -7,8 +7,13 @@ import { useEffect, useState } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
+import dayjs, { Dayjs } from "dayjs";
+import { useRouter } from "next/navigation";
 
 export default function DailyShare(){
+    const router = useRouter();
+    const today = dayjs(new Date()).format('M월 DD일');
+    const [myDaily, setMyDaily] = useState<any>({});
     const [dailyList, setDailyList] = useState<any[]>([]);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
@@ -22,6 +27,18 @@ export default function DailyShare(){
         rain: "/img/share_bg/Rain.jpg",
         ligtning: "/img/share_bg/Lightning.jpg",
     };
+
+    const fetcyMyDailyShare = async () => {
+        try {
+            const response = await fetch('/api/daily-share/me');
+            const json = await response.json();
+            console.log('json: ', json);
+
+            setMyDaily(json);
+        } catch(e) {
+            console.error(e);
+        }
+    }
 
     const fetchDailyList = async () => {
         try {
@@ -49,14 +66,15 @@ export default function DailyShare(){
     }
 
     useEffect(() => {
+        fetcyMyDailyShare();
         fetchDailyList();
     }, []);
 
     return(
-        <>
+        <div className="relative">
             <AppBar
                 left={
-                    <p>오늘날짜</p>
+                    <p className="pl-[24rem] text-regular text-gray-800 text-[14rem] leading-[20rem]">{today}</p>
                 }
                 right={
                     <div className="flex items-center gap-[]">
@@ -76,31 +94,19 @@ export default function DailyShare(){
                 }
             />
             <article
-                className="relative flex flex-col w-full bg-cover bg-center"
+                className="flex flex-col w-full bg-cover bg-center"
                 style={{ minHeight: 'calc(100vh - 132px)' }}
             >
-                <div className="absolute  inset-0">`ㄴㄴ`
+                <div className="absolute inset-0">
                     <img src={shareBg.none} alt="Navi" />
                 </div>
                 <div className="relative flex flex-col flex-1">
                     <div className="flex-shrink-0">
-                        <TodayMyMood dailyStatus="" />
+                        <TodayMyMood dailyListLength={dailyList.length} />
                     </div>
-                    {!dailyList.length && (
-                        <div className="flex-shrink-0 flex justify-center p-[16px]">
-                            <Button
-                                txt="오늘의 하루 기록하기"
-                                iconName="Edit"
-                                iconPosition="l"
-                                round
-                                className="w-full"
-                                onClick={() => {}}
-                            />
-                        </div>
-                    )}
-                    <div className="bg-base-wf rounded-t-[24px] pt-[8px] flex flex-col flex-1">
-                        <div className="flex items-center justify-between py-[12px] px-[16px]">
-                            <div className="flex items-center gap-[12px]">
+                    <div className="bg-base-wf rounded-t-[24rem] pt-[8rem] flex flex-col flex-1">
+                        <div className="flex items-center justify-between py-[12rem] px-[16rem]">
+                            <div className="flex items-center gap-[12rem]">
                                 <TextButton
                                     txt="최신순"
                                     color="secondary"
@@ -124,14 +130,13 @@ export default function DailyShare(){
                             />
                         </div>
                         {!dailyList.length ? (
-                            <div className="flex-1 flex flex-col items-center justify-center gap-[24px]">
-                                <p className="text-base-bk text-[20px] leading-[28px] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
+                            <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">
+                                <p className="text-base-bk text-[20rem] leading-[28rem] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
                                 <Button
                                     txt="오늘의 하루 공유하기"
                                     round
                                     size="l"
-                                    className="w-[166px]"
-                                    onClick={() => {}}
+                                    onClick={() => router.push('regist_daily')}
                                 />
                             </div>
                         ) : (
@@ -159,6 +164,6 @@ export default function DailyShare(){
                     </div>
                 </div>
             </article>
-        </>
+        </div>
     );
 }

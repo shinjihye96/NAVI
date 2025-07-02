@@ -137,7 +137,7 @@ export default function DailyShare(){
                                     round
                                     size="l"
                                     className="w-[166rem]"
-                                    onClick={() => {}}
+                                    onClick={() => router.push('regist_daily')}
                                 />
                             </div>
                         ) : (

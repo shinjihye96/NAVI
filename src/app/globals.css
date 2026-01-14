@@ -1,27 +1,50 @@
+@import url('../../public/font/font.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+html{
+    font-size: 1px;
+}
+body{
+    font-size: 16px;
+    font-family: 'suit', Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+input{
+    appearance: none;
+    background: none;
+}
+input:focus{
+    outline: none;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+textarea{
+    outline: none;
+    border: 1px solid transparent;
+    padding: 12rem 16rem;
+    color: #343A40;
+    border-radius: 16rem;
+}
+textarea::placeholder{
+    color: #ADB5BD;
+}
+textarea.line{
+    border-color: #DEE2E6;
+}
+textarea.filled{
+    background: #F1F3F5;
+}
+textarea:disabled{
+    color: #ADB5BD;
+}
+textarea.line:focus{
+    border-color: #26B388;
+}
+textarea.line:disabled{
+    border-color: #DEE2E6;
+}
+textarea.line.error{
+    border-color: #FE3D3D;
 }

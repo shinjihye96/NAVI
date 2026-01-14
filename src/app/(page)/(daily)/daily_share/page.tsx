@@ -3,21 +3,23 @@
 import AppBar from "components/appBar/page";
 import { Button, IconButton, TextButton } from "components/ui/button/page";
 import { Checkbox } from "components/ui/checkbox/page";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
+import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery } from "api";
 
 export default function DailyShare(){
     const router = useRouter();
     const today = dayjs(new Date()).format('M월 DD일');
-    const [myDaily, setMyDaily] = useState<any>({});
-    const [dailyList, setDailyList] = useState<any[]>([]);
+    const [myDaily, setMyDaily] = useState<DailyShareType | null>(null);
+    const [dailyList, setDailyList] = useState<DailyShareType[]>([]);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const shareBg = {
         none: "/img/share_bg/None.jpg",
@@ -28,30 +30,32 @@ export default function DailyShare(){
         ligtning: "/img/share_bg/Lightning.jpg",
     };
 
-    const fetcyMyDailyShare = async () => {
+    const fetchMyDailyShare = useCallback(async () => {
         try {
-            const response = await fetch('/api/daily-share/me');
-            const json = await response.json();
-            console.log('json: ', json);
-
-            setMyDaily(json);
+            const response = await dailySharesApi.checkTodayShare();
+            if (response.hasShared && response.dailyShare) {
+                setMyDaily(response.dailyShare);
+            }
         } catch(e) {
-            console.error(e);
+            console.error('Failed to fetch my daily share:', e);
         }
-    }
+    }, []);
 
-    const fetchDailyList = async () => {
+    const fetchDailyList = useCallback(async () => {
         try {
-          const response = await fetch('/api/daily-share');
-          if (!response.ok) throw new Error(response.statusText);
-          const json = await response.json();
-          console.log('json: ', json);
-
-          setDailyList(json);
+            setIsLoading(true);
+            const query: DailyShareQuery = {
+                sortBy: isLatestFirst ? 'latest' : 'oldest',
+                isFollowing: isFollowing || undefined,
+            };
+            const response = await dailySharesApi.getAll(query);
+            setDailyList(response.items);
         } catch (e) {
-          console.error(e);
+            console.error('Failed to fetch daily list:', e);
+        } finally {
+            setIsLoading(false);
         }
-    }
+    }, [isLatestFirst, isFollowing]);
 
     const latestSortHandler = () => {
         setIsLatestFirst(!isLatestFirst);
@@ -66,9 +70,12 @@ export default function DailyShare(){
     }
 
     useEffect(() => {
-        fetcyMyDailyShare();
+        fetchMyDailyShare();
+    }, [fetchMyDailyShare]);
+
+    useEffect(() => {
         fetchDailyList();
-    }, []);
+    }, [fetchDailyList]);
 
     return(
         <div className="relative">

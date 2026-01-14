@@ -148,7 +148,7 @@ export default function RegistDaily(){
                         <div className="nav py-[8rem] absolute bottom-0 left-[50%] transform -translate-x-1/2">
                             <div className="flex items-center justify-center gap-[6rem]">
                                 {weatherOptions.map((weather, index) => (
-                                    <div className={`w-[8rem] h-[8rem] rounded-[50%] ${stepIndex === index ? 'bg-gray-950' : 'bg-gray-500'}`}></div>
+                                    <div key={weather.id} className={`w-[8rem] h-[8rem] rounded-[50%] ${stepIndex === index ? 'bg-gray-950' : 'bg-gray-500'}`}></div>
                                 ))}
                             </div>
                         </div>

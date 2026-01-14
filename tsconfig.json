@@ -25,7 +25,10 @@
       "@/*": ["./app/*"],
       "public/*": ["../public/*"],
       "utils/*": ["./utils/*"],
-      "lib/*": ["./lib/*"]
+      "lib/*": ["./lib/*"],
+      "api": ["./api/index.ts"],
+      "api/*": ["./api/*"],
+      "enums/*": ["./enums/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

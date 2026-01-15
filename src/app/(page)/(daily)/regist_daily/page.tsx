@@ -4,67 +4,35 @@ import AppBar from "components/appBar/page";
 import { Button, IconButton } from "components/ui/button/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { dailySharesApi, Mood } from "api";
+import { dailySharesApi, emotionTypesApi, EmotionTypeInfo } from "api";
 
-const weatherOptions: {
-    id: number;
-    mood: Mood;
-    label: string;
-    img: string;
+// type별 그라데이션 매핑
+const gradientMap: Record<string, { from: string; to: string }> = {
+    sun: { from: '#A8EEF7', to: '#E1F0FF' },
+    sun_cloud: { from: '#FFF4E1', to: '#FCE4A6' },
+    cloud: { from: '#E8EAF6', to: '#C5CAE9' },
+    rain: { from: '#BBDEFB', to: '#64B5F6' },
+    lightning: { from: '#D1C4E9', to: '#7E57C2' },
+};
+
+// EmotionTypeInfo에 gradient 추가한 타입
+interface WeatherOption extends EmotionTypeInfo {
     gradientFrom: string;
     gradientTo: string;
-}[] = [
-    {
-        id: 0,
-        mood: Mood.VERY_GOOD,
-        label: '화창해요',
-        img: '/img/weather/Sun.png',
-        gradientFrom: '#A8EEF7',
-        gradientTo: '#E1F0FF',
-    },
-    {
-        id: 1,
-        mood: Mood.GOOD,
-        label: '조금 맑아요',
-        img: '/img/weather/Sun_and_Cloud.png',
-        gradientFrom: '#FFF4E1',
-        gradientTo: '#FCE4A6',
-    },
-    {
-        id: 2,
-        mood: Mood.NORMAL,
-        label: '흐려요',
-        img: '/img/weather/Cloud.png',
-        gradientFrom: '#E8EAF6',
-        gradientTo: '#C5CAE9',
-    },
-    {
-        id: 3,
-        mood: Mood.BAD,
-        label: '비 내려요',
-        img: '/img/weather/Rain.png',
-        gradientFrom: '#BBDEFB',
-        gradientTo: '#64B5F6',
-    },
-    {
-        id: 4,
-        mood: Mood.VERY_BAD,
-        label: '번개쳐요',
-        img: '/img/weather/Lightning.png',
-        gradientFrom: '#D1C4E9',
-        gradientTo: '#7E57C2',
-    },
-];
+}
 
 const MAX_CONTENT_LENGTH = 80;
 
 export default function RegistDaily() {
     const router = useRouter();
-    const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+    const [emotionTypes, setEmotionTypes] = useState<WeatherOption[]>([]);
+    console.log('emotionTypes: ', emotionTypes);
+    const [selectedMood, setSelectedMood] = useState<string | null>(null);
+    console.log('selectedMood: ', selectedMood);
     const [textContent, setTextContent] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -134,10 +102,6 @@ export default function RegistDaily() {
             // 이미지가 있으면 먼저 업로드
             if (imageFile) {
                 setIsUploading(true);
-                // TODO: 이미지 업로드 API 연결
-                // const uploadResponse = await uploadApi.upload(imageFile);
-                // imageUrl = uploadResponse.url;
-                setIsUploading(false);
             }
 
             await dailySharesApi.create({
@@ -170,8 +134,28 @@ export default function RegistDaily() {
         }
     };
 
+    const fetchEmotionTypes = async () => {
+        try {
+            const data = await emotionTypesApi.getAll();
+            console.log('data: ', data);
+            // API 데이터에 gradient 매핑 추가
+            const weatherOptions: WeatherOption[] = data.map((item) => ({
+                ...item,
+                gradientFrom: gradientMap[item.type]?.from || '#E8EAF6',
+                gradientTo: gradientMap[item.type]?.to || '#C5CAE9',
+            }));
+            setEmotionTypes(weatherOptions);
+        } catch {
+            // 백엔드 미실행 시 무시
+        }
+    };
+
+    useEffect(() => {
+        fetchEmotionTypes();
+    }, []);
+
     return (
-        <div className="flex flex-col min-h-screen bg-base-wf">
+        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
             <AppBar
                 left={
                     <IconButton
@@ -212,15 +196,15 @@ export default function RegistDaily() {
                         onSlideChange={s => setActiveIndex(s.activeIndex)}
                         className={selectedMood === null ? '!pb-[48rem]' : '!pb-[24rem]'}
                     >
-                        {weatherOptions.map((opt, index) => {
+                        {emotionTypes.map((weather, index) => {
                             const styles = getCardStyles(index);
-                            const isSelected = selectedMood === opt.mood;
+                            const isSelected = selectedMood === weather.type;
 
                             return (
-                                <SwiperSlide key={opt.id} className="!w-auto">
+                                <SwiperSlide key={weather.id} className="!w-auto">
                                     <div
                                         onClick={() => {
-                                            setSelectedMood(opt.mood);
+                                            setSelectedMood(weather.type);
                                             swiperRef.current?.slideTo(index);
                                         }}
                                         className={`
@@ -236,7 +220,7 @@ export default function RegistDaily() {
                                             cursor-pointer
                                         `}
                                         style={isSelected ? {
-                                            backgroundImage: `linear-gradient(to bottom, ${opt.gradientFrom}, ${opt.gradientTo})`,
+                                            backgroundImage: `linear-gradient(to bottom, ${weather.gradientFrom}, ${weather.gradientTo})`,
                                         } : {
                                             backgroundColor: '#ffffff',
                                         }}
@@ -244,8 +228,8 @@ export default function RegistDaily() {
                                         <div className={`h-full flex flex-col items-center justify-center ${styles.gap}`}>
                                             <div className={styles.imgSize}>
                                                 <img
-                                                    src={opt.img}
-                                                    alt={opt.label}
+                                                    src={weather.imageUrl}
+                                                    alt={weather.label}
                                                     className="w-full h-auto"
                                                 />
                                             </div>
@@ -256,7 +240,7 @@ export default function RegistDaily() {
                                                 ${styles.textSize}
                                                 ${isSelected ? 'text-base-wf' : 'text-gray-800'}
                                             `}>
-                                                {opt.label}
+                                                {weather.label}
                                             </span>
                                         </div>
                                     </div>
@@ -269,7 +253,7 @@ export default function RegistDaily() {
                     {selectedMood === null && (
                         <div className="absolute bottom-[16rem] left-1/2 -translate-x-1/2 z-10">
                             <div className="flex items-center gap-[6rem]">
-                                {weatherOptions.map((_, index) => (
+                                {emotionTypes.map((weather, index) => (
                                     <div
                                         key={index}
                                         className={`w-[8rem] h-[8rem] rounded-full transition-colors ${
@@ -284,31 +268,24 @@ export default function RegistDaily() {
 
                 {/* Step 2: 질문과 답변 입력 영역 */}
                 {selectedMood !== null && (
-                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem]">
+                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[57rem]">
                         {/* 오늘의 질문 */}
-                        <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950">
+                        <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
                             마음의 에너지를 채워주는 나만의 장소가 있나요?
                         </h2>
 
                         {/* 텍스트 입력 */}
-                        <div className="mt-[16rem] flex-1">
+                        <div className="mt-[16rem] flex-1 flex flex-col">
                             <textarea
                                 value={textContent}
                                 onChange={(e) => {
-                                    if (e.target.value.length <= MAX_CONTENT_LENGTH) {
-                                        setTextContent(e.target.value);
-                                    }
+                                    const value = e.target.value;
+                                    // 80자 초과 시 잘라서 저장
+                                    setTextContent(value.slice(0, MAX_CONTENT_LENGTH));
                                 }}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
-                                className="w-full min-h-[120rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
+                                className="w-full flex-1 resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
                             />
-
-                            {/* 글자 수 카운터 */}
-                            <div className="flex justify-end mt-[8rem]">
-                                <span className="text-[14rem] leading-[20rem] text-gray-600">
-                                    {textContent.length} / {MAX_CONTENT_LENGTH}
-                                </span>
-                            </div>
                         </div>
 
                         {/* 이미지 미리보기 */}
@@ -340,8 +317,8 @@ export default function RegistDaily() {
 
             {/* 하단 툴바 (Step 2에서만) */}
             {selectedMood !== null && (
-                <div className="sticky bottom-0 bg-base-wf border-t border-gray-300 px-[16rem] py-[12rem]">
-                    <div className="flex items-center gap-[16rem]">
+                <div className="fixed w-[414rem] bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
+                    <div className="flex items-center gap-[4rem]">
                         <input
                             ref={fileInputRef}
                             type="file"
@@ -362,6 +339,20 @@ export default function RegistDaily() {
                         >
                             <Icon name="Image" size={24} className="text-green-400" />
                         </label>
+                    </div>
+                    <div className="flex items-center gap-[8rem]">
+                        {/* 글자 수 카운터 */}
+                        <div className="flex justify-end mt-[8rem]">
+                            <span className="text-[14rem] leading-[20rem] text-gray-600">
+                                {textContent.length} / {MAX_CONTENT_LENGTH}
+                            </span>
+                        </div>
+                        <IconButton
+                            iconName="KeyboardDown"
+                            size="l"
+                            color="tertiary"
+                            onClick={handleBack}
+                        />
                     </div>
                 </div>
             )}

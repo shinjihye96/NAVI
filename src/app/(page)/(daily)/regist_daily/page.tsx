@@ -169,7 +169,7 @@ export default function RegistDaily() {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
+        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf pt-[56px]">
             <AppBar
                 left={
                     <IconButton
@@ -187,6 +187,7 @@ export default function RegistDaily() {
                         disabled={!selectedMood || isSubmitting}
                     />
                 }
+                sticky={true}
             />
 
             <article className="flex-1 flex flex-col">
@@ -282,7 +283,7 @@ export default function RegistDaily() {
 
                 {/* Step 2: 질문과 답변 입력 영역 */}
                 {selectedMood !== null && (
-                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[57rem]">
+                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[73rem]">
                         {/* 오늘의 질문 */}
                         <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
                             마음의 에너지를 채워주는 나만의 장소가 있나요?
@@ -297,26 +298,33 @@ export default function RegistDaily() {
                                     const value = e.target.value;
                                     // 80자 초과 시 잘라서 저장
                                     setTextContent(value.slice(0, MAX_CONTENT_LENGTH));
+                                    // 높이 자동 조절
+                                    if (textareaRef.current) {
+                                        textareaRef.current.style.height = 'auto';
+                                        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+                                    }
                                 }}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
-                                className="w-full flex-1 resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
+                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
                             />
                         </div>
 
                         {/* 이미지 미리보기 */}
                         {imagePreview && (
-                            <div className="relative w-[120rem] h-[120rem] mt-[16rem] rounded-[12rem] overflow-hidden">
+                            <div className="relative w-[120rem] h-[120rem] mt-[16rem]">
                                 {isUploading ? (
                                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                                         <div className="w-[40rem] h-[40rem] border-4 border-green-400 border-t-transparent rounded-full animate-spin" />
                                     </div>
                                 ) : (
-                                    <Image
-                                        src={imagePreview}
-                                        alt="업로드 이미지"
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    <div className="block rounded-[12rem] overflow-hidden">
+                                        <Image
+                                            src={imagePreview}
+                                            alt="업로드 이미지"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
                                 )}
                                 <button
                                     onClick={handleRemoveImage}

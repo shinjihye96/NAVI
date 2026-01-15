@@ -8,7 +8,7 @@ const nextConfig = {
           // },
           {
             source: '/api/:path*',
-            destination: 'http://localhost:3003/:path*',
+            destination: 'http://localhost:3003/api/:path*',
           },
         ];
     },

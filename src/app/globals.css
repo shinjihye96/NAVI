@@ -1,8 +1,78 @@
 @import url('../../public/font/font.css');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+    /* Font */
+    --font-suit: "suit", Arial, sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Base Colors */
+    --color-base-wf: #ffffff;
+    --color-base-bkf: #000000;
+
+    /* Transparent Colors */
+    --color-tp-wf: #FFFFFF;
+    --color-tp-w85: #E1F0FF85;
+    --color-tp-w40: #E1F0FF40;
+    --color-tp-w32: #E1F0FF32;
+    --color-tp-w24: #E1F0FF24;
+    --color-tp-w16: #E1F0FF16;
+    --color-tp-w8: #E1F0FF08;
+    --color-tp-bkf: #000000;
+    --color-tp-bk85: #26374785;
+    --color-tp-bk40: #26374740;
+    --color-tp-bk32: #26374732;
+    --color-tp-bk24: #26374724;
+    --color-tp-bk16: #26374716;
+    --color-tp-bk8: #26374708;
+
+    /* Gray Colors */
+    --color-gray-950: #212529;
+    --color-gray-900: #343A40;
+    --color-gray-800: #495057;
+    --color-gray-700: #666E75;
+    --color-gray-600: #ADB5BD;
+    --color-gray-500: #CED4DA;
+    --color-gray-400: #DEE2E6;
+    --color-gray-300: #E9ECEF;
+    --color-gray-200: #F1F3F5;
+    --color-gray-100: #F8F9FA;
+
+    /* Green Colors */
+    --color-green-700: #16684F;
+    --color-green-600: #1A7B5E;
+    --color-green-500: #219A75;
+    --color-green-400: #26B388;
+    --color-green-300: #5DD0AD;
+    --color-green-88: #26B38888;
+    --color-green-80: #26B38880;
+    --color-green-72: #26B38872;
+    --color-green-64: #26B38864;
+    --color-green-56: #26B38856;
+    --color-green-48: #26B38848;
+    --color-green-32: #26B38832;
+    --color-green-24: #26B38824;
+    --color-green-16: #26B38816;
+    --color-green-8: #26B38808;
+
+    /* Semantic Colors */
+    --color-semantic-r300: #FE3D3D;
+    --color-semantic-r400: #D40101;
+    --color-semantic-r500: #A10101;
+    --color-semantic-b300: #178FFD;
+    --color-semantic-b400: #D40101;
+    --color-semantic-b500: #A10101;
+
+    /* Box Shadows */
+    --shadow-xs: 0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 4px 8px -4px rgba(33, 37, 41, 0.10);
+    --shadow-s: 0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 8px 12px -4px rgba(33, 37, 41, 0.10);
+    --shadow-m: 0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 12px 16px -4px rgba(33, 37, 41, 0.10);
+    --shadow-l: 0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 16px 24px -4px rgba(33, 37, 41, 0.10);
+    --shadow-xl: 0px 4px 6px -2px rgba(33, 37, 41, 0.04), 0px 24px 36px -4px rgba(33, 37, 41, 0.10);
+}
 
 html{
     font-size: 1px;

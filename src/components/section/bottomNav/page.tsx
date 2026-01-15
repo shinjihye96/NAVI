@@ -20,12 +20,12 @@ export default function BottomNav(){
     }, [routerData]);
 
     return(
-        <nav className='flex items-center justify-between fixed bottom-0 max-w-[414rem] w-full px-[8rem] py-[16rem] bg-base-wf z-10'>
+        <nav className='flex items-center justify-between fixed bottom-0 max-w-[414rem] w-full px-[8rem] pt-[16rem] pb-[calc(env(safe-area-inset-bottom)+16px)] bg-base-wf z-10'>
             {routerData.map((nav, index) => (
                 <button 
                     type="button" 
                     key={`${nav.id}_${index}`}
-                    className={`grid gap-[4rem] justify-center  text-center ${activeNav.id === nav.id ? 'text-green-500' : 'text-gray-900'}`}
+                    className={`grid gap-[4rem] justify-center  text-center cursor-pointer ${activeNav.id === nav.id ? 'text-green-500' : 'text-gray-900'}`}
                     onClick={() => navHandler(nav.id)}
                 >
                     <Icon

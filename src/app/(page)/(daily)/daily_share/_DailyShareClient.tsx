@@ -3,23 +3,28 @@
 import AppBar from "components/appBar/page";
 import { Button, IconButton, TextButton } from "components/ui/button/page";
 import { Checkbox } from "components/ui/checkbox/page";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery, getAccessToken } from "api";
+import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery } from "api";
 
-export default function DailyShare() {
+interface DailyShareClientProps {
+    initialMyDaily: DailyShareType | null;
+    initialDailyList: DailyShareType[];
+}
+
+export default function DailyShareClient({ initialMyDaily, initialDailyList }: DailyShareClientProps) {
     const router = useRouter();
     const today = dayjs(new Date()).format('M월 DD일');
-    const [myDaily, setMyDaily] = useState<DailyShareType | null>(null);
-    const [dailyList, setDailyList] = useState<DailyShareType[]>([]);
+    const [myDaily, setMyDaily] = useState<DailyShareType | null>(initialMyDaily);
+    const [dailyList, setDailyList] = useState<DailyShareType[]>(initialDailyList);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const shareBg = {
         none: "/img/share_bg/None.jpg",
@@ -30,29 +35,7 @@ export default function DailyShare() {
         ligtning: "/img/share_bg/Lightning.jpg",
     };
 
-    const fetchMyDailyShare = useCallback(async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
-        const token = getAccessToken();
-        if (!token) return;
-
-        try {
-            const response = await dailySharesApi.checkTodayShare();
-            if (response.hasShared && response.dailyShare) {
-                setMyDaily(response.dailyShare);
-            }
-        } catch {
-            // 백엔드 미실행 시 무시
-        }
-    }, []);
-
     const fetchDailyList = useCallback(async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
-        const token = getAccessToken();
-        if (!token) {
-            setIsLoading(false);
-            return;
-        }
-
         try {
             setIsLoading(true);
             const query: DailyShareQuery = {
@@ -61,32 +44,28 @@ export default function DailyShare() {
             };
             const response = await dailySharesApi.getAll(query);
             setDailyList(response.items);
-        } catch {
-            // 백엔드 미실행 시 무시
+        } catch (e) {
+            console.error('Failed to fetch daily list:', e);
         } finally {
             setIsLoading(false);
         }
     }, [isLatestFirst, isFollowing]);
 
-    const latestSortHandler = () => {
+    const latestSortHandler = async () => {
         setIsLatestFirst(!isLatestFirst);
+        // 필터 변경 시 다시 fetch
+        setTimeout(() => fetchDailyList(), 0);
     };
 
     const sameUserTypeHandler = () => {
         setSameUserType(!sameUserType);
     };
 
-    const isFollowingHandler = () => {
+    const isFollowingHandler = async () => {
         setIsFollowing(!isFollowing);
+        // 필터 변경 시 다시 fetch
+        setTimeout(() => fetchDailyList(), 0);
     };
-
-    useEffect(() => {
-        fetchMyDailyShare();
-    }, [fetchMyDailyShare]);
-
-    useEffect(() => {
-        fetchDailyList();
-    }, [fetchDailyList]);
 
     return (
         <div className="relative">

@@ -4,54 +4,33 @@ import AppBar from "components/appBar/page";
 import { Button, IconButton } from "components/ui/button/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { dailySharesApi, emotionTypesApi, EmotionTypeInfo } from "api";
-
-// type별 그라데이션 매핑
-const gradientMap: Record<string, { from: string; to: string }> = {
-    sun: { from: '#A8EEF7', to: '#E1F0FF' },
-    sun_cloud: { from: '#FFF4E1', to: '#FCE4A6' },
-    cloud: { from: '#E8EAF6', to: '#C5CAE9' },
-    rain: { from: '#BBDEFB', to: '#64B5F6' },
-    lightning: { from: '#D1C4E9', to: '#7E57C2' },
-};
-
-// EmotionTypeInfo에 gradient 추가한 타입
-interface WeatherOption extends EmotionTypeInfo {
-    gradientFrom: string;
-    gradientTo: string;
-}
+import { dailySharesApi } from "api";
+import { WeatherOption } from "./page";
 
 const MAX_CONTENT_LENGTH = 80;
 
-export default function RegistDaily() {
+interface RegistDailyClientProps {
+    initialEmotionTypes: WeatherOption[];
+}
+
+export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyClientProps) {
     const router = useRouter();
-    const [emotionTypes, setEmotionTypes] = useState<WeatherOption[]>([]);
+    const [emotionTypes] = useState<WeatherOption[]>(initialEmotionTypes);
     const [selectedMood, setSelectedMood] = useState<string | null>(null);
     const [textContent, setTextContent] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
     const swiperRef = useRef<any>(null);
     const [activeIndex, setActiveIndex] = useState(0);
-    const cameraInputRef = useRef<HTMLInputElement>(null);
-    const galleryInputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isTextareaFocused, setIsTextareaFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-    // 모바일 환경 감지
-    useEffect(() => {
-        const checkMobile = () => {
-            const userAgent = navigator.userAgent || navigator.vendor;
-            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-            setIsMobile(isMobileDevice);
-        };
-        checkMobile();
-    }, []);
 
     // 카드 UI 상태
     function getCardStyles(index: number) {
@@ -96,11 +75,8 @@ export default function RegistDaily() {
     const handleRemoveImage = () => {
         setImageFile(null);
         setImagePreview(null);
-        if (cameraInputRef.current) {
-            cameraInputRef.current.value = '';
-        }
-        if (galleryInputRef.current) {
-            galleryInputRef.current.value = '';
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
@@ -148,28 +124,8 @@ export default function RegistDaily() {
         }
     };
 
-    const fetchEmotionTypes = async () => {
-        try {
-            const data = await emotionTypesApi.getAll();
-            // API 데이터에 gradient 매핑 추가
-            const weatherOptions: WeatherOption[] = data.map((item) => ({
-                ...item,
-                gradientFrom: gradientMap[item.type]?.from || '#E8EAF6',
-                gradientTo: gradientMap[item.type]?.to || '#C5CAE9',
-            }));
-            setEmotionTypes(weatherOptions);
-        } catch {
-            // 백엔드 미실행 시 기본값 유지
-        }
-    };
-
-    useEffect(() => {
-        // 백그라운드에서 API 데이터로 업데이트 (기본값은 이미 표시됨)
-        fetchEmotionTypes();
-    }, []);
-
     return (
-        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf pt-[56px]">
+        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
             <AppBar
                 left={
                     <IconButton
@@ -187,7 +143,6 @@ export default function RegistDaily() {
                         disabled={!selectedMood || isSubmitting}
                     />
                 }
-                sticky={true}
             />
 
             <article className="flex-1 flex flex-col">
@@ -201,8 +156,8 @@ export default function RegistDaily() {
                     </h1>
                 </div>
 
-                {/* 날씨 카드 영역 */}
-                <div className="relative mt-[24rem]">
+                {/* 날씨 카드 영역 - textarea 포커스 시 숨김 */}
+                {!isTextareaFocused && <div className="relative mt-[24rem]">
                     <Swiper
                         slidesPerView={'auto'}
                         centeredSlides={true}
@@ -279,11 +234,11 @@ export default function RegistDaily() {
                             </div>
                         </div>
                     )}
-                </div>
+                </div>}
 
                 {/* Step 2: 질문과 답변 입력 영역 */}
                 {selectedMood !== null && (
-                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[73rem]">
+                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[57rem]">
                         {/* 오늘의 질문 */}
                         <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
                             마음의 에너지를 채워주는 나만의 장소가 있나요?
@@ -298,33 +253,28 @@ export default function RegistDaily() {
                                     const value = e.target.value;
                                     // 80자 초과 시 잘라서 저장
                                     setTextContent(value.slice(0, MAX_CONTENT_LENGTH));
-                                    // 높이 자동 조절
-                                    if (textareaRef.current) {
-                                        textareaRef.current.style.height = 'auto';
-                                        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-                                    }
                                 }}
+                                onFocus={() => setIsTextareaFocused(true)}
+                                onBlur={() => setIsTextareaFocused(false)}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
-                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
+                                className="w-full flex-1 resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
                             />
                         </div>
 
                         {/* 이미지 미리보기 */}
                         {imagePreview && (
-                            <div className="relative w-[120rem] h-[120rem] mt-[16rem]">
+                            <div className="relative w-[120rem] h-[120rem] mt-[16rem] rounded-[12rem] overflow-hidden">
                                 {isUploading ? (
                                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                                         <div className="w-[40rem] h-[40rem] border-4 border-green-400 border-t-transparent rounded-full animate-spin" />
                                     </div>
                                 ) : (
-                                    <div className="block rounded-[12rem] overflow-hidden">
-                                        <Image
-                                            src={imagePreview}
-                                            alt="업로드 이미지"
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
+                                    <Image
+                                        src={imagePreview}
+                                        alt="업로드 이미지"
+                                        fill
+                                        className="object-cover"
+                                    />
                                 )}
                                 <button
                                     onClick={handleRemoveImage}
@@ -340,35 +290,24 @@ export default function RegistDaily() {
 
             {/* 하단 툴바 (Step 2에서만) */}
             {selectedMood !== null && (
-                <div className="fixed max-w-[414rem] w-full bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
+                <div className="fixed w-[414rem] bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
                     <div className="flex items-center gap-[4rem]">
-                        {/* 카메라 input (모바일: 카메라, PC: 파일선택) */}
                         <input
-                            ref={cameraInputRef}
-                            type="file"
-                            accept="image/*"
-                            capture={isMobile ? "environment" : undefined}
-                            onChange={handleImageSelect}
-                            className="hidden"
-                            id="camera-upload"
-                        />
-                        {/* 갤러리 input (모바일: 갤러리, PC: 파일선택) */}
-                        <input
-                            ref={galleryInputRef}
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
                             onChange={handleImageSelect}
                             className="hidden"
-                            id="gallery-upload"
+                            id="image-upload"
                         />
                         <label
-                            htmlFor="camera-upload"
+                            htmlFor="image-upload"
                             className="cursor-pointer p-[8rem]"
                         >
                             <Icon name="Camera" size={24} className="text-green-400" />
                         </label>
                         <label
-                            htmlFor="gallery-upload"
+                            htmlFor="image-upload"
                             className="cursor-pointer p-[8rem]"
                         >
                             <Icon name="Image" size={24} className="text-green-400" />

@@ -56,3 +56,5 @@ export const Radio = forwardRef<HTMLInputElement, CheckboxProps>(
         </label>
     );
 });
+
+Radio.displayName = 'Radio';

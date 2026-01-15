@@ -47,7 +47,7 @@ export function Button({
   return(
     <button
       type='button'
-      className={`px-[16rem] inline-flex items-center justify-center gap-[6rem] ${round ? 'rounded-[99rem]' : 'rounded-[8rem]'} ${buttonSize()} ${buttonColor()} ${className}`}
+      className={`cursor-pointer px-[16rem] inline-flex items-center justify-center gap-[6rem] ${round ? 'rounded-[99rem]' : 'rounded-[8rem]'} ${buttonSize()} ${buttonColor()} ${className}`}
       disabled={disabled}
       onClick={onClick}
     >
@@ -107,7 +107,7 @@ export function TextButton({
   return (
     <button 
       type='button' 
-      className={`inline-flex items-center gap-[4rem] text-[14rem] leading-[20rem] font-medium disabled:text-gray-500 ${buttonColor()} ${className}`}
+      className={`cursor-pointer inline-flex items-center gap-[4rem] text-[14rem] leading-[20rem] font-medium disabled:text-gray-500 ${buttonColor()} ${className}`}
       disabled={disabled}
       onClick={onClick} 
       {...props}
@@ -232,7 +232,7 @@ export function IconButton({
   return (
     <button
       type="button"
-      className={`
+      className={`cursor-pointer 
         aspect-square flex items-center justify-center 
         ${shapeType === 'round' ? '!rounded-[99rem]' : ''}
         ${btnSize} ${buttonColor()} ${className}
@@ -241,7 +241,7 @@ export function IconButton({
       disabled={disabled}
       {...props}
     >
-      <Icon name={iconName} size={iconSize} className={`m-auto ${iconColor()}`} />
+      <Icon name={iconName} size={iconSize} className={`cursor-pointer m-auto ${iconColor()}`} />
     </button>
   );
 }

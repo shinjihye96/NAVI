@@ -1,6 +1,9 @@
 import { ApiResponse } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// 클라이언트: 프록시 사용 (빈 문자열), 서버: 직접 호출
+const API_BASE_URL = typeof window === 'undefined'
+  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')
+  : '';
 
 // 토큰 관리
 let accessToken: string | null = null;
@@ -100,7 +103,7 @@ async function refreshTokens(): Promise<boolean> {
   if (!refreshToken) return false;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

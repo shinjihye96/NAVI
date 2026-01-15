@@ -19,31 +19,31 @@ export const dailySharesApi = {
     if (query?.sortBy) params.append('sortBy', query.sortBy);
 
     const queryString = params.toString();
-    return api.get<PaginatedResponse<DailyShare>>(`/daily-shares${queryString ? `?${queryString}` : ''}`);
+    return api.get<PaginatedResponse<DailyShare>>(`/api/daily-shares${queryString ? `?${queryString}` : ''}`);
   },
 
   // 하루공유 상세 조회
   getById: async (id: number): Promise<DailyShare> => {
-    return api.get<DailyShare>(`/daily-shares/${id}`);
+    return api.get<DailyShare>(`/api/daily-shares/${id}`);
   },
 
   // 오늘 공유 여부 확인
   checkTodayShare: async (): Promise<{ hasShared: boolean; dailyShare?: DailyShare }> => {
-    return api.get<{ hasShared: boolean; dailyShare?: DailyShare }>('/daily-shares/today/check');
+    return api.get<{ hasShared: boolean; dailyShare?: DailyShare }>('/api/daily-shares/today/check');
   },
 
   // 하루공유 생성
   create: async (data: CreateDailyShareDto): Promise<DailyShare> => {
-    return api.post<DailyShare>('/daily-shares', data);
+    return api.post<DailyShare>('/api/daily-shares', data);
   },
 
   // 하루공유 수정
   update: async (id: number, data: UpdateDailyShareDto): Promise<DailyShare> => {
-    return api.patch<DailyShare>(`/daily-shares/${id}`, data);
+    return api.patch<DailyShare>(`/api/daily-shares/${id}`, data);
   },
 
   // 하루공유 삭제
   delete: async (id: number): Promise<void> => {
-    return api.delete<void>(`/daily-shares/${id}`);
+    return api.delete<void>(`/api/daily-shares/${id}`);
   },
 };

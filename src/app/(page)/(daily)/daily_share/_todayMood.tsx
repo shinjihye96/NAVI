@@ -4,8 +4,8 @@ import { Button } from "components/ui/button/page";
 import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
-import { dailySharesApi, DailyShare, Mood } from "api";
+import { useEffect, useState } from "react";
+import { dailySharesApi, DailyShare, Mood, getAccessToken } from "api";
 
 interface TodayMyMoodProps {
     dailyListLength: number;
@@ -18,7 +18,14 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedWeather, setSelectedWeather] = useState<Mood | null>(null);
 
-    const fetchMyDaily =  async () => {
+    const fetchMyDaily = async () => {
+        // 로그인하지 않은 경우 API 호출 스킵
+        const token = getAccessToken();
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
+
         try {
             setIsLoading(true);
             const response = await dailySharesApi.checkTodayShare();

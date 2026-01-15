@@ -39,7 +39,6 @@ export default function RegistDaily() {
     const swiperRef = useRef<any>(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [isTextareaFocused, setIsTextareaFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // 카드 UI 상태
@@ -145,11 +144,12 @@ export default function RegistDaily() {
             }));
             setEmotionTypes(weatherOptions);
         } catch {
-            // 백엔드 미실행 시 무시
+            // 백엔드 미실행 시 기본값 유지
         }
     };
 
     useEffect(() => {
+        // 백그라운드에서 API 데이터로 업데이트 (기본값은 이미 표시됨)
         fetchEmotionTypes();
     }, []);
 
@@ -185,8 +185,8 @@ export default function RegistDaily() {
                     </h1>
                 </div>
 
-                {/* 날씨 카드 영역 - textarea 포커스 시 숨김 */}
-                {!isTextareaFocused && <div className="relative mt-[24rem]">
+                {/* 날씨 카드 영역 */}
+                <div className="relative mt-[24rem]">
                     <Swiper
                         slidesPerView={'auto'}
                         centeredSlides={true}
@@ -263,7 +263,7 @@ export default function RegistDaily() {
                             </div>
                         </div>
                     )}
-                </div>}
+                </div>
 
                 {/* Step 2: 질문과 답변 입력 영역 */}
                 {selectedMood !== null && (
@@ -283,8 +283,6 @@ export default function RegistDaily() {
                                     // 80자 초과 시 잘라서 저장
                                     setTextContent(value.slice(0, MAX_CONTENT_LENGTH));
                                 }}
-                                onFocus={() => setIsTextareaFocused(true)}
-                                onBlur={() => setIsTextareaFocused(false)}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
                                 className="w-full flex-1 resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
                             />

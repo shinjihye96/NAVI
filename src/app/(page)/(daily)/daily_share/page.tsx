@@ -9,7 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery } from "api";
+import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery, getAccessToken } from "api";
 
 export default function DailyShare() {
     const router = useRouter();
@@ -31,6 +31,10 @@ export default function DailyShare() {
     };
 
     const fetchMyDailyShare = useCallback(async () => {
+        // 로그인하지 않은 경우 API 호출 스킵
+        const token = getAccessToken();
+        if (!token) return;
+
         try {
             const response = await dailySharesApi.checkTodayShare();
             if (response.hasShared && response.dailyShare) {
@@ -42,6 +46,13 @@ export default function DailyShare() {
     }, []);
 
     const fetchDailyList = useCallback(async () => {
+        // 로그인하지 않은 경우 API 호출 스킵
+        const token = getAccessToken();
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
+
         try {
             setIsLoading(true);
             const query: DailyShareQuery = {

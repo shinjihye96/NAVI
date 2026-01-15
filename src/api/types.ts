@@ -143,7 +143,7 @@ export interface DailyShare {
 }
 
 export interface CreateDailyShareDto {
-  mood: Mood;
+  mood: Mood | string;
   content?: string;
   imageUrl?: string;
   isPrivate?: boolean;

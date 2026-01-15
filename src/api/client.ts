@@ -2,7 +2,7 @@ import { ApiResponse } from './types';
 
 // 클라이언트: 프록시 사용 (빈 문자열), 서버: 직접 호출
 const API_BASE_URL = typeof window === 'undefined'
-  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')
+  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003')
   : '';
 
 // 토큰 관리

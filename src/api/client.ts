@@ -45,7 +45,12 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  // 서버에서는 /api prefix 제거 (프록시 미적용)
+  const isServer = typeof window === 'undefined';
+  const finalEndpoint = isServer && endpoint.startsWith('/api/')
+    ? endpoint.replace('/api/', '/')
+    : endpoint;
+  const url = `${API_BASE_URL}${finalEndpoint}`;
   const token = getAccessToken();
 
   const headers: HeadersInit = {

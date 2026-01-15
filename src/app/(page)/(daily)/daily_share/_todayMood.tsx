@@ -18,7 +18,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedWeather, setSelectedWeather] = useState<Mood | null>(null);
 
-    const fetchMyDaily = useCallback(async () => {
+    const fetchMyDaily =  async () => {
         try {
             setIsLoading(true);
             const response = await dailySharesApi.checkTodayShare();
@@ -33,11 +33,11 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    };
 
     useEffect(() => {
         fetchMyDaily();
-    }, [fetchMyDaily]);
+    }, []);
 
     // 로딩 중일 때
     if (isLoading) {

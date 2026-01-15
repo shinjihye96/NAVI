@@ -20,13 +20,13 @@ export default function AppBar({
   className = ''
 }: AppBarProps) {
   return (
-    <header className={`h-[56px] px-4 flex items-center ${sticky && 'sticky top-0 z-10'} ${className}`}>
+    <header className={`h-[56px] px-4 flex items-center bg-base-wf ${sticky && 'fixed top-0 left-1/2 -translate-x-1/2 max-w-[414rem] w-full z-50'} ${className}`}>
       <div className="grid items-center grid-cols-[1fr_2fr_1fr] w-full">
         <div className="flex justify-start">{left}</div>
         <div className="flex justify-center">
           {center ? center : title && <h1 className="text-center font-medium">{title}</h1>}
         </div>
-        <div className="flex justify-end gap-2">{right}</div>
+        <div className="flex justify-end gap-2 pr-[16px]">{right}</div>
       </div>
     </header>
   );

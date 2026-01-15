@@ -23,7 +23,7 @@ export const dailySharesApi = {
   },
 
   // 하루공유 상세 조회
-  getById: async (id: number): Promise<DailyShare> => {
+  getById: async (id: string): Promise<DailyShare> => {
     return api.get<DailyShare>(`/api/daily-shares/${id}`);
   },
 
@@ -38,12 +38,12 @@ export const dailySharesApi = {
   },
 
   // 하루공유 수정
-  update: async (id: number, data: UpdateDailyShareDto): Promise<DailyShare> => {
+  update: async (id: string, data: UpdateDailyShareDto): Promise<DailyShare> => {
     return api.patch<DailyShare>(`/api/daily-shares/${id}`, data);
   },
 
   // 하루공유 삭제
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     return api.delete<void>(`/api/daily-shares/${id}`);
   },
 };

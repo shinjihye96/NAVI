@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import LayoutChildren from './layout_children'
+import QueryProvider from 'lib/query-provider'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <LayoutChildren>
-          {children}
-        </LayoutChildren>
+        <QueryProvider>
+          <LayoutChildren>
+            {children}
+          </LayoutChildren>
+        </QueryProvider>
       </body>
     </html>
   )

@@ -157,10 +157,8 @@ export interface UpdateDailyShareDto {
 }
 
 export interface DailyShareQuery extends PaginationQuery {
-  userId?: string;
-  mood?: Mood;
-  isFollowing?: boolean;
-  sortBy?: 'latest' | 'oldest';
+  filter?: 'all' | 'caregiver' | 'patient';
+  date?: string; // YYYY-MM-DD 형식
 }
 
 // Emotion 관련 타입

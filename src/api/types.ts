@@ -123,14 +123,14 @@ export interface LoginResponse {
 
 // DailyShare 관련 타입
 export interface DailyEmotion {
-  id: number;
+  id: string;
   emotionType: EmotionType;
-  userId: number;
+  userId: string;
   user?: User;
 }
 
 export interface DailyShare {
-  id: number;
+  id: string;
   mood: Mood;
   content?: string;
   imageUrl?: string;
@@ -157,7 +157,7 @@ export interface UpdateDailyShareDto {
 }
 
 export interface DailyShareQuery extends PaginationQuery {
-  userId?: number;
+  userId?: string;
   mood?: Mood;
   isFollowing?: boolean;
   sortBy?: 'latest' | 'oldest';

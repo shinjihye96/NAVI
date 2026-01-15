@@ -25,7 +25,7 @@ export default function BottomNav(){
                 <button 
                     type="button" 
                     key={`${nav.id}_${index}`}
-                    className={`grid gap-[4rem] justify-center  text-center ${activeNav.id === nav.id ? 'text-green-500' : 'text-gray-900'}`}
+                    className={`grid gap-[4rem] justify-center  text-center cursor-pointer ${activeNav.id === nav.id ? 'text-green-500' : 'text-gray-900'}`}
                     onClick={() => navHandler(nav.id)}
                 >
                     <Icon

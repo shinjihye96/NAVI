@@ -2,6 +2,7 @@
 
 import AppBar from "components/appBar/page";
 import { Button, IconButton, TextButton } from "components/ui/button/page";
+import { Checkbox } from "components/ui/checkbox/page";
 import { useCallback, useEffect, useState } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -15,7 +16,11 @@ export default function DailyShare() {
     const today = dayjs(new Date()).format('M월 DD일');
     const [myDaily, setMyDaily] = useState<DailyShareType | null>(null);
     const [dailyList, setDailyList] = useState<DailyShareType[]>([]);
+    console.log('dailyList: ', dailyList);
     const [filter, setFilter] = useState<'all' | 'caregiver' | 'patient'>('all');
+    const [isLatestFirst, setIsLatestFirst] = useState(false);
+    const [sameUserType, setSameUserType] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const shareBg = {
@@ -46,7 +51,9 @@ export default function DailyShare() {
     const fetchDailyList = useCallback(async () => {
         // 로그인하지 않은 경우 API 호출 스킵
         const token = getAccessToken();
+        console.log('fetchDailyList - token:', token);
         if (!token) {
+            console.log('토큰 없음 - API 호출 스킵');
             setIsLoading(false);
             return;
         }
@@ -58,7 +65,8 @@ export default function DailyShare() {
                 date: dayjs().format('YYYY-MM-DD'),
             };
             const response = await dailySharesApi.getAll(query);
-            setDailyList(response.items);
+            console.log('dailySharesApi.getAll response: ', response);
+            setDailyList(response.items || (response as any).data || []);
         } catch {
             // 백엔드 미실행 시 무시
         } finally {
@@ -68,6 +76,18 @@ export default function DailyShare() {
 
     const filterHandler = (newFilter: 'all' | 'caregiver' | 'patient') => {
         setFilter(newFilter);
+    };
+
+    const latestSortHandler = () => {
+        setIsLatestFirst(!isLatestFirst);
+    };
+
+    const sameUserTypeHandler = () => {
+        setSameUserType(!sameUserType);
+    };
+
+    const isFollowingHandler = () => {
+        setIsFollowing(!isFollowing);
     };
 
     useEffect(() => {
@@ -116,21 +136,26 @@ export default function DailyShare() {
                         <div className="flex items-center justify-between py-[12rem] px-[16rem]">
                             <div className="flex items-center gap-[12rem]">
                                 <TextButton
-                                    txt="전체"
-                                    color={filter === 'all' ? 'primary' : 'secondary'}
-                                    onClick={() => filterHandler('all')}
+                                    txt="최신순"
+                                    color="secondary"
+                                    iconName={isLatestFirst ? "ChevronUp" : "ChevronDown"}
+                                    iconPosition="r"
+                                    onClick={latestSortHandler}
                                 />
                                 <TextButton
-                                    txt="보호자"
-                                    color={filter === 'caregiver' ? 'primary' : 'secondary'}
-                                    onClick={() => filterHandler('caregiver')}
-                                />
-                                <TextButton
-                                    txt="환자"
-                                    color={filter === 'patient' ? 'primary' : 'secondary'}
-                                    onClick={() => filterHandler('patient')}
+                                    txt="모아보기"
+                                    color="secondary"
+                                    iconName={sameUserType ? "ChevronUp" : "ChevronDown"}
+                                    iconPosition="r"
+                                    onClick={sameUserTypeHandler}
                                 />
                             </div>
+                            <Checkbox
+                                label="팔로우"
+                                onChange={isFollowingHandler}
+                                checked={isFollowing ? true : false}
+                                value={''}
+                            />
                         </div>
                         {!dailyList.length ? (
                             <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">

@@ -166,7 +166,7 @@ export default function RegistDaily() {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf pt-[56px]">
+        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
             <AppBar
                 left={
                     <IconButton

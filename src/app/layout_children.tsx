@@ -10,7 +10,7 @@ const LayoutChildren: React.FC<LayoutContainerProps> =({children}) => {
     const pathname = usePathname();
 
     return(
-        <main className='max-w-[414rem] m-auto'>
+        <main className='max-w-[414rem] m-auto pt-[56rem]'>
             <section className='pb-[76rem] overflow-hidden'>
                 {children}
             </section>

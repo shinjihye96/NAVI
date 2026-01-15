@@ -36,10 +36,22 @@ export default function RegistDaily() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const swiperRef = useRef<any>(null);
     const [activeIndex, setActiveIndex] = useState(0);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
+    const galleryInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    // 모바일 환경 감지
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = navigator.userAgent || navigator.vendor;
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            setIsMobile(isMobileDevice);
+        };
+        checkMobile();
+    }, []);
 
     // 카드 UI 상태
     function getCardStyles(index: number) {
@@ -84,8 +96,11 @@ export default function RegistDaily() {
     const handleRemoveImage = () => {
         setImageFile(null);
         setImagePreview(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+        if (cameraInputRef.current) {
+            cameraInputRef.current.value = '';
+        }
+        if (galleryInputRef.current) {
+            galleryInputRef.current.value = '';
         }
     };
 
@@ -317,24 +332,35 @@ export default function RegistDaily() {
 
             {/* 하단 툴바 (Step 2에서만) */}
             {selectedMood !== null && (
-                <div className="fixed w-[414rem] bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
+                <div className="fixed max-w-[414rem] w-full bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
                     <div className="flex items-center gap-[4rem]">
+                        {/* 카메라 input (모바일: 카메라, PC: 파일선택) */}
                         <input
-                            ref={fileInputRef}
+                            ref={cameraInputRef}
+                            type="file"
+                            accept="image/*"
+                            capture={isMobile ? "environment" : undefined}
+                            onChange={handleImageSelect}
+                            className="hidden"
+                            id="camera-upload"
+                        />
+                        {/* 갤러리 input (모바일: 갤러리, PC: 파일선택) */}
+                        <input
+                            ref={galleryInputRef}
                             type="file"
                             accept="image/*"
                             onChange={handleImageSelect}
                             className="hidden"
-                            id="image-upload"
+                            id="gallery-upload"
                         />
                         <label
-                            htmlFor="image-upload"
+                            htmlFor="camera-upload"
                             className="cursor-pointer p-[8rem]"
                         >
                             <Icon name="Camera" size={24} className="text-green-400" />
                         </label>
                         <label
-                            htmlFor="image-upload"
+                            htmlFor="gallery-upload"
                             className="cursor-pointer p-[8rem]"
                         >
                             <Icon name="Image" size={24} className="text-green-400" />

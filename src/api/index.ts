@@ -1,5 +1,5 @@
 // API 클라이언트 및 토큰 관리
-export { api, setAccessToken, getAccessToken, clearTokens } from './client';
+export { api, setAccessToken, getAccessToken, setRefreshToken, getRefreshToken, clearTokens } from './client';
 
 // API 서비스
 export { authApi } from './auth';

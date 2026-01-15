@@ -11,34 +11,6 @@ interface TodayMyMoodProps {
     dailyListLength: number;
 }
 
-// const weatherImg: { mood: Mood; name: string; img: string }[] = [
-//     {
-//         mood: Mood.VERY_GOOD,
-//         name: '화창해요',
-//         img: '/img/weather/Sun.png'
-//     },
-//     {
-//         mood: Mood.GOOD,
-//         name: '조금 맑아요',
-//         img: '/img/weather/Sun_and_Cloud.png'
-//     },
-//     {
-//         mood: Mood.NORMAL,
-//         name: '흐려요',
-//         img: '/img/weather/Cloud.png'
-//     },
-//     {
-//         mood: Mood.BAD,
-//         name: '비 내려요',
-//         img: '/img/weather/Rain.png'
-//     },
-//     {
-//         mood: Mood.VERY_BAD,
-//         name: '번개쳐요',
-//         img: '/img/weather/Lightning.png'
-//     },
-// ];
-
 export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const router = useRouter();
     const [myDaily, setMyDaily] = useState<DailyShare | null>(null);

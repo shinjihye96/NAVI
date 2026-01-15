@@ -1,7 +1,6 @@
 'use client';
 
 import { Button, TextButton } from "components/ui/button/page";
-import Input from "components/ui/input/page";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { setAccessToken, setRefreshToken } from "api";
@@ -30,16 +29,26 @@ export default function LoginId() {
             });
 
             const data = await response.json();
+            console.log('로그인 응답:', data);
 
             if (!response.ok) {
                 setError(data.message || '로그인에 실패했습니다.');
                 return;
             }
 
-            if (data.data?.tokens) {
-                setAccessToken(data.data.tokens.accessToken);
-                setRefreshToken(data.data.tokens.refreshToken);
+            // 응답 구조에 따라 토큰 추출
+            const tokens = data.data?.tokens || data.tokens || data.data;
+            const accessToken = tokens?.accessToken || tokens?.access_token;
+            const refreshToken = tokens?.refreshToken || tokens?.refresh_token;
+
+            if (accessToken) {
+                setAccessToken(accessToken);
+                if (refreshToken) {
+                    setRefreshToken(refreshToken);
+                }
                 router.replace('/daily_share');
+            } else {
+                setError('로그인 응답에서 토큰을 찾을 수 없습니다.');
             }
         } catch (err) {
             setError('로그인 중 오류가 발생했습니다.');
@@ -80,13 +89,15 @@ export default function LoginId() {
             {/* 입력 폼 */}
             <div className="flex-1">
                 <div className="flex flex-col gap-[16rem]">
-                    <Input
-                        label="아이디"
-                        name="email"
-                        value={email}
-                        type="line"
-                        onChange={(e) => setEmail(e?.target.value || '')}
-                    />
+                    <div className="grid gap-[4rem]">
+                        <p className="text-[14rem] text-gray-700 leading-[20rem] font-400">아이디</p>
+                        <input
+                            type="text"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="h-[40rem] border-b border-gray-400 focus:border-green-400 placeholder:text-gray-600 font-normal text-gray-900 leading-[20rem] text-[16rem] outline-none"
+                        />
+                    </div>
                     <div className="grid gap-[4rem]">
                         <p className="text-[14rem] text-gray-700 leading-[20rem] font-400">비밀번호</p>
                         <input

@@ -50,7 +50,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-base-wf">
+        <div className="flex flex-col min-h-dvh bg-base-wf">
             {/* 온보딩 스와이퍼 */}
             <div className="flex-1 flex flex-col justify-end pb-[24rem]">
                 <Swiper

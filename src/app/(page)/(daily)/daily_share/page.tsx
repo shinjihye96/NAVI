@@ -9,7 +9,7 @@ async function getInitialData() {
         ]);
 
         return {
-            myDaily: myDailyResponse.hasShared ? myDailyResponse.dailyShare : null,
+            myDaily: myDailyResponse.hasShared && myDailyResponse.dailyShare ? myDailyResponse.dailyShare : null,
             dailyList: dailyListResponse.items,
         };
     } catch (e) {

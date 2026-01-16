@@ -83,9 +83,19 @@ export default function DailyShare() {
         myFollowingData?.items?.map((user) => String(user.id)) || []
     );
 
-    const dailyList = dailyListData?.items || [];
+    const allDailyList = dailyListData?.items || [];
+
+    // 팔로우 필터 적용
+    const dailyList = isFollowing
+        ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
+        : allDailyList;
+
     console.log('dailyList: ', dailyList);
     const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
+
+    // 팔로우 필터 상태 체크
+    const hasNoFollowing = followingIds.size === 0;
+    const hasFollowingButNoPostsToday = !hasNoFollowing && dailyList.length === 0 && isFollowing;
 
     // 팔로우 여부 체크 함수
     const isUserFollowing = (userId: string | number): boolean => {
@@ -274,12 +284,37 @@ export default function DailyShare() {
                                 label="팔로우"
                                 onChange={isFollowingHandler}
                                 checked={isFollowing ? true : false}
-                                value={''}
+                                value={'followSort'}
                             />
                         </div>
                         {isActuallyLoading ? (
-                            <DailyShareSkeleton />
-                        ) : !dailyList.length ? (
+                            <DailyShareSkeleton count={4} />
+                        ) : isFollowing && hasNoFollowing ? (
+                            // 팔로우 필터 ON + 팔로우한 사람 없음
+                            <div className="flex-1 flex flex-col items-center justify-center gap-[16rem] py-[48rem]">
+                                <p className="text-gray-600 text-[16rem] leading-[24rem] text-center">아직 팔로우한 사람이 없어요</p>
+                                <Button
+                                    txt="전체 목록 보기"
+                                    round
+                                    size="m"
+                                    color="secondary"
+                                    onClick={() => setIsFollowing(false)}
+                                />
+                            </div>
+                        ) : isFollowing && hasFollowingButNoPostsToday ? (
+                            // 팔로우 필터 ON + 팔로우한 사람 있지만 오늘 글 없음
+                            <div className="flex-1 flex flex-col items-center justify-center gap-[16rem] py-[48rem]">
+                                <p className="text-gray-600 text-[16rem] leading-[24rem] text-center">팔로우한 사람들이 아직<br />오늘의 하루를 공유하지 않았어요</p>
+                                <Button
+                                    txt="전체 목록 보기"
+                                    round
+                                    size="m"
+                                    color="secondary"
+                                    onClick={() => setIsFollowing(false)}
+                                />
+                            </div>
+                        ) : !allDailyList.length ? (
+                            // 전체 목록이 비어있음
                             <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">
                                 <p className="text-base-bk text-[20rem] leading-[28rem] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
                                 <Button

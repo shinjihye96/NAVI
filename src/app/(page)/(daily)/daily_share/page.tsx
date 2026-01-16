@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType } from "api";
+import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { EMOTION_TYPES } from "constants/emotions";
 import { DailyShareSkeleton } from "components/ui/skeleton/page";
@@ -63,10 +63,35 @@ export default function DailyShare() {
         queryFn: () => dailySharesApi.checkTodayShare(),
         enabled: hasToken,
     });
-    
+
+    // 현재 로그인한 사용자 정보 조회
+    const { data: currentUser } = useQuery({
+        queryKey: ['currentUser'],
+        queryFn: () => usersApi.getMe(),
+        enabled: hasToken,
+    });
+
+    // 내가 팔로우하는 사용자 목록 조회
+    const { data: myFollowingData } = useQuery({
+        queryKey: ['myFollowing', currentUser?.id],
+        queryFn: () => usersApi.getFollowing(currentUser!.id, 1, 1000),
+        enabled: hasToken && !!currentUser?.id,
+    });
+
+    // 팔로잉 ID Set (빠른 조회용)
+    const followingIds = new Set(
+        myFollowingData?.items?.map((user) => String(user.id)) || []
+    );
+
     const dailyList = dailyListData?.items || [];
     console.log('dailyList: ', dailyList);
     const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
+
+    // 팔로우 여부 체크 함수
+    const isUserFollowing = (userId: string | number): boolean => {
+        if (!hasToken) return false;
+        return followingIds.has(String(userId));
+    };
 
     const filterHandler = (newFilter: 'all' | 'caregiver' | 'patient' | undefined) => {
         setFilter(newFilter);
@@ -139,6 +164,58 @@ export default function DailyShare() {
 
     const handleReactionClick = (dailyShareId: string, reactionType: ReactionType) => {
         reactionMutation.mutate({ dailyShareId, reactionType });
+    };
+
+    // 팔로우/언팔로우 mutation
+    const followMutation = useMutation({
+        mutationFn: async ({ userId, isCurrentlyFollowing }: { userId: string; isCurrentlyFollowing: boolean }) => {
+            if (isCurrentlyFollowing) {
+                await followsApi.unfollow(userId);
+                return { action: 'unfollowed' as const, userId };
+            } else {
+                await followsApi.follow(userId);
+                return { action: 'followed' as const, userId };
+            }
+        },
+        onMutate: async ({ userId, isCurrentlyFollowing }) => {
+            // 내 팔로잉 목록 캐시 취소 및 업데이트
+            await queryClient.cancelQueries({ queryKey: ['myFollowing', currentUser?.id] });
+
+            const previousFollowingData = queryClient.getQueryData(['myFollowing', currentUser?.id]);
+
+            // 팔로잉 목록 Optimistic Update
+            queryClient.setQueryData(['myFollowing', currentUser?.id], (old: any) => {
+                if (!old?.items) return old;
+                if (isCurrentlyFollowing) {
+                    // 언팔로우: 목록에서 제거
+                    return {
+                        ...old,
+                        items: old.items.filter((user: any) => String(user.id) !== userId),
+                    };
+                } else {
+                    // 팔로우: 목록에 추가 (임시 객체)
+                    return {
+                        ...old,
+                        items: [...old.items, { id: userId }],
+                    };
+                }
+            });
+
+            return { previousFollowingData };
+        },
+        onError: (_err, _variables, context) => {
+            if (context?.previousFollowingData) {
+                queryClient.setQueryData(['myFollowing', currentUser?.id], context.previousFollowingData);
+            }
+        },
+        onSuccess: () => {
+            // 성공 시 팔로잉 목록 다시 조회하여 정확한 데이터 반영
+            queryClient.invalidateQueries({ queryKey: ['myFollowing', currentUser?.id] });
+        },
+    });
+
+    const handleFollowClick = (userId: string, isCurrentlyFollowing: boolean) => {
+        followMutation.mutate({ userId, isCurrentlyFollowing });
     };
 
     return (
@@ -218,7 +295,11 @@ export default function DailyShare() {
                                     <li key={`${post.id}_${index}`} className="py-[12rem]">
                                         <div className="grid grid-cols-[1fr_auto] items-center py-[8rem]">
                                             <div className="flex items-center gap-[8rem]">
-                                                <div className="w-[48rem] h-[48rem] rounded-full bg-sky-100 flex items-center justify-center overflow-hidden">
+                                                <button 
+                                                    type="button"
+                                                    className="w-[48rem] h-[48rem] rounded-full bg-sky-100 flex items-center justify-center overflow-hidden"
+                                                    onClick={() => {}}
+                                                >
                                                     {post.user?.profileImageUrl ? (
                                                         <img src={post.user.profileImageUrl} alt={post.user.nickname} className="w-full h-full object-cover" />
                                                     ) : (
@@ -230,7 +311,7 @@ export default function DailyShare() {
                                                             className="w-full h-full object-cover"
                                                         />
                                                     )}
-                                                </div>
+                                                </button>
                                                 <div className="grid gap-[2rem]">
                                                     <p className="text-[14rem] font-semibold text-gray-950">{post.user?.nickname || 'Name'}</p>
                                                     <div className="flex items-center gap-[8rem] text-[12rem]">
@@ -241,9 +322,9 @@ export default function DailyShare() {
                                                 </div>
                                             </div>
                                             <TextButton
-                                                txt="팔로우"
-                                                color="primary"
-                                                onClick={() => {}}
+                                                txt={isUserFollowing(post.user.id) ? "팔로잉" : "팔로우"}
+                                                color={isUserFollowing(post.user.id) ? "retreative" : "primary"}
+                                                onClick={() => handleFollowClick(String(post.user.id), isUserFollowing(post.user.id))}
                                             />
                                         </div>
                                         <p className="text-[16rem] leading-[24rem] text-gray-950 py-[8rem] px-[16rem]">{post.content}</p>

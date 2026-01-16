@@ -224,13 +224,13 @@ export default function DailyShare() {
                             iconName="Follower"
                             size="l"
                             color="tertiary"
-                            onClick={() => {}}
+                            onClick={() => router.push('/follow')}
                         />
                         <IconButton
                             iconName="Bell"
                             size="l"
                             color="tertiary"
-                            onClick={() => {}}
+                            onClick={() => router.push('/notifications')}
                         />
                     </div>
                 }
@@ -346,7 +346,6 @@ export default function DailyShare() {
                                         <p className="text-[16rem] leading-[24rem] text-gray-950 py-[8rem] px-[16rem]">{post.content}</p>
                                         <div className="flex gap-[8rem] flex-wrap px-[16rem] py-[12rem]">
                                             {EMOTION_TYPES.map((emotion) => {
-                                                // reactions 또는 emotions 필드 모두 지원 (백엔드 마이그레이션 과정)
                                                 const reactions = ((post as any).reactions || (post as any).emotions) as { type: string; count: number }[] | undefined;
                                                 const myReactions = (post as any).myReactions as string[] | undefined;
                                                 const reactionData = reactions?.find((r) => r.type === emotion.type);

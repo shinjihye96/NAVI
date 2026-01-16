@@ -11,12 +11,10 @@ export const dailySharesApi = {
   // 하루공유 목록 조회
   getAll: async (query?: DailyShareQuery): Promise<PaginatedResponse<DailyShare>> => {
     const params = new URLSearchParams();
+    if (query?.filter) params.append('filter', query.filter);
+    if (query?.date) params.append('date', query.date);
     if (query?.page) params.append('page', String(query.page));
     if (query?.limit) params.append('limit', String(query.limit));
-    if (query?.userId) params.append('userId', String(query.userId));
-    if (query?.mood) params.append('mood', query.mood);
-    if (query?.isFollowing !== undefined) params.append('isFollowing', String(query.isFollowing));
-    if (query?.sortBy) params.append('sortBy', query.sortBy);
 
     const queryString = params.toString();
     return api.get<PaginatedResponse<DailyShare>>(`/api/daily-shares${queryString ? `?${queryString}` : ''}`);

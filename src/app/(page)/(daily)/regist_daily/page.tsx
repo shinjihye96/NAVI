@@ -135,10 +135,8 @@ export default function RegistDaily() {
         }
     };
 
-    // 뒤로가기
     const handleBack = () => {
         if (selectedMood !== null) {
-            // Step 2에서 Step 1로
             setSelectedMood(null);
             setTextContent('');
             setImageFile(null);
@@ -151,25 +149,24 @@ export default function RegistDaily() {
     const fetchEmotionTypes = async () => {
         try {
             const data = await emotionTypesApi.getAll();
-            // API 데이터에 gradient 매핑 추가
+
             const weatherOptions: WeatherOption[] = data.map((item) => ({
                 ...item,
                 gradientFrom: gradientMap[item.type]?.from || '#E8EAF6',
                 gradientTo: gradientMap[item.type]?.to || '#C5CAE9',
             }));
             setEmotionTypes(weatherOptions);
-        } catch {
-            // 백엔드 미실행 시 기본값 유지
+        } catch (e) {
+            console.error('Failed to fetch emotion types:', e);
         }
     };
 
     useEffect(() => {
-        // 백그라운드에서 API 데이터로 업데이트 (기본값은 이미 표시됨)
         fetchEmotionTypes();
     }, []);
 
     return (
-        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf pt-[56px]">
+        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
             <AppBar
                 left={
                     <IconButton

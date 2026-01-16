@@ -3,23 +3,34 @@
 import AppBar from "components/appBar/page";
 import { Button, IconButton, TextButton } from "components/ui/button/page";
 import { Checkbox } from "components/ui/checkbox/page";
-import { useCallback, useEffect, useState } from "react";
-import 'swiper/css';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { useState, useEffect } from "react";
 import TodayMyMood from "./_todayMood";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery, getAccessToken } from "api";
+import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { EMOTION_TYPES } from "constants/emotions";
+import { DailyShareSkeleton } from "components/ui/skeleton/page";
+import Image from "next/image";
+import Chips from "components/ui/chip/page";
+
+dayjs.extend(relativeTime);
+dayjs.locale("ko");
 
 export default function DailyShare() {
     const router = useRouter();
     const today = dayjs(new Date()).format('M월 DD일');
-    const [myDaily, setMyDaily] = useState<DailyShareType | null>(null);
-    const [dailyList, setDailyList] = useState<DailyShareType[]>([]);
+    const [filter, setFilter] = useState<'all' | 'caregiver' | 'patient' | undefined>(undefined);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const shareBg = {
         none: "/img/share_bg/None.jpg",
@@ -30,43 +41,62 @@ export default function DailyShare() {
         ligtning: "/img/share_bg/Lightning.jpg",
     };
 
-    const fetchMyDailyShare = useCallback(async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
-        const token = getAccessToken();
-        if (!token) return;
+    const hasToken = isClient && !!getAccessToken();
 
-        try {
-            const response = await dailySharesApi.checkTodayShare();
-            if (response.hasShared && response.dailyShare) {
-                setMyDaily(response.dailyShare);
-            }
-        } catch {
-            // 백엔드 미실행 시 무시
-        }
-    }, []);
+    const { data: dailyListData, isLoading, isFetching } = useQuery({
+        queryKey: ['dailyShares', filter],
+        queryFn: async () => {
+            const query: DailyShareQuery = {};
+            if (filter) query.filter = filter;
+            return dailySharesApi.getAll(query);
+        },
+        enabled: hasToken,
+    });
 
-    const fetchDailyList = useCallback(async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
-        const token = getAccessToken();
-        if (!token) {
-            setIsLoading(false);
-            return;
-        }
+    const isActuallyLoading = !isClient || (hasToken && (isLoading || (!dailyListData && isFetching)));
 
-        try {
-            setIsLoading(true);
-            const query: DailyShareQuery = {
-                sortBy: isLatestFirst ? 'latest' : 'oldest',
-                isFollowing: isFollowing || undefined,
-            };
-            const response = await dailySharesApi.getAll(query);
-            setDailyList(response.items);
-        } catch {
-            // 백엔드 미실행 시 무시
-        } finally {
-            setIsLoading(false);
-        }
-    }, [isLatestFirst, isFollowing]);
+    const { data: myDailyData } = useQuery({
+        queryKey: ['myTodayShare'],
+        queryFn: () => dailySharesApi.checkTodayShare(),
+        enabled: hasToken,
+    });
+
+    const { data: currentUser } = useQuery({
+        queryKey: ['currentUser'],
+        queryFn: () => usersApi.getMe(),
+        enabled: hasToken,
+    });
+
+    const { data: myFollowingData } = useQuery({
+        queryKey: ['myFollowing', currentUser?.id],
+        queryFn: () => usersApi.getFollowing(currentUser!.id, 1, 1000),
+        enabled: hasToken && !!currentUser?.id,
+    });
+
+    const followingIds = new Set(
+        myFollowingData?.items?.map((user) => String(user.id)) || []
+    );
+
+    const allDailyList = dailyListData?.items || [];
+
+    const dailyList = isFollowing
+        ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
+        : allDailyList;
+
+    console.log('dailyList: ', dailyList);
+    const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
+
+    const hasNoFollowing = followingIds.size === 0;
+    const hasFollowingButNoPostsToday = !hasNoFollowing && dailyList.length === 0 && isFollowing;
+
+    const isUserFollowing = (userId: string | number): boolean => {
+        if (!hasToken) return false;
+        return followingIds.has(String(userId));
+    };
+
+    const filterHandler = (newFilter: 'all' | 'caregiver' | 'patient' | undefined) => {
+        setFilter(newFilter);
+    };
 
     const latestSortHandler = () => {
         setIsLatestFirst(!isLatestFirst);
@@ -80,13 +110,107 @@ export default function DailyShare() {
         setIsFollowing(!isFollowing);
     };
 
-    useEffect(() => {
-        fetchMyDailyShare();
-    }, [fetchMyDailyShare]);
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        fetchDailyList();
-    }, [fetchDailyList]);
+    const reactionMutation = useMutation({
+        mutationFn: ({ dailyShareId, reactionType }: { dailyShareId: string; reactionType: ReactionType }) =>
+            reactionsApi.toggle(dailyShareId, reactionType),
+        onMutate: async ({ dailyShareId, reactionType }) => {
+            await queryClient.cancelQueries({ queryKey: ['dailyShares', filter] });
+
+            const previousData = queryClient.getQueryData(['dailyShares', filter]);
+
+            queryClient.setQueryData(['dailyShares', filter], (old: any) => {
+                if (!old?.items) return old;
+                return {
+                    ...old,
+                    items: old.items.map((post: any) => {
+                        if (post.id !== dailyShareId) return post;
+
+                        const myReactions = post.myReactions || [];
+                        const reactions = post.reactions || [];
+                        const isAlreadyReacted = myReactions.includes(reactionType);
+
+                        const newMyReactions = isAlreadyReacted
+                            ? myReactions.filter((r: string) => r !== reactionType)
+                            : [...myReactions, reactionType];
+
+                        const newReactions = reactions.map((r: any) => {
+                            if (r.type !== reactionType) return r;
+                            return { ...r, count: isAlreadyReacted ? r.count - 1 : r.count + 1 };
+                        });
+
+                        if (!isAlreadyReacted && !reactions.find((r: any) => r.type === reactionType)) {
+                            newReactions.push({ type: reactionType, count: 1 });
+                        }
+
+                        return {
+                            ...post,
+                            myReactions: newMyReactions,
+                            reactions: newReactions.filter((r: any) => r.count > 0),
+                        };
+                    }),
+                };
+            });
+
+            return { previousData };
+        },
+        onError: (_err, _variables, context) => {
+            if (context?.previousData) {
+                queryClient.setQueryData(['dailyShares', filter], context.previousData);
+            }
+        },
+    });
+
+    const handleReactionClick = (dailyShareId: string, reactionType: ReactionType) => {
+        reactionMutation.mutate({ dailyShareId, reactionType });
+    };
+
+    const followMutation = useMutation({
+        mutationFn: async ({ userId, isCurrentlyFollowing }: { userId: string; isCurrentlyFollowing: boolean }) => {
+            if (isCurrentlyFollowing) {
+                await followsApi.unfollow(userId);
+                return { action: 'unfollowed' as const, userId };
+            } else {
+                await followsApi.follow(userId);
+                return { action: 'followed' as const, userId };
+            }
+        },
+        onMutate: async ({ userId, isCurrentlyFollowing }) => {
+            await queryClient.cancelQueries({ queryKey: ['myFollowing', currentUser?.id] });
+
+            const previousFollowingData = queryClient.getQueryData(['myFollowing', currentUser?.id]);
+
+            queryClient.setQueryData(['myFollowing', currentUser?.id], (old: any) => {
+                if (!old?.items) return old;
+                if (isCurrentlyFollowing) {
+                    return {
+                        ...old,
+                        items: old.items.filter((user: any) => String(user.id) !== userId),
+                    };
+                } else {
+                    return {
+                        ...old,
+                        items: [...old.items, { id: userId }],
+                    };
+                }
+            });
+
+            return { previousFollowingData };
+        },
+        onError: (_err, _variables, context) => {
+            if (context?.previousFollowingData) {
+                queryClient.setQueryData(['myFollowing', currentUser?.id], context.previousFollowingData);
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['myFollowing', currentUser?.id] });
+        },
+    });
+
+    const handleFollowClick = (userId: string, isCurrentlyFollowing: boolean) => {
+        followMutation.mutate({ userId, isCurrentlyFollowing });
+    };
 
     return (
         <div className="relative">
@@ -100,13 +224,13 @@ export default function DailyShare() {
                             iconName="Follower"
                             size="l"
                             color="tertiary"
-                            onClick={() => {}}
+                            onClick={() => router.push('/follow')}
                         />
                         <IconButton
                             iconName="Bell"
                             size="l"
                             color="tertiary"
-                            onClick={() => {}}
+                            onClick={() => router.push('/notifications')}
                         />
                     </div>
                 }
@@ -132,22 +256,46 @@ export default function DailyShare() {
                                     iconPosition="r"
                                     onClick={latestSortHandler}
                                 />
-                                <TextButton
+                                {/* <TextButton
                                     txt="모아보기"
                                     color="secondary"
                                     iconName={sameUserType ? "ChevronUp" : "ChevronDown"}
                                     iconPosition="r"
                                     onClick={sameUserTypeHandler}
-                                />
+                                /> */}
                             </div>
                             <Checkbox
                                 label="팔로우"
                                 onChange={isFollowingHandler}
                                 checked={isFollowing ? true : false}
-                                value={''}
+                                value={'followSort'}
                             />
                         </div>
-                        {!dailyList.length ? (
+                        {isActuallyLoading ? (
+                            <DailyShareSkeleton count={4} />
+                        ) : isFollowing && hasNoFollowing ? (
+                            <div className="flex-1 flex flex-col items-center justify-center gap-[16rem] py-[48rem]">
+                                <p className="text-gray-600 text-[16rem] leading-[24rem] text-center">아직 팔로우한 사람이 없어요</p>
+                                <Button
+                                    txt="전체 목록 보기"
+                                    round
+                                    size="m"
+                                    color="secondary"
+                                    onClick={() => setIsFollowing(false)}
+                                />
+                            </div>
+                        ) : isFollowing && hasFollowingButNoPostsToday ? (
+                            <div className="flex-1 flex flex-col items-center justify-center gap-[16rem] py-[48rem]">
+                                <p className="text-gray-600 text-[16rem] leading-[24rem] text-center">팔로우한 사람들이 아직<br />오늘의 하루를 공유하지 않았어요</p>
+                                <Button
+                                    txt="전체 목록 보기"
+                                    round
+                                    size="m"
+                                    color="secondary"
+                                    onClick={() => setIsFollowing(false)}
+                                />
+                            </div>
+                        ) : !allDailyList.length ? (
                             <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">
                                 <p className="text-base-bk text-[20rem] leading-[28rem] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
                                 <Button
@@ -158,23 +306,66 @@ export default function DailyShare() {
                                 />
                             </div>
                         ) : (
-                            <ul className="box">
+                            <ul className="flex flex-col gap-[16rem] px-[16rem] py-[8rem]">
                                 {dailyList.map((post, index) => (
-                                    <li key={`${post.id}_${index}`}>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex"></div>
+                                    <li key={`${post.id}_${index}`} className="py-[12rem]">
+                                        <div className="grid grid-cols-[1fr_auto] items-center py-[8rem]">
+                                            <div className="flex items-center gap-[8rem]">
+                                                <button 
+                                                    type="button"
+                                                    className="w-[48rem] h-[48rem] rounded-full bg-sky-100 flex items-center justify-center overflow-hidden"
+                                                    onClick={() => {}}
+                                                >
+                                                    {post.user?.profileImageUrl ? (
+                                                        <img src={post.user.profileImageUrl} alt={post.user.nickname} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <Image
+                                                            src={'/img/Butterfly.png'}
+                                                            alt="Default Profile"
+                                                            width={48}
+                                                            height={48}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    )}
+                                                </button>
+                                                <div className="grid gap-[2rem]">
+                                                    <p className="text-[14rem] font-semibold text-gray-950">{post.user?.nickname || 'Name'}</p>
+                                                    <div className="flex items-center gap-[8rem] text-[12rem]">
+                                                        <p className="text-gray-700">{post.user?.userType || 'User Type'}</p>
+                                                        <span className="text-gray-200">|</span>
+                                                        <p className="text-gray-600">{dayjs(post.createdAt).fromNow()}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <TextButton
-                                                txt={"팔로우"}
-                                                color="primary"
-                                                onClick={() => {}}
+                                                txt={isUserFollowing(post.user.id) ? "팔로잉" : "팔로우"}
+                                                color={isUserFollowing(post.user.id) ? "retreative" : "primary"}
+                                                onClick={() => handleFollowClick(String(post.user.id), isUserFollowing(post.user.id))}
                                             />
                                         </div>
-                                        <div className="">{post.content}</div>
-                                        <Swiper
-                                            spaceBetween={16}
-                                        >
-                                            <SwiperSlide></SwiperSlide>
-                                        </Swiper>
+                                        <p className="text-[16rem] leading-[24rem] text-gray-950 py-[8rem] px-[16rem]">{post.content}</p>
+                                        <div className="flex gap-[8rem] flex-wrap px-[16rem] py-[12rem]">
+                                            {EMOTION_TYPES.map((emotion) => {
+                                                const reactions = ((post as any).reactions || (post as any).emotions) as { type: string; count: number }[] | undefined;
+                                                const myReactions = (post as any).myReactions as string[] | undefined;
+                                                const reactionData = reactions?.find((r) => r.type === emotion.type);
+                                                const count = reactionData?.count || 0;
+                                                const isSelected = myReactions?.includes(emotion.type) || false;
+                                                return (
+                                                    <Chips
+                                                        key={emotion.type}
+                                                        typeName={emotion.type}
+                                                        imageSrc={emotion.icon}
+                                                        imageAlt={emotion.label}
+                                                        imagePosition="l"
+                                                        text={count === 0 ? '' : `${count}`}
+                                                        className={isSelected ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}
+                                                        type="outline"
+                                                        onclick={() => handleReactionClick(post.id, emotion.type as ReactionType)}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
                                     </li>
                                 ))}
                             </ul>

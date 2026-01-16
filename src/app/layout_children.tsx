@@ -9,12 +9,15 @@ interface LayoutContainerProps{
 const LayoutChildren: React.FC<LayoutContainerProps> =({children}) => {
     const pathname = usePathname();
 
+    // 로그인 관련 페이지에서는 BottomNav 숨김
+    const hideBottomNav = pathname.startsWith('/login') || pathname.startsWith('/signup');
+
     return(
-        <main className='max-w-[414rem] m-auto'>
-            <section className='pb-[76rem] overflow-hidden'>
+        <main className={`max-w-[414rem] m-auto ${!hideBottomNav ? 'pt-[56rem]' : ''}`}>
+            <section className={`${!hideBottomNav ? 'pb-[76rem]' : ''} overflow-hidden`}>
                 {children}
             </section>
-            <BottomNav />
+            {!hideBottomNav && <BottomNav />}
         </main>
     );
 }

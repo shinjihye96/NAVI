@@ -7,6 +7,9 @@ interface ChipsProps{
     typeName?: string,
     iconName?: string,
     iconPosition?: 'r' | 'l',
+    imageSrc?: string,
+    imageAlt?: string,
+    imagePosition?: 'r' | 'l',
     text: string,
     className?: string,
     onclick?: () => void,
@@ -18,6 +21,9 @@ export default function Chips({
     typeName,
     iconName,
     iconPosition,
+    imageSrc,
+    imageAlt,
+    imagePosition,
     text,
     className = '',
     onclick,
@@ -42,6 +48,7 @@ export default function Chips({
                 onClick={onclick} 
                 {...props}
             >
+                {imagePosition == 'l' && imageSrc && ( <img src={imageSrc} alt={imageAlt} className='w-[16rem] aspect-square' /> )}
                 {iconPosition == 'l' && iconName && (
                     <Icon
                         name={iconName}
@@ -49,6 +56,7 @@ export default function Chips({
                     />
                 )}
                 {text && <p className='text-[12rem] text-gray-900 leading-[15.6rem]'>{text}</p>}
+                {imagePosition == 'r' && imageSrc && ( <img src={imageSrc} alt={imageAlt} className='w-[16rem] aspect-square' /> )}
                 {iconPosition == 'r' && iconName && (
                    <Icon
                         name={iconName}

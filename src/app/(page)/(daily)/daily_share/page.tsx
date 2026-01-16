@@ -3,25 +3,22 @@
 import AppBar from "components/appBar/page";
 import { Button, IconButton, TextButton } from "components/ui/button/page";
 import { Checkbox } from "components/ui/checkbox/page";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import TodayMyMood from "./_todayMood";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShare as DailyShareType, DailyShareQuery, getAccessToken } from "api";
+import { dailySharesApi, DailyShareQuery, getAccessToken } from "api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DailyShare() {
     const router = useRouter();
     const today = dayjs(new Date()).format('M월 DD일');
-    const [myDaily, setMyDaily] = useState<DailyShareType | null>(null);
-    const [dailyList, setDailyList] = useState<DailyShareType[]>([]);
-    console.log('dailyList: ', dailyList);
     const [filter, setFilter] = useState<'all' | 'caregiver' | 'patient'>('all');
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
     const shareBg = {
         none: "/img/share_bg/None.jpg",
@@ -32,47 +29,27 @@ export default function DailyShare() {
         ligtning: "/img/share_bg/Lightning.jpg",
     };
 
-    const fetchMyDailyShare = useCallback(async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
-        const token = getAccessToken();
-        if (!token) return;
+    const todayDate = dayjs().format('YYYY-MM-DD');
 
-        try {
-            const response = await dailySharesApi.checkTodayShare();
-            console.log('response: ', response);
-            if (response.hasShared && response.dailyShare) {
-                setMyDaily(response.dailyShare);
-            }
-        } catch {
-            // 백엔드 미실행 시 무시
-        }
-    }, []);
+    // 하루공유 목록 조회
+    const { data: dailyListData, isLoading } = useQuery({
+        queryKey: ['dailyShares', filter, todayDate],
+        queryFn: async () => {
+            const query: DailyShareQuery = { filter, date: todayDate };
+            return dailySharesApi.getAll(query);
+        },
+        enabled: !!getAccessToken(),
+    });
 
-    const fetchDailyList = useCallback(async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
-        const token = getAccessToken();
-        console.log('fetchDailyList - token:', token);
-        if (!token) {
-            console.log('토큰 없음 - API 호출 스킵');
-            setIsLoading(false);
-            return;
-        }
+    // 오늘 내 하루공유 체크
+    const { data: myDailyData } = useQuery({
+        queryKey: ['myTodayShare'],
+        queryFn: () => dailySharesApi.checkTodayShare(),
+        enabled: !!getAccessToken(),
+    });
 
-        try {
-            setIsLoading(true);
-            const query: DailyShareQuery = {
-                filter: filter,
-                date: dayjs().format('YYYY-MM-DD'),
-            };
-            const response = await dailySharesApi.getAll(query);
-            console.log('dailySharesApi.getAll response: ', response);
-            setDailyList(response.items || (response as any).data || []);
-        } catch {
-            // 백엔드 미실행 시 무시
-        } finally {
-            setIsLoading(false);
-        }
-    }, [filter]);
+    const dailyList = dailyListData?.items || [];
+    const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
 
     const filterHandler = (newFilter: 'all' | 'caregiver' | 'patient') => {
         setFilter(newFilter);
@@ -89,14 +66,6 @@ export default function DailyShare() {
     const isFollowingHandler = () => {
         setIsFollowing(!isFollowing);
     };
-
-    useEffect(() => {
-        fetchMyDailyShare();
-    }, [fetchMyDailyShare]);
-
-    useEffect(() => {
-        fetchDailyList();
-    }, [fetchDailyList]);
 
     return (
         <div className="relative">
@@ -157,7 +126,23 @@ export default function DailyShare() {
                                 value={''}
                             />
                         </div>
-                        {!dailyList.length ? (
+                        {isLoading ? (
+                            <div className="flex-1 flex flex-col gap-[16rem] px-[16rem] py-[16rem]">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="animate-pulse">
+                                        <div className="flex items-center gap-[12rem] mb-[12rem]">
+                                            <div className="w-[40rem] h-[40rem] bg-gray-200 rounded-full" />
+                                            <div className="flex-1">
+                                                <div className="h-[16rem] bg-gray-200 rounded w-[80rem] mb-[4rem]" />
+                                                <div className="h-[12rem] bg-gray-200 rounded w-[60rem]" />
+                                            </div>
+                                        </div>
+                                        <div className="h-[60rem] bg-gray-200 rounded mb-[12rem]" />
+                                        <div className="h-[120rem] bg-gray-200 rounded" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : !dailyList.length ? (
                             <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">
                                 <p className="text-base-bk text-[20rem] leading-[28rem] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
                                 <Button

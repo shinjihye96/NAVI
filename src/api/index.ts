@@ -7,6 +7,7 @@ export { usersApi } from './users';
 export { dailySharesApi } from './daily-shares';
 export { emotionsApi, emotionTypesApi, type EmotionTypeInfo } from './emotions';
 export { followsApi } from './follows';
+export { reactionsApi, type ReactionType, type ToggleReactionResponse } from './reactions';
 
 // 타입
 export * from './types';

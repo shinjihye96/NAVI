@@ -43,7 +43,6 @@ export default function DailyShare() {
 
     const hasToken = isClient && !!getAccessToken();
 
-    // 하루공유 목록 조회
     const { data: dailyListData, isLoading, isFetching } = useQuery({
         queryKey: ['dailyShares', filter],
         queryFn: async () => {
@@ -54,38 +53,32 @@ export default function DailyShare() {
         enabled: hasToken,
     });
 
-    // 실제 로딩 상태: 토큰 체크 전이거나 API 호출 중일 때
     const isActuallyLoading = !isClient || (hasToken && (isLoading || (!dailyListData && isFetching)));
 
-    // 오늘 내 하루공유 체크
     const { data: myDailyData } = useQuery({
         queryKey: ['myTodayShare'],
         queryFn: () => dailySharesApi.checkTodayShare(),
         enabled: hasToken,
     });
 
-    // 현재 로그인한 사용자 정보 조회
     const { data: currentUser } = useQuery({
         queryKey: ['currentUser'],
         queryFn: () => usersApi.getMe(),
         enabled: hasToken,
     });
 
-    // 내가 팔로우하는 사용자 목록 조회
     const { data: myFollowingData } = useQuery({
         queryKey: ['myFollowing', currentUser?.id],
         queryFn: () => usersApi.getFollowing(currentUser!.id, 1, 1000),
         enabled: hasToken && !!currentUser?.id,
     });
 
-    // 팔로잉 ID Set (빠른 조회용)
     const followingIds = new Set(
         myFollowingData?.items?.map((user) => String(user.id)) || []
     );
 
     const allDailyList = dailyListData?.items || [];
 
-    // 팔로우 필터 적용
     const dailyList = isFollowing
         ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
         : allDailyList;
@@ -93,11 +86,9 @@ export default function DailyShare() {
     console.log('dailyList: ', dailyList);
     const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
 
-    // 팔로우 필터 상태 체크
     const hasNoFollowing = followingIds.size === 0;
     const hasFollowingButNoPostsToday = !hasNoFollowing && dailyList.length === 0 && isFollowing;
 
-    // 팔로우 여부 체크 함수
     const isUserFollowing = (userId: string | number): boolean => {
         if (!hasToken) return false;
         return followingIds.has(String(userId));
@@ -165,7 +156,6 @@ export default function DailyShare() {
             return { previousData };
         },
         onError: (_err, _variables, context) => {
-            // 에러 시 롤백
             if (context?.previousData) {
                 queryClient.setQueryData(['dailyShares', filter], context.previousData);
             }
@@ -176,7 +166,6 @@ export default function DailyShare() {
         reactionMutation.mutate({ dailyShareId, reactionType });
     };
 
-    // 팔로우/언팔로우 mutation
     const followMutation = useMutation({
         mutationFn: async ({ userId, isCurrentlyFollowing }: { userId: string; isCurrentlyFollowing: boolean }) => {
             if (isCurrentlyFollowing) {
@@ -188,22 +177,18 @@ export default function DailyShare() {
             }
         },
         onMutate: async ({ userId, isCurrentlyFollowing }) => {
-            // 내 팔로잉 목록 캐시 취소 및 업데이트
             await queryClient.cancelQueries({ queryKey: ['myFollowing', currentUser?.id] });
 
             const previousFollowingData = queryClient.getQueryData(['myFollowing', currentUser?.id]);
 
-            // 팔로잉 목록 Optimistic Update
             queryClient.setQueryData(['myFollowing', currentUser?.id], (old: any) => {
                 if (!old?.items) return old;
                 if (isCurrentlyFollowing) {
-                    // 언팔로우: 목록에서 제거
                     return {
                         ...old,
                         items: old.items.filter((user: any) => String(user.id) !== userId),
                     };
                 } else {
-                    // 팔로우: 목록에 추가 (임시 객체)
                     return {
                         ...old,
                         items: [...old.items, { id: userId }],
@@ -219,7 +204,6 @@ export default function DailyShare() {
             }
         },
         onSuccess: () => {
-            // 성공 시 팔로잉 목록 다시 조회하여 정확한 데이터 반영
             queryClient.invalidateQueries({ queryKey: ['myFollowing', currentUser?.id] });
         },
     });
@@ -272,13 +256,13 @@ export default function DailyShare() {
                                     iconPosition="r"
                                     onClick={latestSortHandler}
                                 />
-                                <TextButton
+                                {/* <TextButton
                                     txt="모아보기"
                                     color="secondary"
                                     iconName={sameUserType ? "ChevronUp" : "ChevronDown"}
                                     iconPosition="r"
                                     onClick={sameUserTypeHandler}
-                                />
+                                /> */}
                             </div>
                             <Checkbox
                                 label="팔로우"
@@ -290,7 +274,6 @@ export default function DailyShare() {
                         {isActuallyLoading ? (
                             <DailyShareSkeleton count={4} />
                         ) : isFollowing && hasNoFollowing ? (
-                            // 팔로우 필터 ON + 팔로우한 사람 없음
                             <div className="flex-1 flex flex-col items-center justify-center gap-[16rem] py-[48rem]">
                                 <p className="text-gray-600 text-[16rem] leading-[24rem] text-center">아직 팔로우한 사람이 없어요</p>
                                 <Button
@@ -302,7 +285,6 @@ export default function DailyShare() {
                                 />
                             </div>
                         ) : isFollowing && hasFollowingButNoPostsToday ? (
-                            // 팔로우 필터 ON + 팔로우한 사람 있지만 오늘 글 없음
                             <div className="flex-1 flex flex-col items-center justify-center gap-[16rem] py-[48rem]">
                                 <p className="text-gray-600 text-[16rem] leading-[24rem] text-center">팔로우한 사람들이 아직<br />오늘의 하루를 공유하지 않았어요</p>
                                 <Button
@@ -314,7 +296,6 @@ export default function DailyShare() {
                                 />
                             </div>
                         ) : !allDailyList.length ? (
-                            // 전체 목록이 비어있음
                             <div className="flex-1 flex flex-col items-center justify-center gap-[24rem]">
                                 <p className="text-base-bk text-[20rem] leading-[28rem] font-semibold text-center">오늘은 첫번째로<br />하루를 공유하는 건 어떨까요?</p>
                                 <Button

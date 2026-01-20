@@ -8,7 +8,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { dailySharesApi, emotionTypesApi, EmotionTypeInfo } from "api";
+import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion } from "api";
 
 // type별 그라데이션 매핑
 const gradientMap: Record<string, { from: string; to: string }> = {
@@ -42,6 +42,8 @@ export default function RegistDaily() {
     const cameraInputRef = useRef<HTMLInputElement>(null);
     const galleryInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [currentQuestion, setCurrentQuestion] = useState<DailyQuestion | null>(null);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     // 모바일 환경 감지
     useEffect(() => {
@@ -118,6 +120,27 @@ export default function RegistDaily() {
                 setIsUploading(true);
             }
 
+            // 오늘의 질문에 답변 제출 (질문이 있는 경우)
+            if (currentQuestion && textContent) {
+                try {
+                    await dailyQuestionsApi.submitAnswer({
+                        questionId: currentQuestion.id,
+                        content: textContent,
+                    });
+                } catch (error: any) {
+                    // QUESTION_INACTIVE 에러 처리
+                    if (error.response?.data?.error?.code === 'QUESTION_INACTIVE') {
+                        // 새 질문 가져오기
+                        const newQuestion = await fetchTodayQuestion();
+                        setCurrentQuestion(newQuestion);
+                        showAlert('질문이 변경되었습니다. 새 질문에 답변해주세요.');
+                        return; // 제출 중단
+                    }
+                    throw error;
+                }
+            }
+
+            // 하루공유 게시글 작성
             await dailySharesApi.create({
                 mood: selectedMood,
                 content: textContent || undefined,
@@ -161,12 +184,38 @@ export default function RegistDaily() {
         }
     };
 
+    // 오늘의 질문 가져오기
+    const fetchTodayQuestion = async () => {
+        try {
+            const question = await dailyQuestionsApi.getTodayQuestion();
+            setCurrentQuestion(question);
+            return question;
+        } catch (e) {
+            console.error('Failed to fetch today question:', e);
+            return null;
+        }
+    };
+
+    // 알림 메시지 표시
+    const showAlert = (message: string) => {
+        setAlertMessage(message);
+        setTimeout(() => setAlertMessage(null), 3000);
+    };
+
     useEffect(() => {
         fetchEmotionTypes();
+        fetchTodayQuestion();
     }, []);
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
+            {/* 알림 메시지 */}
+            {alertMessage && (
+                <div className="fixed top-[72rem] left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-[16rem] py-[12rem] rounded-[8rem] shadow-lg">
+                    <p className="text-[14rem] leading-[20rem]">{alertMessage}</p>
+                </div>
+            )}
+
             <AppBar
                 left={
                     <IconButton
@@ -283,7 +332,7 @@ export default function RegistDaily() {
                     <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[73rem]">
                         {/* 오늘의 질문 */}
                         <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
-                            마음의 에너지를 채워주는 나만의 장소가 있나요?
+                            {currentQuestion?.content || '마음의 에너지를 채워주는 나만의 장소가 있나요?'}
                         </h2>
 
                         {/* 텍스트 입력 */}

@@ -20,7 +20,7 @@ const gradientMap: Record<string, { from: string; to: string }> = {
 };
 
 // EmotionTypeInfo에 gradient 추가한 타입
-interface WeatherOption extends EmotionTypeInfo {
+export interface WeatherOption extends EmotionTypeInfo {
     gradientFrom: string;
     gradientTo: string;
 }

@@ -5,6 +5,7 @@ export { api, setAccessToken, getAccessToken, setRefreshToken, getRefreshToken, 
 export { authApi } from './auth';
 export { usersApi } from './users';
 export { dailySharesApi } from './daily-shares';
+export { dailyQuestionsApi, type DailyQuestion, type AnswerDailyQuestionDto } from './daily-questions';
 export { emotionsApi, emotionTypesApi, type EmotionTypeInfo } from './emotions';
 export { followsApi, type FollowListQuery } from './follows';
 export { reactionsApi, type ReactionType, type ToggleReactionResponse } from './reactions';

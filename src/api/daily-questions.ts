@@ -1,0 +1,26 @@
+import { api } from './client';
+
+export interface DailyQuestion {
+  id: string;
+  content: string;
+  date: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface AnswerDailyQuestionDto {
+  questionId: string;
+  content: string;
+}
+
+export const dailyQuestionsApi = {
+  // 오늘의 질문 조회
+  getTodayQuestion: async (): Promise<DailyQuestion> => {
+    return api.get<DailyQuestion>('/api/daily-questions/today');
+  },
+
+  // 질문에 답변 제출
+  submitAnswer: async (data: AnswerDailyQuestionDto): Promise<void> => {
+    return api.post<void>('/api/daily-questions/answer', data);
+  },
+};

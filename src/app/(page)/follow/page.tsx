@@ -27,10 +27,11 @@ export default function FollowPage() {
 
     const hasToken = isClient && !!getAccessToken();
 
-    // 현재 사용자 정보
+    // 현재 사용자 정보 - 자주 변하지 않음
     const { data: currentUser } = useQuery({
         queryKey: ['currentUser'],
         queryFn: () => usersApi.getMe(),
+        staleTime: 5 * 60 * 1000, // 5분
         enabled: hasToken,
     });
 
@@ -38,6 +39,7 @@ export default function FollowPage() {
     const { data: followersData } = useQuery({
         queryKey: ['followers', currentUser?.id],
         queryFn: () => usersApi.getFollowers(currentUser!.id, 1, 1000),
+        staleTime: 2 * 60 * 1000, // 2분
         enabled: hasToken && !!currentUser?.id,
     });
 
@@ -45,6 +47,7 @@ export default function FollowPage() {
     const { data: followingData } = useQuery({
         queryKey: ['following', currentUser?.id],
         queryFn: () => usersApi.getFollowing(currentUser!.id, 1, 1000),
+        staleTime: 2 * 60 * 1000, // 2분
         enabled: hasToken && !!currentUser?.id,
     });
 

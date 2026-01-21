@@ -27,7 +27,7 @@ export { HospitalFill } from './icons/hospital_fill';
 export { Hospital } from './icons/hospital';
 export { Image } from './icons/image';
 export { KeyboardDown } from './icons/keyboard_down';
-export { MainFill } from './icons/mail_fill';
+export { MailFill } from './icons/mail_fill';
 export { Mail } from './icons/mail';
 export { PersonFill } from './icons/person_fill';
 export { Person } from './icons/person';

@@ -15,6 +15,7 @@ import { EMOTION_TYPES } from "constants/emotions";
 import { DailyShareSkeleton } from "components/ui/skeleton/page";
 import Image from "next/image";
 import Chips from "components/ui/chip/page";
+import { Icon } from "icon/page";
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -27,6 +28,30 @@ const shareBg = {
     rain: "/img/share_bg/Rain.jpg",
     ligtning: "/img/share_bg/Lightning.jpg",
 };
+
+function PostImage({ src, alt }: { src: string; alt: string }) {
+    const [hasError, setHasError] = useState(false);
+
+    if (hasError) {
+        return (
+            <div className="w-full aspect-square relative bg-gray-200 flex items-center justify-center">
+                <Icon name="ImageNo" size={48} className="text-gray-400" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-full aspect-square relative bg-gray-200">
+            <Image
+                src={src}
+                alt={alt}
+                fill
+                className="object-cover"
+                onError={() => setHasError(true)}
+            />
+        </div>
+    );
+}
 
 export default function DailyShareClient() {
     const router = useRouter();
@@ -80,9 +105,10 @@ export default function DailyShareClient() {
     const allDailyList = dailyListData?.items || [];
 
     const dailyList = isFollowing
-        ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
-        : allDailyList;
-
+    ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
+    : allDailyList;
+    console.log('dailyList: ', dailyList);
+    
     const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
 
     const hasNoFollowing = followingIds.size === 0;
@@ -335,6 +361,9 @@ export default function DailyShareClient() {
                                                 onClick={() => handleFollowClick(String(post.user.id), isUserFollowing(post.user.id))}
                                             />
                                         </div>
+                                        {post.imageUrl && (
+                                            <PostImage src={post.imageUrl} alt="Post Image" />
+                                        )}
                                         <p className="text-[16rem] leading-[24rem] text-gray-950 py-[8rem] px-[16rem]">{post.content}</p>
                                         <div className="flex gap-[8rem] flex-wrap px-[16rem] py-[12rem]">
                                             {EMOTION_TYPES.map((emotion) => {

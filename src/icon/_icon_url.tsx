@@ -26,6 +26,7 @@ export { Heart } from './icons/heart';
 export { HospitalFill } from './icons/hospital_fill';
 export { Hospital } from './icons/hospital';
 export { Image } from './icons/image';
+export { ImageNo } from './icons/Image_no';
 export { KeyboardDown } from './icons/keyboard_down';
 export { MailFill } from './icons/mail_fill';
 export { Mail } from './icons/mail';

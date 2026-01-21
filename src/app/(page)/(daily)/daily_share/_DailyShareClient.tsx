@@ -16,6 +16,7 @@ import { DailyShareSkeleton } from "components/ui/skeleton/page";
 import Image from "next/image";
 import Chips from "components/ui/chip/page";
 import { Icon } from "icon/page";
+import { LoadingSpinner } from "components/ui/loading/page";
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -30,6 +31,7 @@ const shareBg = {
 };
 
 function PostImage({ src, alt }: { src: string; alt: string }) {
+    const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
     if (hasError) {
@@ -42,12 +44,21 @@ function PostImage({ src, alt }: { src: string; alt: string }) {
 
     return (
         <div className="w-full aspect-square relative bg-gray-200">
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <LoadingSpinner size="m" />
+                </div>
+            )}
             <Image
                 src={src}
                 alt={alt}
                 fill
                 className="object-cover"
-                onError={() => setHasError(true)}
+                onLoad={() => setIsLoading(false)}
+                onError={() => {
+                    setIsLoading(false);
+                    setHasError(true);
+                }}
             />
         </div>
     );

@@ -3,17 +3,33 @@
 import { useState, useEffect } from "react";
 import AppBar from "components/appBar/page";
 import BottomNav from "components/section/bottomNav/page";
-import { getAccessToken, usersApi } from "api";
+import { getAccessToken, usersApi, authApi } from "api";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Mypage() {
+    const router = useRouter();
     const [isClient, setIsClient] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
     }, []);
 
     const hasToken = isClient && !!getAccessToken();
+
+    const handleLogout = async () => {
+        try {
+            setIsLoggingOut(true);
+            await authApi.logout();
+            router.push('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            alert('로그아웃에 실패했습니다.');
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
 
     // 현재 사용자 정보 조회
     const { data: currentUser, isLoading, isError, error } = useQuery({
@@ -59,6 +75,15 @@ export default function Mypage() {
                             )}
                         </div>
                     </section>
+                    {hasToken && (
+                        <button
+                            onClick={handleLogout}
+                            disabled={isLoggingOut}
+                            className="w-full bg-red-500 text-white py-[12rem] rounded-[8rem] text-[16rem] font-medium disabled:opacity-50"
+                        >
+                            {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
+                        </button>
+                    )}
                 </div>
             </main>
             <BottomNav />

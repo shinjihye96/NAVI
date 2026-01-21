@@ -4,33 +4,56 @@ import AppBar from "components/appBar/page";
 import { Button, IconButton } from "components/ui/button/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { dailySharesApi } from "api";
-import { WeatherOption } from "./page";
+import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion } from "api";
+
+// type별 그라데이션 매핑
+const gradientMap: Record<string, { from: string; to: string }> = {
+    sun: { from: '#A8EEF7', to: '#E1F0FF' },
+    sun_cloud: { from: '#FFF4E1', to: '#FCE4A6' },
+    cloud: { from: '#E8EAF6', to: '#C5CAE9' },
+    rain: { from: '#BBDEFB', to: '#64B5F6' },
+    lightning: { from: '#D1C4E9', to: '#7E57C2' },
+};
+
+// EmotionTypeInfo에 gradient 추가한 타입
+export interface WeatherOption extends EmotionTypeInfo {
+    gradientFrom: string;
+    gradientTo: string;
+}
 
 const MAX_CONTENT_LENGTH = 80;
 
-interface RegistDailyClientProps {
-    initialEmotionTypes: WeatherOption[];
-}
-
-export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyClientProps) {
+export default function RegistDailyClient() {
     const router = useRouter();
-    const [emotionTypes] = useState<WeatherOption[]>(initialEmotionTypes);
+    const [emotionTypes, setEmotionTypes] = useState<WeatherOption[]>([]);
     const [selectedMood, setSelectedMood] = useState<string | null>(null);
     const [textContent, setTextContent] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const swiperRef = useRef<any>(null);
     const [activeIndex, setActiveIndex] = useState(0);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [isTextareaFocused, setIsTextareaFocused] = useState(false);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
+    const galleryInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [currentQuestion, setCurrentQuestion] = useState<DailyQuestion | null>(null);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    // 모바일 환경 감지
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = navigator.userAgent || navigator.vendor;
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            setIsMobile(isMobileDevice);
+        };
+        checkMobile();
+    }, []);
 
     // 카드 UI 상태
     function getCardStyles(index: number) {
@@ -75,8 +98,11 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
     const handleRemoveImage = () => {
         setImageFile(null);
         setImagePreview(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+        if (cameraInputRef.current) {
+            cameraInputRef.current.value = '';
+        }
+        if (galleryInputRef.current) {
+            galleryInputRef.current.value = '';
         }
     };
 
@@ -94,6 +120,27 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
                 setIsUploading(true);
             }
 
+            // 오늘의 질문에 답변 제출 (질문이 있는 경우)
+            if (currentQuestion && textContent) {
+                try {
+                    await dailyQuestionsApi.submitAnswer({
+                        questionId: currentQuestion.id,
+                        content: textContent,
+                    });
+                } catch (error: any) {
+                    // QUESTION_INACTIVE 에러 처리
+                    if (error.response?.data?.error?.code === 'QUESTION_INACTIVE') {
+                        // 새 질문 가져오기
+                        const newQuestion = await fetchTodayQuestion();
+                        setCurrentQuestion(newQuestion);
+                        showAlert('질문이 변경되었습니다. 새 질문에 답변해주세요.');
+                        return; // 제출 중단
+                    }
+                    throw error;
+                }
+            }
+
+            // 하루공유 게시글 작성
             await dailySharesApi.create({
                 mood: selectedMood,
                 content: textContent || undefined,
@@ -111,10 +158,8 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
         }
     };
 
-    // 뒤로가기
     const handleBack = () => {
         if (selectedMood !== null) {
-            // Step 2에서 Step 1로
             setSelectedMood(null);
             setTextContent('');
             setImageFile(null);
@@ -124,8 +169,53 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
         }
     };
 
+    const fetchEmotionTypes = async () => {
+        try {
+            const data = await emotionTypesApi.getAll();
+
+            const weatherOptions: WeatherOption[] = data.map((item) => ({
+                ...item,
+                gradientFrom: gradientMap[item.type]?.from || '#E8EAF6',
+                gradientTo: gradientMap[item.type]?.to || '#C5CAE9',
+            }));
+            setEmotionTypes(weatherOptions);
+        } catch (e) {
+            console.error('Failed to fetch emotion types:', e);
+        }
+    };
+
+    // 오늘의 질문 가져오기
+    const fetchTodayQuestion = async () => {
+        try {
+            const question = await dailyQuestionsApi.getTodayQuestion();
+            setCurrentQuestion(question);
+            return question;
+        } catch (e) {
+            console.error('Failed to fetch today question:', e);
+            return null;
+        }
+    };
+
+    // 알림 메시지 표시
+    const showAlert = (message: string) => {
+        setAlertMessage(message);
+        setTimeout(() => setAlertMessage(null), 3000);
+    };
+
+    useEffect(() => {
+        fetchEmotionTypes();
+        fetchTodayQuestion();
+    }, []);
+
     return (
         <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
+            {/* 알림 메시지 */}
+            {alertMessage && (
+                <div className="fixed top-[72rem] left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-[16rem] py-[12rem] rounded-[8rem] shadow-lg">
+                    <p className="text-[14rem] leading-[20rem]">{alertMessage}</p>
+                </div>
+            )}
+
             <AppBar
                 left={
                     <IconButton
@@ -143,6 +233,7 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
                         disabled={!selectedMood || isSubmitting}
                     />
                 }
+                sticky={true}
             />
 
             <article className="flex-1 flex flex-col">
@@ -156,8 +247,8 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
                     </h1>
                 </div>
 
-                {/* 날씨 카드 영역 - textarea 포커스 시 숨김 */}
-                {!isTextareaFocused && <div className="relative mt-[24rem]">
+                {/* 날씨 카드 영역 */}
+                <div className="relative mt-[24rem]">
                     <Swiper
                         slidesPerView={'auto'}
                         centeredSlides={true}
@@ -234,14 +325,14 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
                             </div>
                         </div>
                     )}
-                </div>}
+                </div>
 
                 {/* Step 2: 질문과 답변 입력 영역 */}
                 {selectedMood !== null && (
-                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[57rem]">
+                    <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[73rem]">
                         {/* 오늘의 질문 */}
                         <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
-                            마음의 에너지를 채워주는 나만의 장소가 있나요?
+                            {currentQuestion?.content || '마음의 에너지를 채워주는 나만의 장소가 있나요?'}
                         </h2>
 
                         {/* 텍스트 입력 */}
@@ -253,28 +344,33 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
                                     const value = e.target.value;
                                     // 80자 초과 시 잘라서 저장
                                     setTextContent(value.slice(0, MAX_CONTENT_LENGTH));
+                                    // 높이 자동 조절
+                                    if (textareaRef.current) {
+                                        textareaRef.current.style.height = 'auto';
+                                        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+                                    }
                                 }}
-                                onFocus={() => setIsTextareaFocused(true)}
-                                onBlur={() => setIsTextareaFocused(false)}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
-                                className="w-full flex-1 resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
+                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
                             />
                         </div>
 
                         {/* 이미지 미리보기 */}
                         {imagePreview && (
-                            <div className="relative w-[120rem] h-[120rem] mt-[16rem] rounded-[12rem] overflow-hidden">
+                            <div className="relative w-[120rem] h-[120rem] mt-[16rem]">
                                 {isUploading ? (
                                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                                         <div className="w-[40rem] h-[40rem] border-4 border-green-400 border-t-transparent rounded-full animate-spin" />
                                     </div>
                                 ) : (
-                                    <Image
-                                        src={imagePreview}
-                                        alt="업로드 이미지"
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    <div className="block rounded-[12rem] overflow-hidden">
+                                        <Image
+                                            src={imagePreview}
+                                            alt="업로드 이미지"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
                                 )}
                                 <button
                                     onClick={handleRemoveImage}
@@ -290,24 +386,35 @@ export default function RegistDailyClient({ initialEmotionTypes }: RegistDailyCl
 
             {/* 하단 툴바 (Step 2에서만) */}
             {selectedMood !== null && (
-                <div className="fixed w-[414rem] bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
+                <div className="fixed max-w-[414rem] w-full bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
                     <div className="flex items-center gap-[4rem]">
+                        {/* 카메라 input (모바일: 카메라, PC: 파일선택) */}
                         <input
-                            ref={fileInputRef}
+                            ref={cameraInputRef}
+                            type="file"
+                            accept="image/*"
+                            capture={isMobile ? "environment" : undefined}
+                            onChange={handleImageSelect}
+                            className="hidden"
+                            id="camera-upload"
+                        />
+                        {/* 갤러리 input (모바일: 갤러리, PC: 파일선택) */}
+                        <input
+                            ref={galleryInputRef}
                             type="file"
                             accept="image/*"
                             onChange={handleImageSelect}
                             className="hidden"
-                            id="image-upload"
+                            id="gallery-upload"
                         />
                         <label
-                            htmlFor="image-upload"
+                            htmlFor="camera-upload"
                             className="cursor-pointer p-[8rem]"
                         >
                             <Icon name="Camera" size={24} className="text-green-400" />
                         </label>
                         <label
-                            htmlFor="image-upload"
+                            htmlFor="gallery-upload"
                             className="cursor-pointer p-[8rem]"
                         >
                             <Icon name="Image" size={24} className="text-green-400" />

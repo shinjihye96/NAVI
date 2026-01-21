@@ -1,6 +1,6 @@
 import { CustomIconProps } from './_common_interface';
 
-export const MainFill: React.FC<CustomIconProps> = ({
+export const MailFill: React.FC<CustomIconProps> = ({
     size = 48, 
     className, 
     ...props

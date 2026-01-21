@@ -40,6 +40,9 @@ export const getRefreshToken = (): string | null => {
   return null;
 };
 
+// 요청 타임아웃 설정 (10초)
+const REQUEST_TIMEOUT = 10000;
+
 // API 클라이언트 함수
 async function request<T>(
   endpoint: string,
@@ -62,10 +65,25 @@ async function request<T>(
     (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  // AbortController로 타임아웃 구현
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('요청 시간이 초과되었습니다.');
+    }
+    throw error;
+  }
+  clearTimeout(timeoutId);
 
   // 401 에러 시 토큰 갱신 시도
   if (response.status === 401) {
@@ -74,10 +92,26 @@ async function request<T>(
       // 토큰 갱신 성공 시 재요청
       const newToken = getAccessToken();
       (headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`;
-      const retryResponse = await fetch(url, {
-        ...options,
-        headers,
-      });
+
+      const retryController = new AbortController();
+      const retryTimeoutId = setTimeout(() => retryController.abort(), REQUEST_TIMEOUT);
+
+      let retryResponse: Response;
+      try {
+        retryResponse = await fetch(url, {
+          ...options,
+          headers,
+          signal: retryController.signal,
+        });
+      } catch (error) {
+        clearTimeout(retryTimeoutId);
+        if (error instanceof Error && error.name === 'AbortError') {
+          throw new Error('요청 시간이 초과되었습니다.');
+        }
+        throw error;
+      }
+      clearTimeout(retryTimeoutId);
+
       if (!retryResponse.ok) {
         throw new Error(`API Error: ${retryResponse.status}`);
       }

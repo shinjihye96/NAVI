@@ -79,6 +79,7 @@ export default function DailyShareClient() {
 
     const hasToken = isClient && !!getAccessToken();
 
+    // 자주 변하는 데이터 - 짧은 staleTime
     const { data: dailyListData, isLoading, isFetching } = useQuery({
         queryKey: ['dailyShares', filter],
         queryFn: async () => {
@@ -86,6 +87,7 @@ export default function DailyShareClient() {
             if (filter) query.filter = filter;
             return dailySharesApi.getAll(query);
         },
+        staleTime: 30 * 1000, // 30초
         enabled: hasToken,
     });
 
@@ -94,18 +96,22 @@ export default function DailyShareClient() {
     const { data: myDailyData } = useQuery({
         queryKey: ['myTodayShare'],
         queryFn: () => dailySharesApi.checkTodayShare(),
+        staleTime: 60 * 1000, // 1분
         enabled: hasToken,
     });
 
+    // 자주 변하지 않는 데이터 - 긴 staleTime
     const { data: currentUser } = useQuery({
         queryKey: ['currentUser'],
         queryFn: () => usersApi.getMe(),
+        staleTime: 5 * 60 * 1000, // 5분
         enabled: hasToken,
     });
 
     const { data: myFollowingData } = useQuery({
         queryKey: ['myFollowing', currentUser?.id],
         queryFn: () => usersApi.getFollowing(currentUser!.id, 1, 1000),
+        staleTime: 2 * 60 * 1000, // 2분
         enabled: hasToken && !!currentUser?.id,
     });
 

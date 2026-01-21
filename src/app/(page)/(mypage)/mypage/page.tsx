@@ -30,7 +30,6 @@ export default function Mypage() {
             />
             <main className="flex-1 pt-[56px] pb-[76rem]">
                 <div className="p-[16rem] space-y-[24rem]">
-                    {/* 로그인 상태 */}
                     <section className="bg-gray-100 rounded-[12rem] p-[16rem]">
                         <h2 className="text-[16rem] font-semibold text-gray-950 mb-[12rem]">로그인 상태</h2>
                         <div className="space-y-[8rem]">

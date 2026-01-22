@@ -242,7 +242,6 @@ export default function RegistDailyClient() {
                         }
                     </h1>
                 </div>
-
                 <div className="relative mt-[24rem]">
                     <Swiper
                         slidesPerView={'auto'}
@@ -320,7 +319,6 @@ export default function RegistDailyClient() {
                         </div>
                     )}
                 </div>
-
                 {selectedMood !== null && (
                     <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[73rem]">
                         <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
@@ -342,7 +340,7 @@ export default function RegistDailyClient() {
                                     }
                                 }}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
-                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none overflow-hidden"
+                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent"
                             />
                         </div>
 
@@ -373,7 +371,6 @@ export default function RegistDailyClient() {
                     </div>
                 )}
             </article>
-
             {selectedMood !== null && (
                 <div className="fixed max-w-[414rem] w-full bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
                     <div className="flex items-center gap-[4rem]">

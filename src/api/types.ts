@@ -20,11 +20,11 @@ export interface PaginatedResponse<T> {
 
 // Enum 타입들
 export enum Mood {
-  VERY_GOOD = 'very_good',
-  GOOD = 'good',
-  NORMAL = 'normal',
-  BAD = 'bad',
-  VERY_BAD = 'very_bad',
+  SUN = 'sun',
+  SUN_AND_CLOUD = 'sun_and_cloud',
+  CLOUD = 'cloud',
+  RAIN = 'rain',
+  LIGHTNING = 'lightning',
 }
 
 export enum EmotionType {

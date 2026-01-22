@@ -12,6 +12,15 @@ interface TodayMyMoodProps {
     dailyListLength: number;
 }
 
+// 날씨별 메시지 및 아이콘 매핑
+const moodConfig: Record<string, { message: string; icon: string }> = {
+    sun: { message: '맑은 날씨를', icon: '/img/weather/Sun.png' },
+    sun_and_cloud: { message: '조금 맑은 날씨를', icon: '/img/weather/Sun_and_Cloud.png' },
+    cloud: { message: '흐린 날씨를', icon: '/img/weather/Cloud.png' },
+    rain: { message: '비내리는 날씨를', icon: '/img/weather/Rain.png' },
+    lightning: { message: '번개치는 날씨를', icon: '/img/weather/Lightning.png' },
+};
+
 export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const router = useRouter();
     const [myDaily, setMyDaily] = useState<DailyShare | null>(null);
@@ -163,23 +172,37 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                 </div>
             ) : (
                 <div className="is_daily">
-                    {/* <div className="flex items-center justify-between px-[24rem] pt-[14rem] pb-[44rem]">
-                        <div className="grid gap-[6rem]">
-                            <p className="text-[12rem] font-regular leading-[16rem] text-gray-800">
-                                {myDaily?.user?.nickname || '사용자'}님
-                            </p>
-                            <p className="text-[16rem] font-semibold leading-[24rem] text-gray-950">
-                                {currentWeather?.name || '오늘의 날씨'}
-                            </p>
+                    {/* 날씨만 등록했을 때 (content 없음) */}
+                    {!myDaily?.content && myDaily?.mood && (
+                        <div className="pt-[14rem] px-[24rem] pb-[16rem]">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    {nickname && (
+                                        <p className="text-[12rem] text-gray-800 leading-[16rem] mb-[8rem]">
+                                            {nickname}님
+                                        </p>
+                                    )}
+                                    <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-semibold">
+                                        {moodConfig[myDaily.mood]?.message || '오늘의 날씨를'}<br />
+                                        다른 나비들에게<br />
+                                        공유해주세요!
+                                    </h1>
+                                </div>
+                                {/* 날씨 아이콘 */}
+                                <div className="w-[140rem] h-[140rem] flex-shrink-0">
+                                    {moodConfig[myDaily.mood]?.icon && (
+                                        <img
+                                            src={moodConfig[myDaily.mood].icon}
+                                            alt={myDaily.mood}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        {currentWeather && (
-                            <img
-                                src={currentWeather.img}
-                                alt={currentWeather.name}
-                                className="w-[80rem] h-[80rem] object-contain"
-                            />
-                        )}
-                    </div> */}
+                    )}
+
+                    {/* content가 있을 때 */}
                     {myDaily?.content ? (
                         <div className="p-[16rem]">
                             <div className="bg-gray-100 rounded-[16rem] p-[16rem]">
@@ -189,6 +212,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                             </div>
                         </div>
                     ) : (
+                        /* 질문 카드 (날씨만 등록했을 때) */
                         <div className="p-[16rem]">
                             <button
                                 type="button"

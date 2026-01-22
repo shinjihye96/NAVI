@@ -5,18 +5,33 @@ import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { dailySharesApi, DailyShare, Mood, getAccessToken } from "api";
+import { dailySharesApi, dailyQuestionsApi, usersApi, DailyShare, DailyQuestion, Mood, getAccessToken } from "api";
+import dayjs from "dayjs";
 
 interface TodayMyMoodProps {
     dailyListLength: number;
 }
 
+// 날씨별 메시지 및 아이콘 매핑
+const moodConfig: Record<string, { message: string; icon: string }> = {
+    sun: { message: '맑은 날씨를', icon: '/img/weather/Sun.png' },
+    sun_and_cloud: { message: '조금 맑은 날씨를', icon: '/img/weather/Sun_and_Cloud.png' },
+    cloud: { message: '흐린 날씨를', icon: '/img/weather/Cloud.png' },
+    rain: { message: '비내리는 날씨를', icon: '/img/weather/Rain.png' },
+    lightning: { message: '번개치는 날씨를', icon: '/img/weather/Lightning.png' },
+};
+
 export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const router = useRouter();
     const [myDaily, setMyDaily] = useState<DailyShare | null>(null);
+    console.log('myDaily: ', myDaily);
     const [hasShared, setHasShared] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedWeather, setSelectedWeather] = useState<Mood | null>(null);
+    const [todayQuestion, setTodayQuestion] = useState<DailyQuestion | null>(null);
+    const [remainingTime, setRemainingTime] = useState<string>('');
+    const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
+    const [nickname, setNickname] = useState<string>('');
 
     const fetchMyDaily = async () => {
         // 로그인하지 않은 경우 API 호출 스킵
@@ -28,10 +43,23 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
 
         try {
             setIsLoading(true);
-            const response = await dailySharesApi.checkTodayShare();
-            setHasShared(response.hasShared);
-            if (response.hasShared && response.dailyShare) {
-                setMyDaily(response.dailyShare);
+            const [shareResponse, questionResponse, userResponse] = await Promise.all([
+                dailySharesApi.checkTodayShare(),
+                dailyQuestionsApi.getTodayQuestion().catch(() => null),
+                usersApi.getMe().catch(() => null),
+            ]);
+
+            setHasShared(shareResponse.hasShared);
+            if (shareResponse.hasShared && shareResponse.dailyShare) {
+                setMyDaily(shareResponse.dailyShare);
+            }
+
+            if (questionResponse) {
+                setTodayQuestion(questionResponse);
+            }
+
+            if (userResponse?.nickname) {
+                setNickname(userResponse.nickname);
             }
         } catch {
             // 백엔드 미실행 시 기본값 유지 (에러 무시)
@@ -42,9 +70,42 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
         }
     };
 
+    // 남은 시간 계산
+    const calculateRemainingTime = () => {
+        if (!todayQuestion?.expiresAt) return;
+
+        const now = dayjs();
+        const expiresAt = dayjs(todayQuestion.expiresAt);
+        const diff = expiresAt.diff(now);
+
+        if (diff <= 0) {
+            setRemainingTime('마감');
+            setIsUrgent(false);
+            return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        // 30분 미만 여부 체크
+        setIsUrgent(diff < 30 * 60 * 1000);
+
+        if (hours > 0) {
+            setRemainingTime(`${hours}시간 ${minutes}분`);
+        } else {
+            setRemainingTime(`${minutes}분`);
+        }
+    };
+
     useEffect(() => {
         fetchMyDaily();
     }, []);
+
+    useEffect(() => {
+        calculateRemainingTime();
+        const interval = setInterval(calculateRemainingTime, 60000); // 1분마다 업데이트
+        return () => clearInterval(interval);
+    }, [todayQuestion]);
 
     // 로딩 중일 때
     if (isLoading) {
@@ -62,17 +123,41 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
             {!hasShared ? (
                 <div className="daily_none">
                     <div className={`pt-[14rem] px-[24rem] ${dailyListLength > 0 ? 'pb-[44rem]' : 'pb-[80rem]'}`}>
-                        <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-regular">
-                            오늘 한 일 중에<br />
-                            가장 자랑스러운<br />
-                            일은 무엇인가요?
-                        </h1>
-                        <Label
-                            iconName="Clock"
-                            txt={"21시간 6분"}
-                            type={"text"}
-                            className="mt-[12rem]"
-                        />
+                        <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                                {nickname && (
+                                    <p className="text-[12rem] text-gray-800 leading-[16rem] mb-[8rem]">
+                                        {nickname}님
+                                    </p>
+                                )}
+                                <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-regular">
+                                    {todayQuestion?.content ? (
+                                        todayQuestion.content.split('\n').map((line, i) => (
+                                            <span key={i}>{line}<br /></span>
+                                        ))
+                                    ) : (
+                                        <>오늘 한 일 중에<br />가장 자랑스러운<br />일은 무엇인가요?</>
+                                    )}
+                                </h1>
+                                {isUrgent ? (
+                                    <div className="mt-[12rem] inline-flex items-center gap-[4rem] bg-[#7C3AED] text-white px-[8rem] py-[4rem] rounded-[6rem]">
+                                        <Icon name="Clock" size={16} />
+                                        <p className="text-[12rem] font-medium leading-[16rem]">{remainingTime || '계산중...'}</p>
+                                    </div>
+                                ) : (
+                                    <Label
+                                        iconName="Clock"
+                                        txt={remainingTime || '계산중...'}
+                                        type="text"
+                                        className="mt-[12rem]"
+                                    />
+                                )}
+                            </div>
+                            {/* 날씨 아이콘 자리 */}
+                            <div className="w-[140rem] h-[140rem] flex-shrink-0">
+                                {/* TODO: 날씨 아이콘 이미지 추가 */}
+                            </div>
+                        </div>
                     </div>
                     <div className="flex-shrink-0 flex justify-center p-[16rem]">
                         <Button
@@ -87,23 +172,37 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                 </div>
             ) : (
                 <div className="is_daily">
-                    {/* <div className="flex items-center justify-between px-[24rem] pt-[14rem] pb-[44rem]">
-                        <div className="grid gap-[6rem]">
-                            <p className="text-[12rem] font-regular leading-[16rem] text-gray-800">
-                                {myDaily?.user?.nickname || '사용자'}님
-                            </p>
-                            <p className="text-[16rem] font-semibold leading-[24rem] text-gray-950">
-                                {currentWeather?.name || '오늘의 날씨'}
-                            </p>
+                    {/* 날씨만 등록했을 때 (content 없음) */}
+                    {!myDaily?.content && myDaily?.mood && (
+                        <div className="pt-[14rem] px-[24rem] pb-[16rem]">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    {nickname && (
+                                        <p className="text-[12rem] text-gray-800 leading-[16rem] mb-[8rem]">
+                                            {nickname}님
+                                        </p>
+                                    )}
+                                    <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-semibold">
+                                        {moodConfig[myDaily.mood]?.message || '오늘의 날씨를'}<br />
+                                        다른 나비들에게<br />
+                                        공유해주세요!
+                                    </h1>
+                                </div>
+                                {/* 날씨 아이콘 */}
+                                <div className="w-[140rem] h-[140rem] flex-shrink-0">
+                                    {moodConfig[myDaily.mood]?.icon && (
+                                        <img
+                                            src={moodConfig[myDaily.mood].icon}
+                                            alt={myDaily.mood}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        {currentWeather && (
-                            <img
-                                src={currentWeather.img}
-                                alt={currentWeather.name}
-                                className="w-[80rem] h-[80rem] object-contain"
-                            />
-                        )}
-                    </div> */}
+                    )}
+
+                    {/* content가 있을 때 */}
                     {myDaily?.content ? (
                         <div className="p-[16rem]">
                             <div className="bg-gray-100 rounded-[16rem] p-[16rem]">
@@ -113,6 +212,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                             </div>
                         </div>
                     ) : (
+                        /* 질문 카드 (날씨만 등록했을 때) */
                         <div className="p-[16rem]">
                             <button
                                 type="button"
@@ -126,11 +226,11 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                                     <div className="box">
                                         <div className="flex items-center gap-[4rem] px-[14rem] pt-[12rem] pb-[6rem] text-tp-w85">
                                             <Icon name="Clock" size={16} />
-                                            <p className="text-[12rem] leading-[16rem] font-regular">23시간 59분</p>
+                                            <p className="text-[12rem] leading-[16rem] font-regular">{remainingTime || '계산중...'}</p>
                                         </div>
                                         <div className="p-[16rem] pt-[6rem]">
                                             <h3 className="font-semibold text-gray-100 text-[14rem] leading-[20rem] text-left">
-                                                마음의 에너지를 채워주는 나만의 장소가 있나요?
+                                                {todayQuestion?.content || '마음의 에너지를 채워주는 나만의 장소가 있나요?'}
                                             </h3>
                                         </div>
                                     </div>

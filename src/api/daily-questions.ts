@@ -3,9 +3,11 @@ import { api } from './client';
 export interface DailyQuestion {
   id: string;
   content: string;
-  date: string;
-  isActive: boolean;
-  createdAt: string;
+  hasAnswered: boolean;
+  expiresAt: string;
+  date?: string;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export interface AnswerDailyQuestionDto {

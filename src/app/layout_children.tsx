@@ -13,7 +13,7 @@ const LayoutChildren: React.FC<LayoutContainerProps> =({children}) => {
     const hideBottomNav = pathname.startsWith('/login') || pathname.startsWith('/signup');
 
     return(
-        <main className={`max-w-[414rem] m-auto ${!hideBottomNav ? 'pt-[56rem]' : ''}`}>
+        <main className={`max-w-[414rem] m-auto`}>
             <section className={`${!hideBottomNav ? 'pb-[76rem]' : ''} overflow-hidden`}>
                 {children}
             </section>

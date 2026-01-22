@@ -22,3 +22,42 @@ export function DailyShareSkeleton(props: DailyShareSkeletonProps) {
         </div>
     );
 }
+
+export function WeatherCard(){
+    return (
+        <div className="w-[343rem] h-[96rem] bg-gray-200 rounded-[16rem] animate-pulse" />
+    );
+}
+
+// 날씨 선택 카드 스켈레톤 (regist_daily 페이지용)
+interface WeatherCardSkeletonProps {
+    count?: number;
+    size?: 'large' | 'small';
+}
+
+export function WeatherCardSkeleton({ count = 5, size = 'large' }: WeatherCardSkeletonProps) {
+    const isLarge = size === 'large';
+
+    return (
+        <div className="flex items-center justify-center gap-[24rem] overflow-hidden px-[16rem]">
+            {[...Array(count)].map((_, i) => {
+                const isCenter = i === Math.floor(count / 2);
+                return (
+                    <div
+                        key={i}
+                        className={`
+                            animate-pulse flex-shrink-0
+                            ${isLarge
+                                ? `w-[220rem] rounded-[64rem] ${isCenter ? 'scale-100' : 'scale-75 opacity-50'}`
+                                : 'w-[110rem] rounded-[32rem]'
+                            }
+                            aspect-[2/3] bg-gray-200
+                        `}
+                    >
+                        <div className={`h-full flex flex-col items-center justify-center ${isLarge ? 'gap-[40rem]' : 'gap-[20rem]'}`}></div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}

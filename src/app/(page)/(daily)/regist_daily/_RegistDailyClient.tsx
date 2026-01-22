@@ -208,13 +208,12 @@ export default function RegistDailyClient() {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
+        <div className="flex flex-col min-h-[calc(100vh-189rem)] bg-base-wf">
             {alertMessage && (
                 <div className="fixed top-[72rem] left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-[16rem] py-[12rem] rounded-[8rem] shadow-lg">
                     <p className="text-[14rem] leading-[20rem]">{alertMessage}</p>
                 </div>
             )}
-
             <AppBar
                 left={
                     <IconButton
@@ -234,7 +233,6 @@ export default function RegistDailyClient() {
                 }
                 sticky={true}
             />
-
             <article className="flex-1 flex flex-col">
                 <div className="px-[16rem] pt-[16rem]">
                     <h1 className="text-[24rem] leading-[32rem] font-semibold text-gray-950">

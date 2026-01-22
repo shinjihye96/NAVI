@@ -9,6 +9,7 @@ import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion } from "api";
+import { WeatherCardSkeleton } from "components/ui/skeleton/page";
 
 // type별 그라데이션 매핑
 const gradientMap: Record<string, { from: string; to: string }> = {
@@ -30,6 +31,7 @@ const MAX_CONTENT_LENGTH = 80;
 export default function RegistDailyClient() {
     const router = useRouter();
     const [emotionTypes, setEmotionTypes] = useState<WeatherOption[]>([]);
+    const [isLoadingWeather, setIsLoadingWeather] = useState(true);
     const [selectedMood, setSelectedMood] = useState<string | null>(null);
     const [textContent, setTextContent] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -171,6 +173,7 @@ export default function RegistDailyClient() {
 
     const fetchEmotionTypes = async () => {
         try {
+            setIsLoadingWeather(true);
             const data = await emotionTypesApi.getAll();
 
             const weatherOptions: WeatherOption[] = data.map((item) => ({
@@ -181,6 +184,8 @@ export default function RegistDailyClient() {
             setEmotionTypes(weatherOptions);
         } catch (e) {
             console.error('Failed to fetch emotion types:', e);
+        } finally {
+            setIsLoadingWeather(false);
         }
     };
 
@@ -243,6 +248,11 @@ export default function RegistDailyClient() {
                     </h1>
                 </div>
                 <div className="relative mt-[24rem]">
+                    {isLoadingWeather ? (
+                        <div className={selectedMood === null ? 'pb-[48rem]' : 'pb-[24rem]'}>
+                            <WeatherCardSkeleton count={5} size={selectedMood === null ? 'large' : 'small'} />
+                        </div>
+                    ) : (
                     <Swiper
                         slidesPerView={'auto'}
                         centeredSlides={true}
@@ -303,8 +313,9 @@ export default function RegistDailyClient() {
                             );
                         })}
                     </Swiper>
+                    )}
 
-                    {selectedMood === null && (
+                    {selectedMood === null && !isLoadingWeather && (
                         <div className="absolute bottom-[16rem] left-1/2 -translate-x-1/2 z-10">
                             <div className="flex items-center gap-[6rem]">
                                 {emotionTypes.map((weather, index) => (

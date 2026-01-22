@@ -5,7 +5,7 @@ import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { dailySharesApi, dailyQuestionsApi, DailyShare, DailyQuestion, Mood, getAccessToken } from "api";
+import { dailySharesApi, dailyQuestionsApi, usersApi, DailyShare, DailyQuestion, Mood, getAccessToken } from "api";
 import dayjs from "dayjs";
 
 interface TodayMyMoodProps {
@@ -22,6 +22,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [todayQuestion, setTodayQuestion] = useState<DailyQuestion | null>(null);
     const [remainingTime, setRemainingTime] = useState<string>('');
     const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
+    const [nickname, setNickname] = useState<string>('');
 
     const fetchMyDaily = async () => {
         // 로그인하지 않은 경우 API 호출 스킵
@@ -33,9 +34,10 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
 
         try {
             setIsLoading(true);
-            const [shareResponse, questionResponse] = await Promise.all([
+            const [shareResponse, questionResponse, userResponse] = await Promise.all([
                 dailySharesApi.checkTodayShare(),
                 dailyQuestionsApi.getTodayQuestion().catch(() => null),
+                usersApi.getMe().catch(() => null),
             ]);
 
             setHasShared(shareResponse.hasShared);
@@ -45,6 +47,10 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
 
             if (questionResponse) {
                 setTodayQuestion(questionResponse);
+            }
+
+            if (userResponse?.nickname) {
+                setNickname(userResponse.nickname);
             }
         } catch {
             // 백엔드 미실행 시 기본값 유지 (에러 무시)
@@ -108,28 +114,41 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
             {!hasShared ? (
                 <div className="daily_none">
                     <div className={`pt-[14rem] px-[24rem] ${dailyListLength > 0 ? 'pb-[44rem]' : 'pb-[80rem]'}`}>
-                        <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-regular">
-                            {todayQuestion?.content ? (
-                                todayQuestion.content.split('\n').map((line, i) => (
-                                    <span key={i}>{line}<br /></span>
-                                ))
-                            ) : (
-                                <>오늘 한 일 중에<br />가장 자랑스러운<br />일은 무엇인가요?</>
-                            )}
-                        </h1>
-                        {isUrgent ? (
-                            <div className="mt-[12rem] inline-flex items-center gap-[4rem] bg-[#7C3AED] text-white px-[8rem] py-[4rem] rounded-[6rem]">
-                                <Icon name="Clock" size={16} />
-                                <p className="text-[12rem] font-medium leading-[16rem]">{remainingTime || '계산중...'}</p>
+                        <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                                {nickname && (
+                                    <p className="text-[12rem] text-gray-800 leading-[16rem] mb-[8rem]">
+                                        {nickname}님
+                                    </p>
+                                )}
+                                <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-regular">
+                                    {todayQuestion?.content ? (
+                                        todayQuestion.content.split('\n').map((line, i) => (
+                                            <span key={i}>{line}<br /></span>
+                                        ))
+                                    ) : (
+                                        <>오늘 한 일 중에<br />가장 자랑스러운<br />일은 무엇인가요?</>
+                                    )}
+                                </h1>
+                                {isUrgent ? (
+                                    <div className="mt-[12rem] inline-flex items-center gap-[4rem] bg-[#7C3AED] text-white px-[8rem] py-[4rem] rounded-[6rem]">
+                                        <Icon name="Clock" size={16} />
+                                        <p className="text-[12rem] font-medium leading-[16rem]">{remainingTime || '계산중...'}</p>
+                                    </div>
+                                ) : (
+                                    <Label
+                                        iconName="Clock"
+                                        txt={remainingTime || '계산중...'}
+                                        type="text"
+                                        className="mt-[12rem]"
+                                    />
+                                )}
                             </div>
-                        ) : (
-                            <Label
-                                iconName="Clock"
-                                txt={remainingTime || '계산중...'}
-                                type="text"
-                                className="mt-[12rem]"
-                            />
-                        )}
+                            {/* 날씨 아이콘 자리 */}
+                            <div className="w-[140rem] h-[140rem] flex-shrink-0">
+                                {/* TODO: 날씨 아이콘 이미지 추가 */}
+                            </div>
+                        </div>
                     </div>
                     <div className="flex-shrink-0 flex justify-center p-[16rem]">
                         <Button

@@ -8,6 +8,8 @@ import Image from 'next/image';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
+import { Tabs } from 'components/ui/tab/page';
+import { useNotificationStore } from 'store/notificationStore';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -71,6 +73,13 @@ export default function NotificationsPage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<NotificationTab>('all');
     const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+    const setUnreadCount = useNotificationStore((state) => state.setUnreadCount);
+
+    // 안읽은 알림 개수를 스토어에 업데이트
+    useEffect(() => {
+        const unreadCount = notifications.filter((n) => !n.isRead).length;
+        setUnreadCount(unreadCount);
+    }, [notifications, setUnreadCount]);
 
     // 탭별 필터링
     const filteredNotifications = activeTab === 'all'
@@ -85,11 +94,11 @@ export default function NotificationsPage() {
         medical: notifications.filter((n) => n.type === 'medical').length,
     };
 
-    const tabs: { key: NotificationTab; label: string }[] = [
-        { key: 'all', label: '전체' },
-        { key: 'dailyShare', label: '하루공유' },
-        { key: 'community', label: '커뮤니티' },
-        { key: 'medical', label: '의료·후원' },
+    const tabs = [
+        { value: 'all', label: '전체', count: counts.all },
+        { value: 'dailyShare', label: '하루공유', count: counts.dailyShare },
+        { value: 'community', label: '커뮤니티', count: counts.community },
+        { value: 'medical', label: '의료·후원', count: counts.medical },
     ];
 
     const handleNotificationClick = (notification: Notification) => {
@@ -113,26 +122,12 @@ export default function NotificationsPage() {
                 }
                 title="알림"
             />
-
-            {/* 탭 */}
-            <div className="flex border-b border-gray-200 mt-[56px] overflow-x-auto">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.key}
-                        className={`flex-shrink-0 px-[16rem] py-[12rem] text-center text-[14rem] font-medium whitespace-nowrap ${
-                            activeTab === tab.key
-                                ? 'text-primary-500 border-b-2 border-primary-500'
-                                : 'text-gray-500'
-                        }`}
-                        onClick={() => setActiveTab(tab.key)}
-                    >
-                        {tab.label} {counts[tab.key]}
-                    </button>
-                ))}
-            </div>
-
-            {/* 알림 목록 */}
-            <ul>
+            <Tabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onChange={(value) => setActiveTab(value as NotificationTab)}
+            />
+            <ul className='pt-[24px]'>
                 {filteredNotifications.length === 0 ? (
                     <li className="py-[48rem] text-center text-gray-500">
                         알림이 없습니다
@@ -146,26 +141,20 @@ export default function NotificationsPage() {
                             }`}
                             onClick={() => handleNotificationClick(notification)}
                         >
-                            <div className="w-[48rem] h-[48rem] rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                            <div className="w-[40rem] h-[40rem] rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 bg-[#D4EAFF]">
                                 <Image
-                                    src="/icon/Diary.svg"
+                                    src="/img/icon/Write-Image.png"
                                     alt="알림"
-                                    width={24}
-                                    height={24}
+                                    width={32}
+                                    height={32}
                                 />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-[8rem]">
-                                    <p className="text-[14rem] font-semibold text-gray-950 truncate">
-                                        {notification.title}
-                                    </p>
-                                    <span className="text-[12rem] text-gray-500 flex-shrink-0">
-                                        {dayjs(notification.createdAt).fromNow()}
-                                    </span>
+                                    <p className="text-[14rem] font-semibold text-gray-950 truncate">{notification.title}</p>
+                                    <span className="text-[12rem] text-gray-500 flex-shrink-0">{dayjs(notification.createdAt).fromNow()}</span>
                                 </div>
-                                <p className="text-[14rem] text-gray-600 mt-[4rem] line-clamp-2">
-                                    {notification.description}
-                                </p>
+                                <p className="text-[14rem] text-gray-600 mt-[4rem] line-clamp-2">{notification.description}</p>
                             </div>
                         </li>
                     ))

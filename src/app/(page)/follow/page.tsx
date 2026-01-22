@@ -8,6 +8,8 @@ import Search from 'components/ui/searchBar/page';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi, followsApi, getAccessToken } from 'api';
 import Image from 'next/image';
+import { Tabs } from 'components/ui/tab/page';
+import BottomSheet from 'components/ui/bottomSheet/page';
 
 type TabType = 'followers' | 'following';
 type SortType = 'latest' | 'oldest' | 'alphabetical';
@@ -83,9 +85,7 @@ export default function FollowPage() {
     };
 
     // 현재 탭의 데이터
-    const currentList = activeTab === 'followers'
-        ? followersData?.items || []
-        : followingData?.items || [];
+    const currentList = activeTab === 'followers' ? followersData?.items || [] : followingData?.items || [];
 
     // 검색 필터
     const filteredList = currentList.filter((user) =>
@@ -108,7 +108,7 @@ export default function FollowPage() {
     };
 
     return (
-        <div className="min-h-screen bg-base-wf">
+        <div className="min-h-[calc(100vh-132rem)] bg-base-wf">
             <AppBar
                 left={
                     <IconButton
@@ -119,32 +119,16 @@ export default function FollowPage() {
                     />
                 }
             />
-
-            {/* 탭 */}
-            <div className="flex border-b border-gray-200 mt-[56px]">
-                <button
-                    className={`flex-1 py-[12rem] text-center text-[16rem] font-medium ${
-                        activeTab === 'followers'
-                            ? 'text-primary-500 border-b-2 border-primary-500'
-                            : 'text-gray-500'
-                    }`}
-                    onClick={() => setActiveTab('followers')}
-                >
-                    팔로워 {followersData?.items?.length || 0}
-                </button>
-                <button
-                    className={`flex-1 py-[12rem] text-center text-[16rem] font-medium ${
-                        activeTab === 'following'
-                            ? 'text-primary-500 border-b-2 border-primary-500'
-                            : 'text-gray-500'
-                    }`}
-                    onClick={() => setActiveTab('following')}
-                >
-                    팔로잉 {followingData?.items?.length || 0}
-                </button>
+            <div className="border-b border-gray-200 px-[16rem]">
+                <Tabs
+                    tabs={[
+                        { label: '팔로워', value: 'followers', count: followersData?.items?.length || 0 },
+                        { label: '팔로잉', value: 'following', count: followingData?.items?.length || 0 },
+                    ]}
+                    activeTab={activeTab}
+                    onChange={(value) => setActiveTab(value as TabType)}
+                />
             </div>
-
-            {/* 검색바 */}
             <div className="px-[16rem] py-[12rem]">
                 <Search
                     value={searchValue}
@@ -152,44 +136,41 @@ export default function FollowPage() {
                     onChange={(e) => setSearchValue(e?.target.value || '')}
                 />
             </div>
-
-            {/* 정렬 */}
             <div className="flex items-center justify-between px-[16rem] py-[8rem]">
                 <span className="text-[14rem] text-gray-600">닉네임 기준</span>
-                <div className="relative">
-                    <TextButton
-                        txt={sortLabels[sortType]}
-                        color="secondary"
-                        iconName="ChevronDown"
-                        iconPosition="r"
-                        onClick={() => setShowSortOptions(!showSortOptions)}
-                    />
-                    {showSortOptions && (
-                        <div className="absolute right-0 top-full mt-[4rem] bg-white rounded-[8rem] shadow-lg border border-gray-200 z-10 min-w-[120rem]">
-                            {(['latest', 'oldest', 'alphabetical'] as SortType[]).map((type) => (
-                                <button
-                                    key={type}
-                                    className={`w-full px-[16rem] py-[12rem] text-left text-[14rem] ${
-                                        sortType === type ? 'text-primary-500' : 'text-gray-700'
-                                    } hover:bg-gray-50`}
-                                    onClick={() => {
-                                        setSortType(type);
-                                        setShowSortOptions(false);
-                                    }}
-                                >
-                                    {sortLabels[type]}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <TextButton
+                    txt={sortLabels[sortType]}
+                    color="secondary"
+                    iconName="ChevronDown"
+                    iconPosition="r"
+                    onClick={() => setShowSortOptions(true)}
+                />
             </div>
-
-            {/* 목록 */}
+            <BottomSheet 
+                isOpen={showSortOptions} 
+                onClose={() => setShowSortOptions(false)}
+            >
+                <div className="flex flex-col">
+                    {(['latest', 'oldest', 'alphabetical'] as SortType[]).map((type) => (
+                        <button
+                            key={type}
+                            className={`cursor-pointer w-full py-[16rem] text-left text-[16rem] leading-[24rem] ${
+                                sortType === type ? 'text-green-500 font-semibold' : 'text-gray-700'
+                            }`}
+                            onClick={() => {
+                                setSortType(type);
+                                setShowSortOptions(false);
+                            }}
+                        >
+                            {sortLabels[type]}
+                        </button>
+                    ))}
+                </div>
+            </BottomSheet>
             <ul className="px-[16rem]">
                 {sortedList.length === 0 ? (
                     <li className="py-[48rem] text-center text-gray-500">
-                        {searchValue ? '검색 결과가 없습니다' : '아직 목록이 없습니다'}
+                        {searchValue ? '사용자를 찾을 수 없습니다' : '아직 목록이 없습니다'}
                     </li>
                 ) : (
                     sortedList.map((user) => (
@@ -199,9 +180,9 @@ export default function FollowPage() {
                         >
                             <div className="flex items-center gap-[12rem]">
                                 <div className="w-[48rem] h-[48rem] rounded-full bg-sky-100 flex items-center justify-center overflow-hidden">
-                                    {user.profileImage ? (
+                                    {user.profileImageUrl ? (
                                         <img
-                                            src={user.profileImage}
+                                            src={user.profileImageUrl}
                                             alt={user.nickname || ''}
                                             className="w-full h-full object-cover"
                                         />

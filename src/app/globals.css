@@ -118,3 +118,17 @@ textarea.line:disabled{
 textarea.line.error{
     border-color: #FE3D3D;
 }
+
+/* BottomSheet Animation */
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.2s ease-out;
+}

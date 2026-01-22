@@ -24,12 +24,15 @@ export default function Search({
         setInputValue(newValue);
 
         if(onChange){
-            onChange;
+            onChange(e);
         }
     }
 
     const clearHandler = () => {
         setInputValue('');
+        if(onChange){
+            onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
+        }
     }
     return(
         <div className={`relative grid items-center grid-cols-[auto_1fr_48rem] gap-[8rem] min-w-[360rem] bg-gray-200 px-[12rem] py-[8rem] rounded-[6rem] ${className}`}>
@@ -47,16 +50,18 @@ export default function Search({
                 className="placeholder:text-gray-600 text-gray-900 font-normal leading-[20rem] text-[14rem]"
             />
             <div className="flex items-center justify-end">
-                <button
-                    type="button"
-                    onClick={clearHandler}
-                >
-                    <Icon
-                        name="XCircleFill"
-                        size={16}
-                        className="text-gray-600"
-                    />
-                </button>
+                {inputValue && (
+                    <button
+                        type="button"
+                        onClick={clearHandler}
+                    >
+                        <Icon
+                            name="XCircleFill"
+                            size={16}
+                            className="text-gray-600"
+                        />
+                    </button>
+                )}
             </div>
         </div>
     );

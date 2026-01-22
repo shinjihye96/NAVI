@@ -21,12 +21,12 @@ function BaseTab({ label, isActive, count, onClick, className = '' }: BaseTabPro
         <button
             type="button"
             onClick={onClick}
-            className={`flex flex-col items-center gap-[4rem] min-w-[80rem] cursor-pointer ${className}`}
+            className={`relative flex items-center justify-center min-w-[80rem] h-[48rem] cursor-pointer ${className}`}
         >
             <div className="flex items-center gap-[4rem]">
                 <p
-                    className={`text-[14rem] leading-[20rem] font-semibold ${
-                        isActive ? 'text-gray-950' : 'text-gray-500'
+                    className={`text-[14rem] leading-[20rem] ${
+                        isActive ? 'text-gray-950 font-semibold' : 'text-gray-700 font-regular'
                     }`}
                 >
                     {label}
@@ -41,9 +41,7 @@ function BaseTab({ label, isActive, count, onClick, className = '' }: BaseTabPro
                     </p>
                 )}
             </div>
-            <div
-                className={`w-full rounded-full ${isActive && 'h-[2rem] bg-green-500'}`}
-            />
+            <div className={`absolute bottom-0 left-0 w-full rounded-full ${isActive ? 'h-[2rem] bg-green-500' : 'h-[1rem] bg-gray-200'}`}/>
         </button>
     );
 }
@@ -57,7 +55,10 @@ interface TabsProps {
 
 export function Tabs({ tabs, activeTab, onChange, className = '' }: TabsProps) {
     return (
-        <div className={`grid grid-cols-${tabs.length} ${className}`}>
+        <div
+            className={`grid ${className}`}
+            style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
+        >
             {tabs.map((tab) => (
                 <BaseTab
                     key={tab.value}

@@ -47,16 +47,18 @@ export default function Search({
                 className="placeholder:text-gray-600 text-gray-900 font-normal leading-[20rem] text-[14rem]"
             />
             <div className="flex items-center justify-end">
-                <button
-                    type="button"
-                    onClick={clearHandler}
-                >
-                    <Icon
-                        name="XCircleFill"
-                        size={16}
-                        className="text-gray-600"
-                    />
-                </button>
+                {inputValue && (
+                    <button
+                        type="button"
+                        onClick={clearHandler}
+                    >
+                        <Icon
+                            name="XCircleFill"
+                            size={16}
+                            className="text-gray-600"
+                        />
+                    </button>
+                )}
             </div>
         </div>
     );

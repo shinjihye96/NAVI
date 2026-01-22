@@ -110,7 +110,7 @@ export default function NotificationsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-base-wf">
+        <div className="min-h-[calc(100vh-132rem)] bg-base-wf">
             <AppBar
                 left={
                     <IconButton
@@ -121,6 +121,7 @@ export default function NotificationsPage() {
                     />
                 }
                 title="알림"
+                className={"sticky top-0"}
             />
             <Tabs
                 tabs={tabs}

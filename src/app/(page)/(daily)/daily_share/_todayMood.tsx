@@ -5,7 +5,8 @@ import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { dailySharesApi, DailyShare, Mood, getAccessToken } from "api";
+import { dailySharesApi, dailyQuestionsApi, DailyShare, DailyQuestion, Mood, getAccessToken } from "api";
+import dayjs from "dayjs";
 
 interface TodayMyMoodProps {
     dailyListLength: number;
@@ -14,9 +15,13 @@ interface TodayMyMoodProps {
 export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const router = useRouter();
     const [myDaily, setMyDaily] = useState<DailyShare | null>(null);
+    console.log('myDaily: ', myDaily);
     const [hasShared, setHasShared] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedWeather, setSelectedWeather] = useState<Mood | null>(null);
+    const [todayQuestion, setTodayQuestion] = useState<DailyQuestion | null>(null);
+    const [remainingTime, setRemainingTime] = useState<string>('');
+    const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
 
     const fetchMyDaily = async () => {
         // 로그인하지 않은 경우 API 호출 스킵
@@ -28,10 +33,18 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
 
         try {
             setIsLoading(true);
-            const response = await dailySharesApi.checkTodayShare();
-            setHasShared(response.hasShared);
-            if (response.hasShared && response.dailyShare) {
-                setMyDaily(response.dailyShare);
+            const [shareResponse, questionResponse] = await Promise.all([
+                dailySharesApi.checkTodayShare(),
+                dailyQuestionsApi.getTodayQuestion().catch(() => null),
+            ]);
+
+            setHasShared(shareResponse.hasShared);
+            if (shareResponse.hasShared && shareResponse.dailyShare) {
+                setMyDaily(shareResponse.dailyShare);
+            }
+
+            if (questionResponse) {
+                setTodayQuestion(questionResponse);
             }
         } catch {
             // 백엔드 미실행 시 기본값 유지 (에러 무시)
@@ -42,9 +55,42 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
         }
     };
 
+    // 남은 시간 계산
+    const calculateRemainingTime = () => {
+        if (!todayQuestion?.expiresAt) return;
+
+        const now = dayjs();
+        const expiresAt = dayjs(todayQuestion.expiresAt);
+        const diff = expiresAt.diff(now);
+
+        if (diff <= 0) {
+            setRemainingTime('마감');
+            setIsUrgent(false);
+            return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        // 30분 미만 여부 체크
+        setIsUrgent(diff < 30 * 60 * 1000);
+
+        if (hours > 0) {
+            setRemainingTime(`${hours}시간 ${minutes}분`);
+        } else {
+            setRemainingTime(`${minutes}분`);
+        }
+    };
+
     useEffect(() => {
         fetchMyDaily();
     }, []);
+
+    useEffect(() => {
+        calculateRemainingTime();
+        const interval = setInterval(calculateRemainingTime, 60000); // 1분마다 업데이트
+        return () => clearInterval(interval);
+    }, [todayQuestion]);
 
     // 로딩 중일 때
     if (isLoading) {
@@ -63,16 +109,27 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                 <div className="daily_none">
                     <div className={`pt-[14rem] px-[24rem] ${dailyListLength > 0 ? 'pb-[44rem]' : 'pb-[80rem]'}`}>
                         <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-regular">
-                            오늘 한 일 중에<br />
-                            가장 자랑스러운<br />
-                            일은 무엇인가요?
+                            {todayQuestion?.content ? (
+                                todayQuestion.content.split('\n').map((line, i) => (
+                                    <span key={i}>{line}<br /></span>
+                                ))
+                            ) : (
+                                <>오늘 한 일 중에<br />가장 자랑스러운<br />일은 무엇인가요?</>
+                            )}
                         </h1>
-                        <Label
-                            iconName="Clock"
-                            txt={"21시간 6분"}
-                            type={"text"}
-                            className="mt-[12rem]"
-                        />
+                        {isUrgent ? (
+                            <div className="mt-[12rem] inline-flex items-center gap-[4rem] bg-[#7C3AED] text-white px-[8rem] py-[4rem] rounded-[6rem]">
+                                <Icon name="Clock" size={16} />
+                                <p className="text-[12rem] font-medium leading-[16rem]">{remainingTime || '계산중...'}</p>
+                            </div>
+                        ) : (
+                            <Label
+                                iconName="Clock"
+                                txt={remainingTime || '계산중...'}
+                                type="text"
+                                className="mt-[12rem]"
+                            />
+                        )}
                     </div>
                     <div className="flex-shrink-0 flex justify-center p-[16rem]">
                         <Button
@@ -126,11 +183,11 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                                     <div className="box">
                                         <div className="flex items-center gap-[4rem] px-[14rem] pt-[12rem] pb-[6rem] text-tp-w85">
                                             <Icon name="Clock" size={16} />
-                                            <p className="text-[12rem] leading-[16rem] font-regular">23시간 59분</p>
+                                            <p className="text-[12rem] leading-[16rem] font-regular">{remainingTime || '계산중...'}</p>
                                         </div>
                                         <div className="p-[16rem] pt-[6rem]">
                                             <h3 className="font-semibold text-gray-100 text-[14rem] leading-[20rem] text-left">
-                                                마음의 에너지를 채워주는 나만의 장소가 있나요?
+                                                {todayQuestion?.content || '마음의 에너지를 채워주는 나만의 장소가 있나요?'}
                                             </h3>
                                         </div>
                                     </div>

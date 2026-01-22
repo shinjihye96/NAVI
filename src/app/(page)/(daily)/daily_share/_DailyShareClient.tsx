@@ -10,6 +10,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
 import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
+import { useNotificationStore } from "store/notificationStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { EMOTION_TYPES } from "constants/emotions";
 import { DailyShareSkeleton } from "components/ui/skeleton/page";
@@ -67,6 +68,7 @@ function PostImage({ src, alt }: { src: string; alt: string }) {
 export default function DailyShareClient() {
     const router = useRouter();
     const today = dayjs(new Date()).format('M월 DD일');
+    const unreadCount = useNotificationStore((state) => state.unreadCount);
     const [filter, setFilter] = useState<'all' | 'caregiver' | 'patient' | undefined>(undefined);
     const [isLatestFirst, setIsLatestFirst] = useState(false);
     const [sameUserType, setSameUserType] = useState(false);
@@ -268,12 +270,17 @@ export default function DailyShareClient() {
                             color="tertiary"
                             onClick={() => router.push('/follow')}
                         />
-                        <IconButton
-                            iconName="Bell"
-                            size="l"
-                            color="tertiary"
-                            onClick={() => router.push('/notifications')}
-                        />
+                        <div className="relative">
+                            <IconButton
+                                iconName="Bell"
+                                size="l"
+                                color="tertiary"
+                                onClick={() => router.push('/notifications')}
+                            />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-[2rem] right-[2rem] min-w-[16rem] h-[16rem] px-[4rem] bg-semantic-r300 text-white text-[10rem] font-semibold rounded-full flex items-center justify-center">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                            )}
+                        </div>
                     </div>
                 }
             />

@@ -22,13 +22,13 @@ import { LoadingSpinner } from "components/ui/loading/page";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
-const shareBg = {
+const shareBg: Record<string, string> = {
     none: "/img/share_bg/None.jpg",
     sun: "/img/share_bg/Sun.jpg",
     sun_and_cloud: "/img/share_bg/Sun_and_Cloud.jpg",
     cloud: "/img/share_bg/Cloud.jpg",
     rain: "/img/share_bg/Rain.jpg",
-    ligtning: "/img/share_bg/Lightning.jpg",
+    lightning: "/img/share_bg/Lightning.jpg",
 };
 
 function PostImage({ src, alt }: { src: string; alt: string }) {
@@ -129,6 +129,9 @@ export default function DailyShareClient() {
     console.log('dailyList: ', dailyList);
     
     const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
+
+    // 사용자의 오늘 기록된 mood에 따른 배경 이미지 결정
+    const currentBg = myDaily?.mood ? (shareBg[myDaily.mood] || shareBg.none) : shareBg.none;
 
     const hasNoFollowing = followingIds.size === 0;
     const hasFollowingButNoPostsToday = !hasNoFollowing && dailyList.length === 0 && isFollowing;
@@ -263,7 +266,7 @@ export default function DailyShareClient() {
                     <p className="pl-[24rem] text-regular text-gray-800 text-[14rem] leading-[20rem]">{today}</p>
                 }
                 right={
-                    <div className="flex items-center gap-[]">
+                    <div className="flex items-center">
                         <IconButton
                             iconName="Follower"
                             size="l"
@@ -278,7 +281,7 @@ export default function DailyShareClient() {
                                 onClick={() => router.push('/notifications')}
                             />
                             {unreadCount > 0 && (
-                                <span className="absolute top-[2rem] right-[2rem] min-w-[16rem] h-[16rem] px-[4rem] bg-semantic-r300 text-white text-[10rem] font-semibold rounded-full flex items-center justify-center">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                                <span className="absolute top-[10rem] right-[10rem] w-[14rem] aspect-square bg-semantic-r300 text-white text-[10rem] font-regular rounded-full flex items-center justify-center">{unreadCount > 99 ? '99+' : unreadCount}</span>
                             )}
                         </div>
                     </div>
@@ -288,8 +291,8 @@ export default function DailyShareClient() {
                 className="flex flex-col w-full bg-cover bg-center"
                 style={{ minHeight: 'calc(100vh - 132px)' }}
             >
-                <div className="absolute inset-0">
-                    <img src={shareBg.none} alt="Navi" />
+                <div className="absolute top-0 z-[-1]">
+                    <img src={currentBg} alt="Navi" className="w-full h-full object-cover" />
                 </div>
                 <div className="relative flex flex-col flex-1">
                     <div className="flex-shrink-0">

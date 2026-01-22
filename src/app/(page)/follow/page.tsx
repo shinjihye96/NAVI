@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi, followsApi, getAccessToken } from 'api';
 import Image from 'next/image';
 import { Tabs } from 'components/ui/tab/page';
+import BottomSheet from 'components/ui/bottomSheet/page';
 
 type TabType = 'followers' | 'following';
 type SortType = 'latest' | 'oldest' | 'alphabetical';
@@ -137,34 +138,35 @@ export default function FollowPage() {
             </div>
             <div className="flex items-center justify-between px-[16rem] py-[8rem]">
                 <span className="text-[14rem] text-gray-600">닉네임 기준</span>
-                <div className="relative">
-                    <TextButton
-                        txt={sortLabels[sortType]}
-                        color="secondary"
-                        iconName="ChevronDown"
-                        iconPosition="r"
-                        onClick={() => setShowSortOptions(!showSortOptions)}
-                    />
-                    {showSortOptions && (
-                        <div className="absolute right-0 top-full mt-[4rem] bg-white rounded-[8rem] shadow-lg border border-gray-200 z-10 min-w-[120rem]">
-                            {(['latest', 'oldest', 'alphabetical'] as SortType[]).map((type) => (
-                                <button
-                                    key={type}
-                                    className={`w-full px-[16rem] py-[12rem] text-left text-[14rem] ${
-                                        sortType === type ? 'text-primary-500' : 'text-gray-700'
-                                    } hover:bg-gray-50`}
-                                    onClick={() => {
-                                        setSortType(type);
-                                        setShowSortOptions(false);
-                                    }}
-                                >
-                                    {sortLabels[type]}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <TextButton
+                    txt={sortLabels[sortType]}
+                    color="secondary"
+                    iconName="ChevronDown"
+                    iconPosition="r"
+                    onClick={() => setShowSortOptions(true)}
+                />
             </div>
+            <BottomSheet 
+                isOpen={showSortOptions} 
+                onClose={() => setShowSortOptions(false)}
+            >
+                <div className="flex flex-col">
+                    {(['latest', 'oldest', 'alphabetical'] as SortType[]).map((type) => (
+                        <button
+                            key={type}
+                            className={`cursor-pointer w-full py-[16rem] text-left text-[16rem] leading-[24rem] ${
+                                sortType === type ? 'text-green-500 font-semibold' : 'text-gray-700'
+                            }`}
+                            onClick={() => {
+                                setSortType(type);
+                                setShowSortOptions(false);
+                            }}
+                        >
+                            {sortLabels[type]}
+                        </button>
+                    ))}
+                </div>
+            </BottomSheet>
             <ul className="px-[16rem]">
                 {sortedList.length === 0 ? (
                     <li className="py-[48rem] text-center text-gray-500">

@@ -209,7 +209,6 @@ export default function RegistDailyClient() {
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-76rem)] bg-base-wf">
-            {/* 알림 메시지 */}
             {alertMessage && (
                 <div className="fixed top-[72rem] left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-[16rem] py-[12rem] rounded-[8rem] shadow-lg">
                     <p className="text-[14rem] leading-[20rem]">{alertMessage}</p>
@@ -237,7 +236,6 @@ export default function RegistDailyClient() {
             />
 
             <article className="flex-1 flex flex-col">
-                {/* 질문 영역 */}
                 <div className="px-[16rem] pt-[16rem]">
                     <h1 className="text-[24rem] leading-[32rem] font-semibold text-gray-950">
                         {selectedMood === null
@@ -247,7 +245,6 @@ export default function RegistDailyClient() {
                     </h1>
                 </div>
 
-                {/* 날씨 카드 영역 */}
                 <div className="relative mt-[24rem]">
                     <Swiper
                         slidesPerView={'auto'}
@@ -310,7 +307,6 @@ export default function RegistDailyClient() {
                         })}
                     </Swiper>
 
-                    {/* 페이지 인디케이터 (Step 1에서만) */}
                     {selectedMood === null && (
                         <div className="absolute bottom-[16rem] left-1/2 -translate-x-1/2 z-10">
                             <div className="flex items-center gap-[6rem]">
@@ -327,15 +323,12 @@ export default function RegistDailyClient() {
                     )}
                 </div>
 
-                {/* Step 2: 질문과 답변 입력 영역 */}
                 {selectedMood !== null && (
                     <div className="flex-1 flex flex-col px-[16rem] mt-[32rem] pb-[73rem]">
-                        {/* 오늘의 질문 */}
                         <h2 className="text-[24rem] leading-[32rem] font-semibold text-gray-950 flex-shrink-0">
                             {currentQuestion?.content || '마음의 에너지를 채워주는 나만의 장소가 있나요?'}
                         </h2>
 
-                        {/* 텍스트 입력 */}
                         <div className="mt-[16rem] flex-1 flex flex-col">
                             <textarea
                                 ref={textareaRef}
@@ -351,11 +344,10 @@ export default function RegistDailyClient() {
                                     }
                                 }}
                                 placeholder={`오늘의 질문에 대한 답변을 작성해주세요.\n사진은 1장만 올릴 수 있어요.`}
-                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none"
+                                className="w-full min-h-[48rem] resize-none text-[16rem] leading-[24rem] text-gray-900 placeholder:text-gray-600 bg-transparent outline-none overflow-hidden"
                             />
                         </div>
 
-                        {/* 이미지 미리보기 */}
                         {imagePreview && (
                             <div className="relative w-[120rem] h-[120rem] mt-[16rem]">
                                 {isUploading ? (
@@ -384,11 +376,9 @@ export default function RegistDailyClient() {
                 )}
             </article>
 
-            {/* 하단 툴바 (Step 2에서만) */}
             {selectedMood !== null && (
                 <div className="fixed max-w-[414rem] w-full bottom-[76rem] left-1/2 -translate-x-1/2 bg-base-wf border-t border-gray-300 p-[4rem] flex items-center justify-between z-10">
                     <div className="flex items-center gap-[4rem]">
-                        {/* 카메라 input (모바일: 카메라, PC: 파일선택) */}
                         <input
                             ref={cameraInputRef}
                             type="file"
@@ -398,7 +388,6 @@ export default function RegistDailyClient() {
                             className="hidden"
                             id="camera-upload"
                         />
-                        {/* 갤러리 input (모바일: 갤러리, PC: 파일선택) */}
                         <input
                             ref={galleryInputRef}
                             type="file"
@@ -421,7 +410,6 @@ export default function RegistDailyClient() {
                         </label>
                     </div>
                     <div className="flex items-center gap-[8rem]">
-                        {/* 글자 수 카운터 */}
                         <div className="flex justify-end mt-[8rem]">
                             <span className="text-[14rem] leading-[20rem] text-gray-600">
                                 {textContent.length} / {MAX_CONTENT_LENGTH}

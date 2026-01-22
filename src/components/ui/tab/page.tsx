@@ -42,9 +42,7 @@ function BaseTab({ label, isActive, count, onClick, className = '' }: BaseTabPro
                 )}
             </div>
             <div
-                className={`w-full rounded-full ${
-                    isActive ? 'h-[2rem] bg-green-500' : 'h-[1rem] bg-gray-200'
-                }`}
+                className={`w-full rounded-full ${isActive && 'h-[2rem] bg-green-500'}`}
             />
         </button>
     );

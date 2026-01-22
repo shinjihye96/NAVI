@@ -118,6 +118,7 @@ export default function FollowPage() {
                         onClick={() => router.back()}
                     />
                 }
+                className={"sticky top-0"}
             />
             <div className="border-b border-gray-200 px-[16rem]">
                 <Tabs

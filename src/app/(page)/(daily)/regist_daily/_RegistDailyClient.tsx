@@ -398,6 +398,7 @@ export default function RegistDailyClient() {
                                             src={imagePreview}
                                             alt="업로드 이미지"
                                             fill
+                                            sizes="120px"
                                             className="object-cover"
                                         />
                                     </div>

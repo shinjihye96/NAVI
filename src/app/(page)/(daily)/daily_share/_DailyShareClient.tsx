@@ -54,6 +54,7 @@ function PostImage({ src, alt }: { src: string; alt: string }) {
                 src={src}
                 alt={alt}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 onLoad={() => setIsLoading(false)}
                 onError={() => {

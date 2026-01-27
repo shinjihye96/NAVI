@@ -8,7 +8,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion, DailyShare, Mood } from "api";
+import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion, DailyShare, Mood, WeatherType } from "api";
 import { WeatherCardSkeleton } from "components/ui/skeleton/page";
 
 // type별 그라데이션 매핑
@@ -18,6 +18,15 @@ const gradientMap: Record<string, { from: string; to: string }> = {
     cloud: { from: '#E8EAF6', to: '#C5CAE9' },
     rain: { from: '#BBDEFB', to: '#64B5F6' },
     lightning: { from: '#D1C4E9', to: '#7E57C2' },
+};
+
+// 프론트엔드 타입 → API weather 타입 매핑
+const weatherTypeMap: Record<string, WeatherType> = {
+    sun: 'sunny',
+    sun_cloud: 'partly_cloudy',
+    cloud: 'cloudy',
+    rain: 'rainy',
+    lightning: 'lightning',
 };
 
 // EmotionTypeInfo에 gradient 추가한 타입
@@ -125,11 +134,13 @@ export default function RegistDailyClient() {
             }
 
             // 오늘의 질문에 답변 제출 (질문이 있는 경우)
-            if (currentQuestion && textContent) {
+            if (currentQuestion && selectedMood) {
                 try {
                     await dailyQuestionsApi.submitAnswer({
-                        questionId: currentQuestion.id,
-                        content: textContent,
+                        questionId: Number(currentQuestion.id),
+                        content: textContent || undefined,
+                        imageUrl,
+                        weather: weatherTypeMap[selectedMood],
                     });
                 } catch (error: any) {
                     // QUESTION_INACTIVE 에러 처리

@@ -10,9 +10,13 @@ export interface DailyQuestion {
   createdAt?: string;
 }
 
+export type WeatherType = 'sunny' | 'partly_cloudy' | 'cloudy' | 'rainy' | 'lightning';
+
 export interface AnswerDailyQuestionDto {
-  questionId: string;
-  content: string;
+  questionId: number;
+  content?: string;
+  imageUrl?: string;
+  weather: WeatherType;
 }
 
 export const dailyQuestionsApi = {

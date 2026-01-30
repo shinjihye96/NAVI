@@ -20,6 +20,24 @@ export interface AnswerDailyQuestionDto {
   weather: WeatherType;
 }
 
+// 내 답변 응답 타입
+export interface DailyAnswer {
+  id: number;
+  questionId: number;
+  content?: string;
+  imageUrl?: string;
+  weather: WeatherType;
+  createdAt: string;
+  question?: DailyQuestion;
+}
+
+export interface MyAnswersResponse {
+  items: DailyAnswer[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export const dailyQuestionsApi = {
   // 오늘의 질문 조회
   getTodayQuestion: async (): Promise<DailyQuestion> => {
@@ -29,5 +47,10 @@ export const dailyQuestionsApi = {
   // 질문에 답변 제출
   submitAnswer: async (data: AnswerDailyQuestionDto): Promise<void> => {
     return api.post<void>('/api/daily-questions/answer', data);
+  },
+
+  // 내 답변 히스토리 조회
+  getMyAnswers: async (page: number = 1, limit: number = 20): Promise<MyAnswersResponse> => {
+    return api.get<MyAnswersResponse>(`/api/daily-questions/my-answers?page=${page}&limit=${limit}`);
   },
 };

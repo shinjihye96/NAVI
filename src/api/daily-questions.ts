@@ -10,7 +10,8 @@ export interface DailyQuestion {
   createdAt?: string;
 }
 
-export type WeatherType = 'sunny' | 'partly_cloudy' | 'cloudy' | 'rainy' | 'lightning';
+// emotion_types 테이블과 동일한 값 사용
+export type WeatherType = 'sun' | 'sun_cloud' | 'cloud' | 'rain' | 'lightning';
 
 export interface AnswerDailyQuestionDto {
   questionId: number;

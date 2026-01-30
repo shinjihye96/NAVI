@@ -7,6 +7,8 @@ import { useState, useEffect } from "react";
 import TodayMyMood from "./_todayMood";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
 import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
@@ -19,6 +21,8 @@ import Chips from "components/ui/chip/page";
 import { Icon } from "icon/page";
 import { LoadingSpinner } from "components/ui/loading/page";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -122,7 +126,10 @@ export default function DailyShareClient() {
         myFollowingData?.items?.map((user) => String(user.id)) || []
     );
 
-    const allDailyList = dailyListData?.items || [];
+    // 텍스트나 이미지가 있는 게시글만 필터링 (빈 게시글 숨김)
+    const allDailyList = (dailyListData?.items || []).filter(
+        (post) => post.content || post.imageUrl
+    );
 
     const dailyList = isFollowing
     ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
@@ -359,7 +366,7 @@ export default function DailyShareClient() {
                                             <div className="flex items-center gap-[8rem]">
                                                 <button
                                                     type="button"
-                                                    className="w-[48rem] h-[48rem] rounded-full bg-sky-100 flex items-center justify-center overflow-hidden"
+                                                    className="w-[48rem] h-[48rem] rounded-full cursor-pointer bg-sky-100 flex items-center justify-center overflow-hidden"
                                                     onClick={() => {}}
                                                 >
                                                     {post.user?.profileImageUrl ? (
@@ -379,7 +386,7 @@ export default function DailyShareClient() {
                                                     <div className="flex items-center gap-[8rem] text-[12rem]">
                                                         <p className="text-gray-700">{post.user?.userType || 'User Type'}</p>
                                                         <span className="text-gray-200">|</span>
-                                                        <p className="text-gray-600">{dayjs(post.createdAt).fromNow()}</p>
+                                                        <p className="text-gray-600">{dayjs.utc(post.createdAt).tz('Asia/Seoul').fromNow()}</p>
                                                     </div>
                                                 </div>
                                             </div>

@@ -136,7 +136,11 @@ export default function DailyShareClient() {
     : allDailyList;
     console.log('dailyList: ', dailyList);
     
-    const myDaily: DailyAnswer | null = myDailyData?.items?.[0] || null;
+    // 오늘 답변인지 확인 (createdAt이 오늘인지 체크)
+    const latestAnswer = myDailyData?.items?.[0];
+    const todayDate = dayjs().format('YYYY-MM-DD');
+    const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === todayDate;
+    const myDaily: DailyAnswer | null = isToday ? latestAnswer : null;
 
     // 사용자의 오늘 기록된 weather에 따른 배경 이미지 결정
     const currentBg = myDaily?.weather ? (shareBg[myDaily.weather] || shareBg.none) : shareBg.none;

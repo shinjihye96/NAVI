@@ -29,7 +29,7 @@ dayjs.locale("ko");
 const shareBg: Record<string, string> = {
     none: "/img/share_bg/None.jpg",
     sun: "/img/share_bg/Sun.jpg",
-    sun_and_cloud: "/img/share_bg/Sun_and_Cloud.jpg",
+    sun_cloud: "/img/share_bg/Sun_and_Cloud.jpg",
     cloud: "/img/share_bg/Cloud.jpg",
     rain: "/img/share_bg/Rain.jpg",
     lightning: "/img/share_bg/Lightning.jpg",

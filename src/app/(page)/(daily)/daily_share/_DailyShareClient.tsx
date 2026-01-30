@@ -11,7 +11,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
+import { dailySharesApi, dailyQuestionsApi, DailyShareQuery, DailyAnswer, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
 import { useNotificationStore } from "store/notificationStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { EMOTION_TYPES } from "constants/emotions";
@@ -101,8 +101,8 @@ export default function DailyShareClient() {
     const isActuallyLoading = !isClient || (hasToken && (isLoading || (!dailyListData && isFetching)));
 
     const { data: myDailyData } = useQuery({
-        queryKey: ['myTodayShare'],
-        queryFn: () => dailySharesApi.checkTodayShare(),
+        queryKey: ['myTodayAnswer'],
+        queryFn: () => dailyQuestionsApi.getMyAnswers(1, 1),
         staleTime: 60 * 1000, // 1분
         enabled: hasToken,
     });
@@ -136,10 +136,10 @@ export default function DailyShareClient() {
     : allDailyList;
     console.log('dailyList: ', dailyList);
     
-    const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
+    const myDaily: DailyAnswer | null = myDailyData?.items?.[0] || null;
 
-    // 사용자의 오늘 기록된 mood에 따른 배경 이미지 결정
-    const currentBg = myDaily?.mood ? (shareBg[myDaily.mood] || shareBg.none) : shareBg.none;
+    // 사용자의 오늘 기록된 weather에 따른 배경 이미지 결정
+    const currentBg = myDaily?.weather ? (shareBg[myDaily.weather] || shareBg.none) : shareBg.none;
 
     const hasNoFollowing = followingIds.size === 0;
     const hasFollowingButNoPostsToday = !hasNoFollowing && dailyList.length === 0 && isFollowing;

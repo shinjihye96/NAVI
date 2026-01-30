@@ -5,14 +5,14 @@ import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { dailySharesApi, dailyQuestionsApi, usersApi, DailyShare, DailyQuestion, Mood, getAccessToken } from "api";
+import { dailyQuestionsApi, usersApi, DailyAnswer, DailyQuestion, getAccessToken } from "api";
 import dayjs from "dayjs";
 
 interface TodayMyMoodProps {
     dailyListLength: number;
 }
 
-// 날씨별 메시지 및 아이콘 매핑
+// 날씨별 메시지 및 아이콘 매핑 (emotion_types 테이블과 동일)
 const moodConfig: Record<string, { message: string; icon: string }> = {
     sun: { message: '맑은 날씨를', icon: '/img/weather/Sun.png' },
     sun_cloud: { message: '조금 맑은 날씨를', icon: '/img/weather/Sun_and_Cloud.png' },
@@ -23,11 +23,10 @@ const moodConfig: Record<string, { message: string; icon: string }> = {
 
 export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const router = useRouter();
-    const [myDaily, setMyDaily] = useState<DailyShare | null>(null);
+    const [myDaily, setMyDaily] = useState<DailyAnswer | null>(null);
     console.log('myDaily: ', myDaily);
     const [hasShared, setHasShared] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedWeather, setSelectedWeather] = useState<Mood | null>(null);
     const [todayQuestion, setTodayQuestion] = useState<DailyQuestion | null>(null);
     const [remainingTime, setRemainingTime] = useState<string>('');
     const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
@@ -43,15 +42,20 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
 
         try {
             setIsLoading(true);
-            const [shareResponse, questionResponse, userResponse] = await Promise.all([
-                dailySharesApi.checkTodayShare(),
+            const [myAnswersResponse, questionResponse, userResponse] = await Promise.all([
+                dailyQuestionsApi.getMyAnswers(1, 1),
                 dailyQuestionsApi.getTodayQuestion().catch(() => null),
                 usersApi.getMe().catch(() => null),
             ]);
 
-            setHasShared(shareResponse.hasShared);
-            if (shareResponse.hasShared && shareResponse.dailyShare) {
-                setMyDaily(shareResponse.dailyShare);
+            // 오늘 답변이 있는지 확인
+            const todayAnswer = myAnswersResponse.items?.[0];
+            if (todayAnswer) {
+                setHasShared(true);
+                setMyDaily(todayAnswer);
+            } else {
+                setHasShared(false);
+                setMyDaily(null);
             }
 
             if (questionResponse) {
@@ -173,7 +177,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
             ) : (
                 <div className="is_daily">
                     {/* 날씨만 등록했을 때 (content 없음) */}
-                    {!myDaily?.content && myDaily?.mood && (
+                    {!myDaily?.content && myDaily?.weather && (
                         <div className="pt-[14rem] px-[24rem] pb-[16rem]">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -183,17 +187,17 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                                         </p>
                                     )}
                                     <h1 className="text-[24rem] text-gray-950 leading-[32rem] font-semibold">
-                                        {moodConfig[myDaily.mood]?.message || '오늘의 날씨를'}<br />
+                                        {moodConfig[myDaily.weather]?.message || '오늘의 날씨를'}<br />
                                         다른 나비들에게<br />
                                         공유해주세요!
                                     </h1>
                                 </div>
                                 {/* 날씨 아이콘 */}
                                 <div className="w-[140rem] h-[140rem] flex-shrink-0">
-                                    {moodConfig[myDaily.mood]?.icon && (
+                                    {moodConfig[myDaily.weather]?.icon && (
                                         <img
-                                            src={moodConfig[myDaily.mood].icon}
-                                            alt={myDaily.mood}
+                                            src={moodConfig[myDaily.weather].icon}
+                                            alt={myDaily.weather}
                                             className="w-full h-full object-contain"
                                         />
                                     )}

@@ -8,7 +8,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion } from "api";
+import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion, DailyShare, Mood, WeatherType } from "api";
 import { WeatherCardSkeleton } from "components/ui/skeleton/page";
 
 // type별 그라데이션 매핑
@@ -19,6 +19,7 @@ const gradientMap: Record<string, { from: string; to: string }> = {
     rain: { from: '#BBDEFB', to: '#64B5F6' },
     lightning: { from: '#D1C4E9', to: '#7E57C2' },
 };
+
 
 // EmotionTypeInfo에 gradient 추가한 타입
 export interface WeatherOption extends EmotionTypeInfo {
@@ -46,6 +47,8 @@ export default function RegistDailyClient() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [currentQuestion, setCurrentQuestion] = useState<DailyQuestion | null>(null);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [existingDaily, setExistingDaily] = useState<DailyShare | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     // 모바일 환경 감지
     useEffect(() => {
@@ -123,11 +126,13 @@ export default function RegistDailyClient() {
             }
 
             // 오늘의 질문에 답변 제출 (질문이 있는 경우)
-            if (currentQuestion && textContent) {
+            if (currentQuestion && selectedMood) {
                 try {
                     await dailyQuestionsApi.submitAnswer({
-                        questionId: currentQuestion.id,
-                        content: textContent,
+                        questionId: Number(currentQuestion.id),
+                        content: textContent || undefined,
+                        imageUrl,
+                        weather: selectedMood as WeatherType,
                     });
                 } catch (error: any) {
                     // QUESTION_INACTIVE 에러 처리
@@ -142,13 +147,24 @@ export default function RegistDailyClient() {
                 }
             }
 
-            // 하루공유 게시글 작성
-            await dailySharesApi.create({
-                mood: selectedMood,
-                content: textContent || undefined,
-                imageUrl,
-                isPrivate: false,
-            });
+            // 하루공유 게시글 작성/수정
+            if (isEditMode && existingDaily) {
+                // 수정 모드
+                await dailySharesApi.update(existingDaily.id, {
+                    mood: selectedMood as Mood,
+                    content: textContent || undefined,
+                    imageUrl,
+                    isPrivate: false,
+                });
+            } else {
+                // 생성 모드
+                await dailySharesApi.create({
+                    mood: selectedMood,
+                    content: textContent || undefined,
+                    imageUrl,
+                    isPrivate: false,
+                });
+            }
 
             router.push('/daily_share');
         } catch (error) {
@@ -207,9 +223,27 @@ export default function RegistDailyClient() {
         setTimeout(() => setAlertMessage(null), 3000);
     };
 
+    // 기존 게시글 확인
+    const checkExistingShare = async () => {
+        try {
+            const response = await dailySharesApi.checkTodayShare();
+            if (response.hasShared && response.dailyShare) {
+                setExistingDaily(response.dailyShare);
+                setIsEditMode(true);
+                setSelectedMood(response.dailyShare.mood);
+                if (response.dailyShare.content) {
+                    setTextContent(response.dailyShare.content);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to check existing share:', error);
+        }
+    };
+
     useEffect(() => {
         fetchEmotionTypes();
         fetchTodayQuestion();
+        checkExistingShare();
     }, []);
 
     return (
@@ -230,7 +264,7 @@ export default function RegistDailyClient() {
                 }
                 right={
                     <Button
-                        txt="기록"
+                        txt={isEditMode ? "수정" : "기록"}
                         size="s"
                         onClick={handleSubmit}
                         disabled={!selectedMood || isSubmitting}
@@ -367,6 +401,7 @@ export default function RegistDailyClient() {
                                             src={imagePreview}
                                             alt="업로드 이미지"
                                             fill
+                                            sizes="120px"
                                             className="object-cover"
                                         />
                                     </div>

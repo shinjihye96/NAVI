@@ -18,10 +18,10 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
-// Enum 타입들
+// Enum 타입들 (emotion_types 테이블과 동일)
 export enum Mood {
   SUN = 'sun',
-  SUN_AND_CLOUD = 'sun_and_cloud',
+  SUN_CLOUD = 'sun_cloud',
   CLOUD = 'cloud',
   RAIN = 'rain',
   LIGHTNING = 'lightning',

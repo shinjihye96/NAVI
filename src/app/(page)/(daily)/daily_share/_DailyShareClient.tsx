@@ -7,9 +7,11 @@ import { useState, useEffect } from "react";
 import TodayMyMood from "./_todayMood";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, DailyShareQuery, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
+import { dailySharesApi, dailyQuestionsApi, DailyShareQuery, DailyAnswer, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
 import { useNotificationStore } from "store/notificationStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { EMOTION_TYPES } from "constants/emotions";
@@ -19,13 +21,15 @@ import Chips from "components/ui/chip/page";
 import { Icon } from "icon/page";
 import { LoadingSpinner } from "components/ui/loading/page";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
 const shareBg: Record<string, string> = {
     none: "/img/share_bg/None.jpg",
     sun: "/img/share_bg/Sun.jpg",
-    sun_and_cloud: "/img/share_bg/Sun_and_Cloud.jpg",
+    sun_cloud: "/img/share_bg/Sun_and_Cloud.jpg",
     cloud: "/img/share_bg/Cloud.jpg",
     rain: "/img/share_bg/Rain.jpg",
     lightning: "/img/share_bg/Lightning.jpg",
@@ -54,6 +58,7 @@ function PostImage({ src, alt }: { src: string; alt: string }) {
                 src={src}
                 alt={alt}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 onLoad={() => setIsLoading(false)}
                 onError={() => {
@@ -96,8 +101,8 @@ export default function DailyShareClient() {
     const isActuallyLoading = !isClient || (hasToken && (isLoading || (!dailyListData && isFetching)));
 
     const { data: myDailyData } = useQuery({
-        queryKey: ['myTodayShare'],
-        queryFn: () => dailySharesApi.checkTodayShare(),
+        queryKey: ['myTodayAnswer'],
+        queryFn: () => dailyQuestionsApi.getMyAnswers(1, 1),
         staleTime: 60 * 1000, // 1분
         enabled: hasToken,
     });
@@ -121,17 +126,24 @@ export default function DailyShareClient() {
         myFollowingData?.items?.map((user) => String(user.id)) || []
     );
 
-    const allDailyList = dailyListData?.items || [];
+    // 텍스트나 이미지가 있는 게시글만 필터링 (빈 게시글 숨김)
+    const allDailyList = (dailyListData?.items || []).filter(
+        (post) => post.content || post.imageUrl
+    );
 
     const dailyList = isFollowing
     ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
     : allDailyList;
     console.log('dailyList: ', dailyList);
     
-    const myDaily = myDailyData?.hasShared ? myDailyData.dailyShare : null;
+    // 오늘 답변인지 확인 (createdAt이 오늘인지 체크)
+    const latestAnswer = myDailyData?.items?.[0];
+    const todayDate = dayjs().format('YYYY-MM-DD');
+    const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === todayDate;
+    const myDaily: DailyAnswer | null = isToday ? latestAnswer : null;
 
-    // 사용자의 오늘 기록된 mood에 따른 배경 이미지 결정
-    const currentBg = myDaily?.mood ? (shareBg[myDaily.mood] || shareBg.none) : shareBg.none;
+    // 사용자의 오늘 기록된 weather에 따른 배경 이미지 결정
+    const currentBg = myDaily?.weather ? (shareBg[myDaily.weather] || shareBg.none) : shareBg.none;
 
     const hasNoFollowing = followingIds.size === 0;
     const hasFollowingButNoPostsToday = !hasNoFollowing && dailyList.length === 0 && isFollowing;
@@ -358,7 +370,7 @@ export default function DailyShareClient() {
                                             <div className="flex items-center gap-[8rem]">
                                                 <button
                                                     type="button"
-                                                    className="w-[48rem] h-[48rem] rounded-full bg-sky-100 flex items-center justify-center overflow-hidden"
+                                                    className="w-[48rem] h-[48rem] rounded-full cursor-pointer bg-sky-100 flex items-center justify-center overflow-hidden"
                                                     onClick={() => {}}
                                                 >
                                                     {post.user?.profileImageUrl ? (
@@ -378,7 +390,7 @@ export default function DailyShareClient() {
                                                     <div className="flex items-center gap-[8rem] text-[12rem]">
                                                         <p className="text-gray-700">{post.user?.userType || 'User Type'}</p>
                                                         <span className="text-gray-200">|</span>
-                                                        <p className="text-gray-600">{dayjs(post.createdAt).fromNow()}</p>
+                                                        <p className="text-gray-600">{dayjs.utc(post.createdAt).tz('Asia/Seoul').fromNow()}</p>
                                                     </div>
                                                 </div>
                                             </div>

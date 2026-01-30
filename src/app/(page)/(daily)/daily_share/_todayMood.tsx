@@ -15,7 +15,7 @@ interface TodayMyMoodProps {
 // 날씨별 메시지 및 아이콘 매핑
 const moodConfig: Record<string, { message: string; icon: string }> = {
     sun: { message: '맑은 날씨를', icon: '/img/weather/Sun.png' },
-    sun_and_cloud: { message: '조금 맑은 날씨를', icon: '/img/weather/Sun_and_Cloud.png' },
+    sun_cloud: { message: '조금 맑은 날씨를', icon: '/img/weather/Sun_and_Cloud.png' },
     cloud: { message: '흐린 날씨를', icon: '/img/weather/Cloud.png' },
     rain: { message: '비내리는 날씨를', icon: '/img/weather/Rain.png' },
     lightning: { message: '번개치는 날씨를', icon: '/img/weather/Lightning.png' },

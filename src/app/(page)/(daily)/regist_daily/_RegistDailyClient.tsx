@@ -20,14 +20,6 @@ const gradientMap: Record<string, { from: string; to: string }> = {
     lightning: { from: '#D1C4E9', to: '#7E57C2' },
 };
 
-// 프론트엔드 타입 → API weather 타입 매핑
-const weatherTypeMap: Record<string, WeatherType> = {
-    sun: 'sunny',
-    sun_cloud: 'partly_cloudy',
-    cloud: 'cloudy',
-    rain: 'rainy',
-    lightning: 'lightning',
-};
 
 // EmotionTypeInfo에 gradient 추가한 타입
 export interface WeatherOption extends EmotionTypeInfo {
@@ -140,7 +132,7 @@ export default function RegistDailyClient() {
                         questionId: Number(currentQuestion.id),
                         content: textContent || undefined,
                         imageUrl,
-                        weather: weatherTypeMap[selectedMood],
+                        weather: selectedMood as WeatherType,
                     });
                 } catch (error: any) {
                     // QUESTION_INACTIVE 에러 처리

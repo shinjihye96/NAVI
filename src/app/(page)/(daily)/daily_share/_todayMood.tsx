@@ -48,11 +48,14 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                 usersApi.getMe().catch(() => null),
             ]);
 
-            // 오늘 답변이 있는지 확인
-            const todayAnswer = myAnswersResponse.items?.[0];
-            if (todayAnswer) {
+            // 오늘 답변이 있는지 확인 (createdAt이 오늘인지 체크)
+            const latestAnswer = myAnswersResponse.items?.[0];
+            const today = dayjs().format('YYYY-MM-DD');
+            const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === today;
+
+            if (isToday && latestAnswer) {
                 setHasShared(true);
-                setMyDaily(todayAnswer);
+                setMyDaily(latestAnswer);
             } else {
                 setHasShared(false);
                 setMyDaily(null);

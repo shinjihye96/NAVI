@@ -87,6 +87,7 @@ async function request<T>(
 
   // 401 에러 시 토큰 갱신 시도
   if (response.status === 401) {
+    const hadToken = !!token; // 토큰이 있었는지 확인 (비로그인 vs 세션 만료 구분)
     const refreshed = await refreshTokens();
     if (refreshed) {
       // 토큰 갱신 성공 시 재요청
@@ -120,7 +121,9 @@ async function request<T>(
     } else {
       // 토큰 갱신 실패 시 로그아웃 처리
       clearTokens();
-      if (typeof window !== 'undefined') {
+      // 토큰이 있었는데 갱신 실패한 경우에만 리다이렉트 (세션 만료)
+      // 비로그인 상태에서는 리다이렉트하지 않음
+      if (hadToken && typeof window !== 'undefined') {
         window.location.href = '/login';
       }
       throw new Error('Session expired');

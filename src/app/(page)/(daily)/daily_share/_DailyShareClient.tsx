@@ -272,7 +272,7 @@ export default function DailyShareClient() {
 
     const handleShareClick = () => {
         if (!hasToken) {
-            router.push('/login?redirect=/regist_daily');
+            router.push('/login');
             return;
         }
         router.push('/regist_daily');

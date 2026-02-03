@@ -35,7 +35,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const handleRegistClick = () => {
         const token = getAccessToken();
         if (!token) {
-            router.push('/login?redirect=/regist_daily');
+            router.push('/login');
             return;
         }
         router.push('/regist_daily');

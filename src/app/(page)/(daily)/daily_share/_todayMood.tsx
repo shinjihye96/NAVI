@@ -32,6 +32,15 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
     const [nickname, setNickname] = useState<string>('');
 
+    const handleRegistClick = () => {
+        const token = getAccessToken();
+        if (!token) {
+            router.push('/login?redirect=/regist_daily');
+            return;
+        }
+        router.push('/regist_daily');
+    };
+
     const fetchMyDaily = async () => {
         // 로그인하지 않은 경우 API 호출 스킵
         const token = getAccessToken();
@@ -173,7 +182,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                             iconPosition="l"
                             round
                             className="w-full"
-                            onClick={() => router.push('regist_daily')}
+                            onClick={handleRegistClick}
                         />
                     </div>
                 </div>
@@ -224,7 +233,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                             <button
                                 type="button"
                                 className="bg-gray-950 rounded-[16rem] overflow-hidden relative flex w-full"
-                                onClick={() => router.push('regist_daily')}
+                                onClick={handleRegistClick}
                             >
                                 <div className="img_box absolute bottom-0 left-0 w-[70rem]">
                                     <img src="/img/icon/Q.png" alt="question icon" />

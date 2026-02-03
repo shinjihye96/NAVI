@@ -271,6 +271,14 @@ export default function DailyShareClient() {
         followMutation.mutate({ userId, isCurrentlyFollowing });
     };
 
+    const handleShareClick = () => {
+        if (!hasToken) {
+            router.push('/login?redirect=/regist_daily');
+            return;
+        }
+        router.push('/regist_daily');
+    };
+
     return (
         <div className="relative">
             <AppBar
@@ -359,7 +367,7 @@ export default function DailyShareClient() {
                                     txt="오늘의 하루 공유하기"
                                     round
                                     size="l"
-                                    onClick={() => router.push('regist_daily')}
+                                    onClick={handleShareClick}
                                 />
                             </div>
                         ) : (

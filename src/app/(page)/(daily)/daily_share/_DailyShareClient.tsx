@@ -95,10 +95,9 @@ export default function DailyShareClient() {
             return dailySharesApi.getAll(query);
         },
         staleTime: 30 * 1000, // 30초
-        enabled: hasToken,
     });
 
-    const isActuallyLoading = !isClient || (hasToken && (isLoading || (!dailyListData && isFetching)));
+    const isActuallyLoading = !isClient || isLoading || (!dailyListData && isFetching);
 
     const { data: myDailyData } = useQuery({
         queryKey: ['myTodayAnswer'],

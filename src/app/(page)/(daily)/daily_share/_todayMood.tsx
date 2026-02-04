@@ -4,7 +4,7 @@ import { Button } from "components/ui/button/page";
 import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { dailyQuestionsApi, usersApi, DailyAnswer, DailyQuestion, getAccessToken } from "api";
 import dayjs from "dayjs";
 
@@ -32,6 +32,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [remainingTime, setRemainingTime] = useState<string>('');
     const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
     const [nickname, setNickname] = useState<string>('');
+    const hasExpiredRef = useRef(false); // 마감 처리 여부 (무한 호출 방지)
 
     const handleRegistClick = () => {
         const token = getAccessToken();
@@ -98,8 +99,17 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
         if (diff <= 0) {
             setRemainingTime('마감');
             setIsUrgent(false);
+
+            // 마감 시 새 질문 fetch (무한 호출 방지)
+            if (!hasExpiredRef.current) {
+                hasExpiredRef.current = true;
+                fetchMyDaily();
+            }
             return;
         }
+
+        // 아직 마감 안 됨 - ref 초기화
+        hasExpiredRef.current = false;
 
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));

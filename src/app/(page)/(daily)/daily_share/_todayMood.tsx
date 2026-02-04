@@ -28,6 +28,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [hasShared, setHasShared] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [todayQuestion, setTodayQuestion] = useState<DailyQuestion | null>(null);
+    console.log('todayQuestion: ', todayQuestion);
     const [remainingTime, setRemainingTime] = useState<string>('');
     const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
     const [nickname, setNickname] = useState<string>('');
@@ -42,40 +43,40 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     };
 
     const fetchMyDaily = async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
         const token = getAccessToken();
-        if (!token) {
-            setIsLoading(false);
-            return;
-        }
 
         try {
             setIsLoading(true);
-            const [myAnswersResponse, questionResponse, userResponse] = await Promise.all([
-                dailyQuestionsApi.getMyAnswers(1, 1),
-                dailyQuestionsApi.getTodayQuestion().catch(() => null),
-                usersApi.getMe().catch(() => null),
-            ]);
 
-            // 오늘 답변이 있는지 확인 (createdAt이 오늘인지 체크)
-            const latestAnswer = myAnswersResponse.items?.[0];
-            const today = dayjs().format('YYYY-MM-DD');
-            const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === today;
-
-            if (isToday && latestAnswer) {
-                setHasShared(true);
-                setMyDaily(latestAnswer);
-            } else {
-                setHasShared(false);
-                setMyDaily(null);
-            }
-
+            // 오늘의 질문은 비로그인에서도 호출
+            const questionResponse = await dailyQuestionsApi.getTodayQuestion().catch(() => null);
             if (questionResponse) {
                 setTodayQuestion(questionResponse);
             }
 
-            if (userResponse?.nickname) {
-                setNickname(userResponse.nickname);
+            // 로그인한 경우에만 내 답변, 사용자 정보 조회
+            if (token) {
+                const [myAnswersResponse, userResponse] = await Promise.all([
+                    dailyQuestionsApi.getMyAnswers(1, 1),
+                    usersApi.getMe().catch(() => null),
+                ]);
+
+                // 오늘 답변이 있는지 확인 (createdAt이 오늘인지 체크)
+                const latestAnswer = myAnswersResponse.items?.[0];
+                const today = dayjs().format('YYYY-MM-DD');
+                const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === today;
+
+                if (isToday && latestAnswer) {
+                    setHasShared(true);
+                    setMyDaily(latestAnswer);
+                } else {
+                    setHasShared(false);
+                    setMyDaily(null);
+                }
+
+                if (userResponse?.nickname) {
+                    setNickname(userResponse.nickname);
+                }
             }
         } catch {
             // 백엔드 미실행 시 기본값 유지 (에러 무시)

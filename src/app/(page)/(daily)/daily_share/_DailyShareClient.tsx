@@ -95,10 +95,9 @@ export default function DailyShareClient() {
             return dailySharesApi.getAll(query);
         },
         staleTime: 30 * 1000, // 30초
-        enabled: hasToken,
     });
 
-    const isActuallyLoading = !isClient || (hasToken && (isLoading || (!dailyListData && isFetching)));
+    const isActuallyLoading = !isClient || isLoading || (!dailyListData && isFetching);
 
     const { data: myDailyData } = useQuery({
         queryKey: ['myTodayAnswer'],
@@ -271,6 +270,14 @@ export default function DailyShareClient() {
         followMutation.mutate({ userId, isCurrentlyFollowing });
     };
 
+    const handleShareClick = () => {
+        if (!hasToken) {
+            router.push('/login');
+            return;
+        }
+        router.push('/regist_daily');
+    };
+
     return (
         <div className="relative">
             <AppBar
@@ -359,7 +366,7 @@ export default function DailyShareClient() {
                                     txt="오늘의 하루 공유하기"
                                     round
                                     size="l"
-                                    onClick={() => router.push('regist_daily')}
+                                    onClick={handleShareClick}
                                 />
                             </div>
                         ) : (

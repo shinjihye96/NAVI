@@ -8,7 +8,7 @@ import {
 } from './types';
 
 export const dailySharesApi = {
-  // 하루공유 목록 조회
+  // 하루공유 목록 조회 (비로그인 시에도 빈 배열 반환)
   getAll: async (query?: DailyShareQuery): Promise<PaginatedResponse<DailyShare>> => {
     const params = new URLSearchParams();
     if (query?.filter) params.append('filter', query.filter);
@@ -17,7 +17,12 @@ export const dailySharesApi = {
     if (query?.limit) params.append('limit', String(query.limit));
 
     const queryString = params.toString();
-    return api.get<PaginatedResponse<DailyShare>>(`/api/daily-shares${queryString ? `?${queryString}` : ''}`);
+    try {
+      return await api.get<PaginatedResponse<DailyShare>>(`/api/daily-shares${queryString ? `?${queryString}` : ''}`);
+    } catch {
+      // 비로그인 시 401 에러 발생하면 빈 배열 반환
+      return { items: [], total: 0, page: 1, limit: 10, totalPages: 0 };
+    }
   },
 
   // 하루공유 상세 조회

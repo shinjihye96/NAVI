@@ -9,9 +9,10 @@ import Image from "next/image";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { dailySharesApi, emotionTypesApi, EmotionTypeInfo, dailyQuestionsApi, DailyQuestion, DailyShare, Mood, WeatherType } from "api";
+import { isMobile } from 'react-device-detect';
 import { WeatherCardSkeleton } from "components/ui/skeleton/page";
 
-// type별 그라데이션 매핑
+// 타입별 그라데이션
 const gradientMap: Record<string, { from: string; to: string }> = {
     sun: { from: '#A8EEF7', to: '#E1F0FF' },
     sun_cloud: { from: '#FFF4E1', to: '#FCE4A6' },
@@ -20,8 +21,6 @@ const gradientMap: Record<string, { from: string; to: string }> = {
     lightning: { from: '#D1C4E9', to: '#7E57C2' },
 };
 
-
-// EmotionTypeInfo에 gradient 추가한 타입
 export interface WeatherOption extends EmotionTypeInfo {
     gradientFrom: string;
     gradientTo: string;
@@ -39,7 +38,6 @@ export default function RegistDailyClient() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
     const swiperRef = useRef<any>(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -49,16 +47,6 @@ export default function RegistDailyClient() {
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [existingDaily, setExistingDaily] = useState<DailyShare | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
-
-    // 모바일 환경 감지
-    useEffect(() => {
-        const checkMobile = () => {
-            const userAgent = navigator.userAgent || navigator.vendor;
-            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-            setIsMobile(isMobileDevice);
-        };
-        checkMobile();
-    }, []);
 
     // 카드 UI 상태
     function getCardStyles(index: number) {

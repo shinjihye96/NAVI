@@ -4,7 +4,7 @@ import { Button } from "components/ui/button/page";
 import Label from "components/ui/label/page";
 import { Icon } from "icon/page";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { dailyQuestionsApi, usersApi, DailyAnswer, DailyQuestion, getAccessToken } from "api";
 import dayjs from "dayjs";
 
@@ -28,45 +28,56 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
     const [hasShared, setHasShared] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [todayQuestion, setTodayQuestion] = useState<DailyQuestion | null>(null);
+    console.log('todayQuestion: ', todayQuestion);
     const [remainingTime, setRemainingTime] = useState<string>('');
     const [isUrgent, setIsUrgent] = useState(false); // 30분 미만 여부
     const [nickname, setNickname] = useState<string>('');
+    const hasExpiredRef = useRef(false); // 마감 처리 여부 (무한 호출 방지)
 
-    const fetchMyDaily = async () => {
-        // 로그인하지 않은 경우 API 호출 스킵
+    const handleRegistClick = () => {
         const token = getAccessToken();
         if (!token) {
-            setIsLoading(false);
+            router.push('/login');
             return;
         }
+        router.push('/regist_daily');
+    };
+
+    const fetchMyDaily = async () => {
+        const token = getAccessToken();
 
         try {
             setIsLoading(true);
-            const [myAnswersResponse, questionResponse, userResponse] = await Promise.all([
-                dailyQuestionsApi.getMyAnswers(1, 1),
-                dailyQuestionsApi.getTodayQuestion().catch(() => null),
-                usersApi.getMe().catch(() => null),
-            ]);
 
-            // 오늘 답변이 있는지 확인 (createdAt이 오늘인지 체크)
-            const latestAnswer = myAnswersResponse.items?.[0];
-            const today = dayjs().format('YYYY-MM-DD');
-            const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === today;
-
-            if (isToday && latestAnswer) {
-                setHasShared(true);
-                setMyDaily(latestAnswer);
-            } else {
-                setHasShared(false);
-                setMyDaily(null);
-            }
-
+            // 오늘의 질문은 비로그인에서도 호출
+            const questionResponse = await dailyQuestionsApi.getTodayQuestion().catch(() => null);
             if (questionResponse) {
                 setTodayQuestion(questionResponse);
             }
 
-            if (userResponse?.nickname) {
-                setNickname(userResponse.nickname);
+            // 로그인한 경우에만 내 답변, 사용자 정보 조회
+            if (token) {
+                const [myAnswersResponse, userResponse] = await Promise.all([
+                    dailyQuestionsApi.getMyAnswers(1, 1),
+                    usersApi.getMe().catch(() => null),
+                ]);
+
+                // 오늘 답변이 있는지 확인 (createdAt이 오늘인지 체크)
+                const latestAnswer = myAnswersResponse.items?.[0];
+                const today = dayjs().format('YYYY-MM-DD');
+                const isToday = latestAnswer && dayjs(latestAnswer.createdAt).format('YYYY-MM-DD') === today;
+
+                if (isToday && latestAnswer) {
+                    setHasShared(true);
+                    setMyDaily(latestAnswer);
+                } else {
+                    setHasShared(false);
+                    setMyDaily(null);
+                }
+
+                if (userResponse?.nickname) {
+                    setNickname(userResponse.nickname);
+                }
             }
         } catch {
             // 백엔드 미실행 시 기본값 유지 (에러 무시)
@@ -88,8 +99,17 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
         if (diff <= 0) {
             setRemainingTime('마감');
             setIsUrgent(false);
+
+            // 마감 시 새 질문 fetch (무한 호출 방지)
+            if (!hasExpiredRef.current) {
+                hasExpiredRef.current = true;
+                fetchMyDaily();
+            }
             return;
         }
+
+        // 아직 마감 안 됨 - ref 초기화
+        hasExpiredRef.current = false;
 
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -173,7 +193,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                             iconPosition="l"
                             round
                             className="w-full"
-                            onClick={() => router.push('regist_daily')}
+                            onClick={handleRegistClick}
                         />
                     </div>
                 </div>
@@ -224,7 +244,7 @@ export default function TodayMyMood({ dailyListLength }: TodayMyMoodProps) {
                             <button
                                 type="button"
                                 className="bg-gray-950 rounded-[16rem] overflow-hidden relative flex w-full"
-                                onClick={() => router.push('regist_daily')}
+                                onClick={handleRegistClick}
                             >
                                 <div className="img_box absolute bottom-0 left-0 w-[70rem]">
                                     <img src="/img/icon/Q.png" alt="question icon" />

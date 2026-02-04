@@ -10,23 +10,23 @@ import { Pagination } from 'swiper/modules';
 
 const onboardingData = [
     {
-        title: '앱 설명\n타이틀 영역',
+        title: '앱 설명\n타이틀 영역1',
         description: '추가 설명 부분 텍스트 영역\n최대 2줄까지 작성할 수 있음',
     },
     {
-        title: '앱 설명\n타이틀 영역',
+        title: '앱 설명\n타이틀 영역2',
         description: '추가 설명 부분 텍스트 영역\n최대 2줄까지 작성할 수 있음',
     },
     {
-        title: '앱 설명\n타이틀 영역',
+        title: '앱 설명\n타이틀 영역3',
         description: '추가 설명 부분 텍스트 영역\n최대 2줄까지 작성할 수 있음',
     },
     {
-        title: '앱 설명\n타이틀 영역',
+        title: '앱 설명\n타이틀 영역4',
         description: '추가 설명 부분 텍스트 영역\n최대 2줄까지 작성할 수 있음',
     },
     {
-        title: '앱 설명\n타이틀 영역',
+        title: '앱 설명\n타이틀 영역5',
         description: '추가 설명 부분 텍스트 영역\n최대 2줄까지 작성할 수 있음',
     },
 ];
@@ -46,12 +46,11 @@ export default function Login() {
     };
 
     const handleIdLogin = () => {
-        router.push('/login/id');
+        router.push('/login/user_login');
     };
 
     return (
-        <div className="flex flex-col min-h-dvh bg-base-wf">
-            {/* 온보딩 스와이퍼 */}
+        <div className="flex flex-col min-h-dvh bg-base-wf pb-[calc(env(safe-area-inset-bottom))]">
             <div className="flex-1 flex flex-col justify-end pb-[24rem]">
                 <Swiper
                     modules={[Pagination]}
@@ -74,8 +73,6 @@ export default function Login() {
                     ))}
                 </Swiper>
             </div>
-
-            {/* 로그인 이력 있을 경우 메시지 */}
             {hasLoginHistory && (
                 <div className="px-[24rem] pb-[16rem]">
                     <div className="bg-gray-100 rounded-[8rem] py-[12rem] px-[16rem] text-center">
@@ -85,11 +82,8 @@ export default function Login() {
                     </div>
                 </div>
             )}
-
-            {/* 로그인 버튼들 */}
             <div className="px-[16rem] pb-[32rem]">
                 <div className="flex flex-col gap-[8rem]">
-                    {/* 카카오 로그인 */}
                     <button
                         type="button"
                         onClick={handleKakaoLogin}
@@ -102,8 +96,6 @@ export default function Login() {
                         </span>
                         <span className="text-[16rem] font-medium text-[#191919]">카카오로 시작하기</span>
                     </button>
-
-                    {/* 네이버 로그인 */}
                     <button
                         type="button"
                         onClick={handleNaverLogin}
@@ -113,8 +105,6 @@ export default function Login() {
                         <span className="text-[16rem] font-medium text-white">네이버로 시작하기</span>
                     </button>
                 </div>
-
-                {/* 아이디로 시작하기 */}
                 <div className="mt-[16rem] text-center">
                     <TextButton
                         txt="아이디로 시작하기"

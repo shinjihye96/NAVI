@@ -8,6 +8,7 @@ interface InputProps{
     name: string;
     onChange: (e?: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e?: React.FocusEvent<HTMLInputElement>) => void;
+    onKeyDown?: (e?: React.KeyboardEvent<HTMLInputElement>) => void;
     disabled?: boolean;
     error?: boolean;
 }
@@ -19,6 +20,7 @@ export default function Input({
     name,
     onChange,
     onBlur,
+    onKeyDown,
     disabled = false,
     error = false,
 }: InputProps){
@@ -41,7 +43,7 @@ export default function Input({
         setInputValue(inputValue);
 
         if(onChange){
-            onChange
+            onChange(e);
         }
     }
 
@@ -53,6 +55,7 @@ export default function Input({
                 value={inputValue}
                 name={name}
                 onChange={valueHandler}
+                onKeyDown={onKeyDown}
                 onBlur={onBlur}
                 disabled={disabled}
                 className={`h-[40rem] placeholder:text-gray-600 font-normal text-gray-900 leading-[20rem] text-[16rem] disabled:bg-gray-200 ${inputType()}`}

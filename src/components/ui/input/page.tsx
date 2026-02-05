@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 
 interface InputProps{
     className?: string;
@@ -12,7 +12,8 @@ interface InputProps{
     disabled?: boolean;
     error?: boolean;
 }
-export default function Input({
+
+const Input = forwardRef<HTMLInputElement, InputProps>(({
     className = '',
     label,
     type = 'box',
@@ -23,7 +24,7 @@ export default function Input({
     onKeyDown,
     disabled = false,
     error = false,
-}: InputProps){
+}, ref) => {
     const [inputValue, setInputValue] = useState(value ?? '');
 
     const inputType = () => {
@@ -51,6 +52,7 @@ export default function Input({
         <label className={`grid gap-[4rem]`}>
             <p className="text-[14rem] text-gray-700 leading-[20rem] font-400">{label}</p>
             <input
+                ref={ref}
                 type="text"
                 value={inputValue}
                 name={name}
@@ -62,4 +64,6 @@ export default function Input({
             />
         </label>
     );
-}
+});
+
+export default Input;

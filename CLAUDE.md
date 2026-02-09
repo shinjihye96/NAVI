@@ -35,3 +35,29 @@
 - NestJS + TypeScript
 - PostgreSQL (Supabase)
 - TypeORM
+
+---
+
+## Workflow 규칙
+- 코드 변경 전 **계획을 먼저 설명**하고 사용자 확인을 받을 것
+- 멀티 스텝 변경 시 각 단계를 **완전히 완료한 후** 다음 단계로 이동
+- 디자인 목업 이미지가 너무 커서 처리 실패 시, 즉시 **리사이즈를 요청**하거나 **텍스트로 설명**을 요청할 것 (재시도 금지)
+
+## API 연동 규칙
+- API 페이로드 값은 **백엔드 enum/type 정의와 정확히 일치**시킬 것 (emotion_types, weather types, UserType 등)
+- 프론트엔드 구현 전 반드시 **백엔드 enum, DTO, Swagger 스펙을 먼저 읽고** 정확한 값을 확인할 것
+
+## TypeScript 규칙
+- `.toFixed()`, `.includes()` 등 호출 전 **타입과 null/undefined 체크** 필수
+- 객체 배열 비교 시 `.includes()` 대신 **`.some()` 사용**
+- 타입 안전성 항상 확보 — undefined/null 접근 방지
+
+## UI/Layout 규칙
+- sticky, overflow, scroll 등 레이아웃 수정 시 **부모 컨테이너 체인 전체의 height 제약 조건** 반드시 확인
+- `flex-1`이나 `overflow-y-auto`가 작동하려면 **조상 요소의 height가 설정되어 있어야 함**
+- UI 레이아웃 변경은 **한 번에 하나의 속성만** 수정하고 확인 후 다음 단계 진행
+
+## Kakao Maps 규칙
+- 초기 좌표 props, 마커 클러스터링, 줌 레벨 변경 항상 처리
+- 맵 컨테이너에 **명시적 width/height** 필수
+- 맵 연동 후 **런타임 에러 테스트** 필수

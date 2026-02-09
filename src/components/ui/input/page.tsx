@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 
 interface InputProps{
     className?: string;
@@ -8,10 +8,12 @@ interface InputProps{
     name: string;
     onChange: (e?: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e?: React.FocusEvent<HTMLInputElement>) => void;
+    onKeyDown?: (e?: React.KeyboardEvent<HTMLInputElement>) => void;
     disabled?: boolean;
     error?: boolean;
 }
-export default function Input({
+
+const Input = forwardRef<HTMLInputElement, InputProps>(({
     className = '',
     label,
     type = 'box',
@@ -19,9 +21,10 @@ export default function Input({
     name,
     onChange,
     onBlur,
+    onKeyDown,
     disabled = false,
     error = false,
-}: InputProps){
+}, ref) => {
     const [inputValue, setInputValue] = useState(value ?? '');
 
     const inputType = () => {
@@ -41,7 +44,7 @@ export default function Input({
         setInputValue(inputValue);
 
         if(onChange){
-            onChange
+            onChange(e);
         }
     }
 
@@ -49,14 +52,18 @@ export default function Input({
         <label className={`grid gap-[4rem]`}>
             <p className="text-[14rem] text-gray-700 leading-[20rem] font-400">{label}</p>
             <input
+                ref={ref}
                 type="text"
                 value={inputValue}
                 name={name}
                 onChange={valueHandler}
+                onKeyDown={onKeyDown}
                 onBlur={onBlur}
                 disabled={disabled}
                 className={`h-[40rem] placeholder:text-gray-600 font-normal text-gray-900 leading-[20rem] text-[16rem] disabled:bg-gray-200 ${inputType()}`}
             />
         </label>
     );
-}
+});
+
+export default Input;

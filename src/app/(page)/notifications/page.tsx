@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AppBar from 'components/appBar/page';
-import { IconButton } from 'components/ui/button/page';
+import { IconButton, TextButton } from 'components/ui/button/page';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -109,6 +109,12 @@ export default function NotificationsPage() {
         // TODO: 해당 알림에 맞는 페이지로 이동
     };
 
+    const handleMarkAllAsRead = () => {
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    };
+
+    const hasUnread = notifications.some((n) => !n.isRead);
+
     return (
         <div className="min-h-[calc(100vh-132rem)] bg-base-wf">
             <AppBar
@@ -121,6 +127,15 @@ export default function NotificationsPage() {
                     />
                 }
                 title="알림"
+                right={
+                    hasUnread ? (
+                        <TextButton
+                            txt="모두 읽기"
+                            color="primary"
+                            onClick={handleMarkAllAsRead}
+                        />
+                    ) : null
+                }
                 className={"sticky top-0"}
             />
             <Tabs
@@ -152,10 +167,10 @@ export default function NotificationsPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-[8rem]">
-                                    <p className="text-[14rem] font-semibold text-gray-950 truncate">{notification.title}</p>
+                                    <p className={`text-[14rem] font-semibold truncate ${notification.isRead ? 'text-gray-500' : 'text-gray-950'}`}>{notification.title}</p>
                                     <span className="text-[12rem] text-gray-500 flex-shrink-0">{dayjs(notification.createdAt).fromNow()}</span>
                                 </div>
-                                <p className="text-[14rem] text-gray-600 mt-[4rem] line-clamp-2">{notification.description}</p>
+                                <p className={`text-[14rem] mt-[4rem] line-clamp-2 ${notification.isRead ? 'text-gray-500' : 'text-gray-950'}`}>{notification.description}</p>
                             </div>
                         </li>
                     ))

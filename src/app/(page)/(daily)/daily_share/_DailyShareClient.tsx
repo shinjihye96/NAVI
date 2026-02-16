@@ -11,7 +11,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/ko";
 import { useRouter } from "next/navigation";
-import { dailySharesApi, dailyQuestionsApi, DailyShareQuery, DailyAnswer, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
+import { dailySharesApi, dailyQuestionsApi, DailyShareQuery, DailyAnswer, DailyQuestion, getAccessToken, reactionsApi, ReactionType, followsApi, usersApi } from "api";
 import { useNotificationStore } from "store/notificationStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { EMOTION_TYPES } from "constants/emotions";
@@ -106,6 +106,13 @@ export default function DailyShareClient() {
         enabled: hasToken,
     });
 
+    // 오늘의 질문 (비로그인에서도 조회)
+    const { data: todayQuestion } = useQuery({
+        queryKey: ['todayQuestion'],
+        queryFn: () => dailyQuestionsApi.getTodayQuestion(),
+        staleTime: 5 * 60 * 1000, // 5분
+    });
+
     // 자주 변하지 않는 데이터 - 긴 staleTime
     const { data: currentUser } = useQuery({
         queryKey: ['currentUser'],
@@ -133,8 +140,7 @@ export default function DailyShareClient() {
     const dailyList = isFollowing
     ? allDailyList.filter((post) => followingIds.has(String(post.user?.id)))
     : allDailyList;
-    console.log('dailyList: ', dailyList);
-    
+
     // 오늘 답변인지 확인 (createdAt이 오늘인지 체크)
     const latestAnswer = myDailyData?.items?.[0];
     const todayDate = dayjs().format('YYYY-MM-DD');
@@ -315,7 +321,13 @@ export default function DailyShareClient() {
                 </div>
                 <div className="relative flex flex-col flex-1">
                     <div className="flex-shrink-0">
-                        <TodayMyMood dailyListLength={dailyList.length} />
+                        <TodayMyMood
+                            dailyListLength={dailyList.length}
+                            myDaily={myDaily}
+                            todayQuestion={todayQuestion ?? null}
+                            nickname={currentUser?.nickname ?? ''}
+                            hasToken={hasToken}
+                        />
                     </div>
                     <div className="bg-base-wf rounded-t-[24rem] pt-[8rem] flex flex-col flex-1">
                         <div className="flex items-center justify-between py-[12rem] px-[16rem]">

@@ -9,6 +9,7 @@ export { dailyQuestionsApi, type DailyQuestion, type AnswerDailyQuestionDto, typ
 export { emotionsApi, emotionTypesApi, type EmotionTypeInfo } from './emotions';
 export { followsApi, type FollowListQuery } from './follows';
 export { reactionsApi, type ReactionType, type ToggleReactionResponse } from './reactions';
+export { notificationsApi } from './notifications';
 
 // 타입
 export * from './types';

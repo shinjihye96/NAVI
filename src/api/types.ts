@@ -191,3 +191,41 @@ export interface CancerType {
   id: number;
   name: string;
 }
+
+// Notification 관련 타입
+export type NotificationCategory = 'daily_share' | 'community' | 'medical_support';
+
+export interface NotificationItem {
+  id: string;
+  category: NotificationCategory;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  referenceId: string | null;
+  referenceType: string | null;
+  createdAt: string;
+}
+
+export interface NotificationPagination {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface NotificationListResponse {
+  items: NotificationItem[];
+  pagination: NotificationPagination;
+}
+
+export interface NotificationUnreadCount {
+  total: number;
+  dailyShare: number;
+  community: number;
+  medicalSupport: number;
+}
+
+export interface NotificationQuery extends PaginationQuery {
+  category?: NotificationCategory;
+}
